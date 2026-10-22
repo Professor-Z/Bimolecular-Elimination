@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E2 Reaction Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+        .interactive { pointer-events: auto; }
+        select option { background: #1e293b; color: #ffffff; }
+        input[type=range]:disabled { opacity: 0.35; }
+        input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-webkit-slider-runnable-track { cursor: not-allowed; }
+        button:disabled { opacity: 0.35; cursor: not-allowed; }
+        @keyframes flashWarn { 0%,100% { background: transparent; } 30% { background: rgba(239,68,68,0.35); } }
+        .floating-label { position: fixed; left: 0; top: 0; z-index: 5; pointer-events: none; white-space: nowrap; opacity: 0; font-weight: 800; transform: translate(-50%, 0); }
+        #reactive-label { visibility: hidden; color: #facc15; font-size: 19px; letter-spacing: 0.14em;
+            text-shadow: 0 0 6px rgba(250,204,21,0.95), 0 0 16px rgba(250,204,21,0.75), 0 0 32px rgba(250,204,21,0.5); }
+        #product-label { visibility: hidden; font-size: 19px; letter-spacing: 0.14em; padding: 6px 20px; border-radius: 9999px;
+            background: rgba(15,23,42,0.62); border: 1px solid currentColor; }
+        #product-label.hofmann { color: #4ade80;
+            text-shadow: 0 0 6px rgba(74,222,128,0.95), 0 0 16px rgba(74,222,128,0.75), 0 0 32px rgba(74,222,128,0.5);
+            box-shadow: 0 0 14px rgba(74,222,128,0.6), inset 0 0 10px rgba(74,222,128,0.25); }
+        #product-label.zaitsev { color: #4ade80;
+            text-shadow: 0 0 6px rgba(74,222,128,0.95), 0 0 16px rgba(74,222,128,0.75), 0 0 32px rgba(74,222,128,0.5);
+            box-shadow: 0 0 14px rgba(74,222,128,0.6), inset 0 0 10px rgba(74,222,128,0.25); }
+        #alkene-label { visibility: hidden; font-size: 19px; letter-spacing: 0.14em; padding: 6px 20px; border-radius: 9999px;
+            color: #ffffff; background: #1f7bff; border: 1px solid #7db7ff; box-shadow: 0 0 14px rgba(31,123,255,0.85), 0 0 30px rgba(31,123,255,0.5); }
+        #blocked-hint { width: max-content; white-space: nowrap; text-align: center;
+            color: #ff2d2d; font-size: 15px; letter-spacing: 0.04em; transition: opacity 0.3s ease;
+            text-shadow: 0 0 8px rgba(255,45,45,0.55), 0 1px 6px rgba(0,0,0,0.9); }
+        .glass-panel { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 0.75rem; padding: 1rem; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #3b82f6; cursor: pointer; margin-top: -6px; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #4b5563; border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <!-- Top Left Information Panel -->
+    <div class="absolute top-4 left-4 z-10 interactive flex flex-col space-y-4">
+        <div class="glass-panel w-80">
+            <h1 class="text-xl font-bold mb-1 text-blue-400">E2 Reaction</h1>
+            <div class="text-xs font-semibold text-gray-400 mb-3">Bimolecular Elimination</div>
+            
+            <div class="space-y-2 text-sm text-gray-300">
+                <div class="flex justify-between items-center border-b border-gray-700 pb-1">
+                    <span class="text-gray-400">Substrate:</span>
+                    <select id="substrate-select" style="max-width: 13rem" class="bg-slate-800 text-white text-xs font-semibold rounded border border-gray-600 px-1.5 py-1 cursor-pointer focus:outline-none focus:border-blue-400">
+                        <option value="ethane">Bromoethane (CH₃CH₂Br)</option>
+                        <option value="butane">(R)-2-Bromobutane</option>
+                        <option value="dmh">(3R,4R)-3-Bromo-4-methylhexane</option>
+                    </select>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Base:</span>
+                    <select id="base-select" class="bg-slate-800 text-red-400 text-xs font-semibold rounded border border-gray-600 px-1.5 py-1 cursor-pointer focus:outline-none focus:border-blue-400">
+                        <option value="hydride">Hydride: H⁻</option>
+                        <option value="hydroxide">Hydroxide: OH⁻</option>
+                        <option value="tbuo">tert-Butoxide: (CH₃)₃CO⁻</option>
+                    </select>
+                </div>
+            </div>
+            <div id="drag-hint" class="text-xs font-semibold text-green-400 mt-3 leading-snug"></div>
+        </div>
+    </div>
+
+    <!-- Top Right Controls -->
+    <div class="absolute top-4 right-4 z-10 interactive flex flex-col items-end space-y-2">
+        <div class="glass-panel w-72">
+            <label class="block text-xs font-semibold text-gray-400 mb-2 uppercase">View Mode:</label>
+            <div class="flex space-x-1.5 mb-2">
+                <button id="btn-bs" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-xs transition font-bold">Ball & Stick</button>
+                <button id="btn-sf" class="flex-1 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs transition font-bold">Space Filling</button>
+            </div>
+            <div class="flex space-x-1.5">
+                <button id="btn-newman" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs transition font-bold shadow">
+                    NEWMAN PROJECTION
+                </button>
+                <button id="btn-side" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs transition font-bold shadow">
+                    SIDE VIEW
+                </button>
+            </div>
+            <button id="btn-labels" class="w-full mt-1.5 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded text-xs transition font-bold shadow">LABELS: ON</button>
+        </div>
+
+        <button id="btn-orbitals" class="glass-panel w-72 py-2 border border-purple-500 text-purple-300 hover:bg-purple-600 hover:text-white rounded text-xs transition font-bold shadow-lg text-center">
+            SHOW P ORBITALS
+        </button>
+    </div>
+
+    <!-- Bottom Center Reaction Progress Controls -->
+    <div id="bottom-panel" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl z-10 interactive">
+        <div class="glass-panel flex flex-col items-center">
+            <div class="flex justify-between w-full text-xs text-gray-400 mb-2 font-semibold px-2">
+                <span>Reactants</span>
+                <span>Transition State</span>
+                <span>Products</span>
+            </div>
+            <div class="flex items-center w-full space-x-3">
+                <button id="btn-speed" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs transition font-bold whitespace-nowrap shadow flex-shrink-0">
+                    1x Speed
+                </button>
+                
+                <button id="btn-play" class="w-10 h-10 flex-shrink-0 rounded-full bg-blue-600 hover:bg-blue-500 flex items-center justify-center transition shadow-lg">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                
+                <input type="range" id="reaction-slider" min="0" max="1" step="0.005" value="0" class="flex-grow">
+                
+                <button id="btn-loop" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs transition font-bold whitespace-nowrap shadow flex-shrink-0">
+                    Loop: OFF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Right Graph & Toggle -->
+    <div class="absolute bottom-4 right-4 z-10 interactive flex flex-col items-end">
+        <div id="graph-container" class="glass-panel mb-16 w-[380px] h-[260px] relative hidden flex-col justify-center items-center shadow-2xl" style="padding: 0.5rem;">
+            <svg viewBox="0 0 140 100" class="w-full h-full overflow-visible">
+                <text x="71.5" y="6" text-anchor="middle" fill="#ffffff" font-size="4" font-weight="bold" letter-spacing="0.5">REACTION COORDINATE (ENDOTHERMIC)</text>
+                <text x="71.5" y="97" text-anchor="middle" fill="#d1d5db" font-size="3" font-weight="bold" letter-spacing="0.5">REACTION PROGRESS</text>
+                <text x="-50" y="3" transform="rotate(-90)" text-anchor="middle" fill="#d1d5db" font-size="3" font-weight="bold" letter-spacing="0.5">POTENTIAL ENERGY</text>
+                
+                <line x1="8" y1="12" x2="8" y2="88" stroke="#4b5563" stroke-width="1" stroke-linecap="round"/>
+                <line x1="8" y1="88" x2="135" y2="88" stroke="#4b5563" stroke-width="1" stroke-linecap="round"/>
+                
+                <path id="energy-curve" d="" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle id="energy-dot" cx="8" cy="60" r="2" fill="#ef4444" stroke="#fff" stroke-width="0.5"/>
+            </svg>
+        </div>
+
+        <button id="btn-graph-toggle" class="px-4 py-2 border border-green-500 bg-gray-800 text-green-400 hover:bg-green-600 hover:text-white rounded text-xs transition font-bold shadow-lg">
+            SHOW ENERGY GRAPH
+        </button>
+    </div>
+
+    <!-- Floating labels (positioned below the substrate by script) -->
+    <div id="reactive-label" class="floating-label">REACTIVE CONFORMATION</div>
+    <div id="product-label" class="floating-label"></div>
+    <div id="alkene-label" class="floating-label"></div>
+    <div id="blocked-hint" class="floating-label">NOT REACTIVE: Try rotating β-carbon</div>
+
+    <!-- Three.js Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        const ATOM_COLORS = { C: 0x808080, H: 0xffffff, Br: 0x228B22, Base: 0xef4444 };
+        const RADII = {
+            BS: { C: 0.38, H: 0.22, Br: 0.52, Base: 0.22, O: 0.34 },
+            SF: { C: 1.25, H: 0.85, Br: 1.50, Base: 0.85, O: 1.12 }
+        };
+        const BOND_RADIUS = 0.08;
+        const DOUBLE_BOND_RADIUS = 0.055;
+        const BOND_COLOR = 0xaaaaaa;
+        
+        // Exact Physical Bond Lengths (Ångströms)
+        const CONST_CH_LENGTH = 1.09;
+        const C_BR_LENGTH = 1.30; // slightly longer than C-H (1.09 Å) for the starting geometry
+        const C_CH3_LENGTH = 1.54; // C-C bond to a methyl group (sp3-sp3); relaxes to 1.50 Å in the alkene
+
+        // Substituent layout. Slots on C_alpha (the carbon bearing Br): index 0 -> +z, index 1 -> -z.
+        // C_beta (the carbon in front in the Newman projection, which loses the H) substituents carry a base dihedral
+        // theta (degrees) about the C-C axis; theta = 0 is the position anti-periplanar to Br when the user rotation is 0.
+        // Types: 'H', 'C' (CH3 group), 'E' (ethyl group, CH2CH3).
+        // (R)-2-bromobutane has two beta carbons:
+        //   Zaitsev route (hydride / hydroxide): C3 is C_beta. On C2 the R configuration puts the C1 methyl at +z, H at -z.
+        //   Hofmann route (tert-butoxide): C1 is C_beta. Swapping the roles of C1 and C3 mirrors the slots to keep the
+        //   R configuration, so the ethyl group (C3) is at -z and H at +z.
+        // ---- (3R,4R)-3-bromo-4-methylhexane: CH3(C1)-CH2(C2)-CHBr(C3)-CH(C4)(CH3, C7)-CH2(C5)-CH3(C6) ----
+        // Group builders (tree nodes). A carbon's children are listed in cyclic order about the bond to it: the first
+        // child sits anti to the reacting partner carbon, and the cyclic order fixes both the rotamer and (for C4) the chirality.
+        const TN = (el, tag, kids) => ({ el, tag, kids: kids || [] });
+        const TCH3 = (tag) => TN('C', tag, [TN('H'), TN('H'), TN('H')]);
+        const groupP = (order) => {            // ethyl: C2 with the C1 methyl and two H
+            const base = [TCH3('C1'), TN('H'), TN('H')];
+            return { type: 'T', tree: TN('C', 'C2', order.map(i => base[i])) };
+        };
+        const groupS = (order) => {            // sec-butyl: C4 with the ethyl (C5-C6), methyl C7 and H4
+            const base = [TN('C', 'C5', [TCH3('C6'), TN('H'), TN('H')]), TCH3('C7'), TN('H', 'H4')];
+            return { type: 'T', tree: TN('C', 'C4', order.map(i => base[i])) };
+        };
+        const groupMe = (tag) => ({ type: 'T', tree: TCH3(tag) });
+        const groupEt = () => ({ type: 'T', tree: TN('C', 'C5', [TCH3('C6'), TN('H'), TN('H')]) });
+        const SPIN = { C5: 1 };   // rotamer (0..2, may be fractional while turning) of groups about their C-C bonds, by atom tag
+        let SPIN_MANUAL = false;  // true only for offline conformer searches
+        // <<DMH-TABLES
+        // As the beta carbon is turned, the neighbouring groups (the ethyl / sec-butyl rotor on C3 and the chain on C4) swing
+        // out of each other's way, so atoms never pass through one another. Rotamer values (0..3, fractional while a group
+        // is turning) every 15 degrees of beta rotation, interpolated smoothly in between. Fitted by minimising steric overlap.
+        const DMH_SPIN_TABLE = {
+            z: { C2: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], C5: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], C1: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], C6: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], C7: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+            h: { C4: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], C5: [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25], C1: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], C6: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], C7: [1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25] }
+        };
+        // Relaxed product conformation (tag -> rotamer), by route and by the beta rotation (degrees) that was reactive
+        const DMH_PRODUCT_SPIN = {
+            z: { 0: { C2: 1, C5: 1, C1: 2.25, C6: 0.5, C7: 0.25 } },
+            h: { 0: { C4: 2, C5: 0.25, C1: 1.75, C6: 2, C7: 1.5 }, 240: { C4: 2, C5: 0.25, C1: 2.5, C6: 2, C7: 1.5 } }
+        };
+        // Orientation of the base for each reactive beta rotation: phi = turn of the base's other groups about the H...O axis,
+        // ang = starting C-O-H angle (tert-butoxide), tb = extra turn of the tert-butyl methyls about the C-O bond.
+        const DMH_BASE = {
+            z: { 0: { phi: 240, ang: 130, tb: 0 } },
+            h: { 0: { phi: 300, ang: 140, tb: 0.5 }, 240: { phi: 300, ang: 140, tb: 0.5 } }
+        };
+        function dmhBaseParams() {
+            const tbl = DMH_BASE[dmhKey()], psi = normDeg(rotationDeg), keys = Object.keys(tbl);
+            let sw = 0, sc = 0, ss = 0, sa = 0, st = 0;
+            keys.forEach(k => {
+                const d = Math.abs(((psi - +k + 540) % 360) - 180), w = Math.max(0.001, 1 - d / 120);
+                const ph = tbl[k].phi * Math.PI / 180;
+                sw += w; sc += w * Math.cos(ph); ss += w * Math.sin(ph); sa += w * tbl[k].ang; st += w * tbl[k].tb;
+            });
+            return { phi: Math.atan2(ss, sc) * 180 / Math.PI, ang: sa / sw, tb: st / sw };
+        }
+        function dmhKey() { return currentBase === 'tbuo' ? 'h' : 'z'; }
+        function updateDmhSpins() {
+            if (SPIN_MANUAL || currentSubstrate !== 'dmh') return;
+            const key = dmhKey(), table = DMH_SPIN_TABLE[key];
+            const psi = normDeg(rotationDeg);
+            for (const k in SPIN) delete SPIN[k];
+            for (const tag in table) {
+                const n = table[tag].length, step = 360 / n, seg = Math.floor(psi / step) % n, f = (psi - step * seg) / step;
+                const a = table[tag][seg], b = table[tag][(seg + 1) % n];
+                const d = ((b - a + 1.5) % 3 + 3) % 3 - 1.5;
+                SPIN[tag] = a + d * f;
+            }
+            // While the alkene forms, the groups next to the double bond turn into the relaxed product conformation
+            const x = Math.min(1, Math.max(0, (reactionProgress - 0.35) / 0.45)), w = x * x * (3 - 2 * x);
+            const pk = String(Math.round(psi) % 360), prod = DMH_PRODUCT_SPIN[key][pk];
+            if (prod) for (const tag in prod) {
+                const a = SPIN[tag] || 0, d = ((prod[tag] - a + 1.5) % 3 + 3) % 3 - 1.5;
+                SPIN[tag] = a + d * w;
+            }
+            SPIN.tb = dmhBaseParams().tb;
+        }
+        // Parameters that fix the stereochemistry (3R,4R) and the lowest-energy starting conformation of each route.
+        const DMH = {
+            // Zaitsev route (hydride / hydroxide): C3 = C_alpha, C4 = C_beta (rotates)
+            z: { alphaSwap: false, pOrder: [0, 1, 2], beta: [['H', 0, 'H4'], [groupMe('C7'), 120], [groupEt(), 240]], rot0: 270, spin0: { C5: 1, C2: 1 } },
+            // Hofmann route (tert-butoxide): C3 = C_alpha, C2 = C_beta (rotates); the two H on C2 give the (E) or (Z) alkene
+            h: { alphaSwap: true, sOrder: [0, 1, 2], beta: [['H', 0, 'H2a'], ['H', 120, 'H2b'], [groupMe('C1'), 240]], rot0: 120, spin0: { C5: 1, C4: 0 } }
+        };
+        // >>DMH-TABLES
+        function getSubstrateConfig() {
+            if (currentSubstrate === 'dmh') {
+                if (currentBase === 'tbuo') {
+                    const p = DMH.h, a = [groupS(p.sOrder), 'H'];
+                    return { alpha: p.alphaSwap ? a.reverse() : a, alphaTags: p.alphaSwap ? ['H3', 'C4'] : ['C4', 'H3'], beta: p.beta, betaTag: 'C2', product: 'hofmann', rot0: p.rot0 };
+                }
+                const p = DMH.z, a = [groupP(p.pOrder), 'H'];
+                return { alpha: p.alphaSwap ? a.reverse() : a, alphaTags: p.alphaSwap ? ['H3', 'C2'] : ['C2', 'H3'], beta: p.beta, betaTag: 'C4', product: 'zaitsev', rot0: p.rot0 };
+            }
+            if (currentSubstrate === 'ethane') {
+                return { alpha: ['H', 'H'], beta: [['H', 0], ['H', 120], ['H', 240]], product: null };
+            }
+            if (currentBase === 'tbuo') {
+                return { alpha: ['H', 'E'], beta: [['H', 0], ['H', 120], ['H', 240]], product: 'hofmann' };
+            }
+            return { alpha: ['C', 'H'], beta: [['H', 0], ['H', 120], ['C', 240]], product: 'zaitsev' };
+        }
+        let sphereMeshes = [];     // every atom sphere of the current molecule (used to centre the view)
+        let baseMeshList = [];     // the atoms of the base (they fade out / in when the base is changed)
+        let baseFade = 1;          // opacity of the base: 1 = fully visible
+        let baseSwitch = null;     // base-change animation in progress: fade out old base, fade in new base, then glide to centre
+        let autoCenter = true;     // the view is still in its preset position (not turned / zoomed by the user)
+        let shiftTween = null;     // smooth on-screen glide of the picture
+        let productType = null;   // 'zaitsev' | 'hofmann' | null (set when the molecule is built)
+        let currentSubstrate = 'ethane';
+        // Bases: hydride (H-), hydroxide (OH-), tert-butoxide ((CH3)3CO-). Bigger bases need a wider view.
+        let currentBase = 'hydride';
+        let labelsOn = true;   // LABELS button: alpha/beta labels, reactive-conformation colouring, product labels
+        const TBUO_SPIN_DEG = { ethane: 190, butane: 330 };   // spin of the tert-butyl group about the H...O axis (per substrate view)
+        const BASE_RETREAT = { hydride: 0, hydroxide: 0, tbuo: 0 };   // how far the base backs away (Å) when no beta-H is anti to Br
+        const BASE_VIEW_SCALE = { hydride: 1, hydroxide: 1.15, tbuo: 1.75 };
+        let baseExtras = { hOH: null, c: null, me: [] };
+        const PI_FORMED_T = 0.7;   // progress at which the dashed partial bonds are gone: the C=C pi bond is solid and the alpha/beta labels fade
+        let rotationDeg = 0;   // rotation of the beta carbon (front carbon) about the C-C bond, before the reaction starts
+        let alphaSubs = [];
+        let betaSubs = [];
+        let glowSprites = {};      // halo sprites for Br and the anti-periplanar beta-H
+        let glowHMesh = null;      // mesh of the beta-H that is (or just was) anti-periplanar to Br
+        let glow = 0;              // 0..1 glow/label intensity (fades in/out)
+        let hoveredMesh = null;    // C3 atom under the pointer (draggable)
+        let blockedHintUntil = 0;
+        let lastFrameTime = performance.now();
+
+        let currentMode = 'BS';
+        let reactionProgress = 0;
+        let isPlaying = false;
+        let isQuarterSpeed = false;
+        let isLooping = false;
+        let playDirection = 1;
+        let showOrbitals = false;
+        const baseSpeed = 0.004;
+
+        // Scene & Camera Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        
+        // Side-view camera poses (target at the origin), given as azimuth / elevation (degrees) and distance (Å).
+        // Azimuth 0 is the +z side; negative azimuth swings toward -x. Each pose is the preferred starting view for
+        // that substrate / base combination, and is also what the SIDE VIEW button returns to.
+        //   bromoethane (any base)                    -> pose of the ethane view
+        //   2-bromobutane + hydride / hydroxide       -> Zaitsev view
+        //   2-bromobutane + tert-butoxide             -> Hofmann view (from the other side, pulled back for the big base)
+        // Fitted from the reference screenshot of 2-bromobutane (anti beta-H on C1, Br below C2, chain level).
+        const SIDE_VIEW_FIT = { az: -138.8, el: 29.9, D: 16, roll: -19.2 };
+        // Zaitsev route (hydride / hydroxide): a different camera angle that puts the substrate in exactly the same place
+        // on screen with the same zoom (chain C4-C3-C2-C1 left to right, Br below C2) - only the highlighted beta-H and the
+        // base move, to C3 instead of C1. Switching bases therefore never visibly moves the substrate.
+        const ZAITSEV_VIEW_FIT = { az: -35.6, el: 31.6, D: 15.94, roll: 16.7 };
+        // (3R,4R)-3-bromo-4-methylhexane: one view for every base. The Hofmann route (tert-butoxide, C2 rotates) uses
+        // the model frame directly. The Zaitsev route (C4 rotates) is built in a different frame, so the same camera is
+        // expressed in that frame by the rigid transform (DMH_R, DMH_T) that maps its atoms onto the Hofmann frame
+        // (the starting conformer is identical): the substrate looks exactly the same for every base.
+        const DMH_VIEW = { az: -160, el: 25, D: 19, roll: -10 };
+        const DMH_R = [[-0.33326, -0.47156, -0.81644], [-0.47193, 0.83309, -0.28854], [0.81622, 0.28914, -0.50018]];
+        const DMH_T = [1.0262, 0.3636, -0.6283];
+        function dmhToZaitsevFrame(pos, up) {      // frame H -> frame Z:  p_Z = R^T (p_H - T)
+            const Rt = (v) => new THREE.Vector3(
+                DMH_R[0][0] * v.x + DMH_R[1][0] * v.y + DMH_R[2][0] * v.z,
+                DMH_R[0][1] * v.x + DMH_R[1][1] * v.y + DMH_R[2][1] * v.z,
+                DMH_R[0][2] * v.x + DMH_R[1][2] * v.y + DMH_R[2][2] * v.z);
+            const T = new THREE.Vector3(DMH_T[0], DMH_T[1], DMH_T[2]);
+            return { pos: Rt(pos.clone().sub(T)), up: Rt(up), target: Rt(T.clone().negate()) };
+        }
+        // Returns {pos, up}: camera position plus its 'up' direction (a roll away from vertical is allowed, since
+        // the view control can roll the camera freely).
+        function sideView() {
+            let az, el, D, roll = 0;
+            if (currentSubstrate === 'ethane') {
+                // bromoethane: same angle as the reference screenshot, one shared zoom/centring for every base
+                az = -18.9; el = 19.6; D = 15;
+            } else if (currentSubstrate === 'dmh') {
+                az = DMH_VIEW.az; el = DMH_VIEW.el; D = DMH_VIEW.D; roll = DMH_VIEW.roll;
+            } else {
+                // 2-bromobutane: same framing for every base (Hofmann: beta-H/base over C1; Zaitsev: over C3).
+                const fit = (currentBase === 'tbuo') ? SIDE_VIEW_FIT : ZAITSEV_VIEW_FIT;
+                az = fit.az; el = fit.el; D = fit.D; roll = fit.roll;
+            }
+            const a = az * Math.PI / 180, e = el * Math.PI / 180, r = roll * Math.PI / 180;
+            const pos = new THREE.Vector3(D * Math.cos(e) * Math.sin(a), D * Math.sin(e), D * Math.cos(e) * Math.cos(a));
+            const fwd = pos.clone().multiplyScalar(-1).normalize();
+            const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+            const cu = new THREE.Vector3().crossVectors(right, fwd);
+            const up = cu.multiplyScalar(Math.cos(r)).addScaledVector(right, -Math.sin(r)).normalize();
+            // The camera always orbits the middle of the C-C bond; to centre the whole assembly (substrate + base) in
+            // the window the picture is shifted on screen instead (see centeredShift / applyViewShift).
+            let target = new THREE.Vector3(0, 0, 0), vpos = pos, vup = up;
+            if (currentSubstrate === 'dmh' && currentBase !== 'tbuo') {
+                const z = dmhToZaitsevFrame(pos, up);
+                vpos = z.pos; vup = z.up; target = z.target;
+            }
+            const f = fitView(vpos, target, vup);
+            return { pos: f.pos, up: vup, target, shift: f.shift };
+        }
+        function sideViewPosition() { return sideView().pos; }
+
+        // The simulation opens in the side view for bromoethane + hydride
+        camera.position.copy(sideViewPosition());
+        const initialUp = sideView().up;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Free "trackball" view control (replaces OrbitControls, which can never roll the view about the line of sight).
+        // Dragging empty space (or right-dragging anywhere) turns the molecule freely in any direction; Shift+drag rolls
+        // the view about the line of sight, so any orientation can be reached. Camera 'up' is tracked in camUp.
+        const controls = { target: new THREE.Vector3(0, 0, 0), enabled: true, update() {} };
+        const camUp = initialUp.clone();
+        // Where the look-at point is drawn, relative to the window centre (units of half the window height; +x right, +y up)
+        const viewShift = { x: 0, y: 0 };
+        // Fits the view to the substrate + base: returns the camera position (pulled in or out along its line of sight so the
+        // assembly fills the free part of the window, above the label / controls) and the on-screen shift that centres it:
+        // the substrate exactly left-to-right, the whole assembly (with the leaving group's path) in the free vertical band.
+        // noFit = keep the distance as given.
+        function fitView(pos, target, up, noFit) {
+            if (!sphereMeshes.length) return { pos, shift: { x: 0, y: 0 } };
+            const W = window.innerWidth, H = window.innerHeight, asp = W / H, th = Math.tan(22.5 * Math.PI / 180);
+            const panelTop = document.getElementById('bottom-panel').getBoundingClientRect().top;
+            const regionTop = 0.93, regionBottom = (H / 2 - (panelTop - 14 - 24 - 10)) / (H / 2);   // free band (half-window-heights), clear of the label and controls
+            const isBase = new Set(baseMeshList);
+            const fwd = target.clone().sub(pos).normalize();
+            const right = new THREE.Vector3().crossVectors(fwd, up).normalize();
+            const cu = new THREE.Vector3().crossVectors(right, fwd).normalize();
+            const measure = (cam) => {
+                const box = () => ({ x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity });
+                const sub = box(), all = box();
+                const grow = (bx, p, rad) => {
+                    const rel = p.clone().sub(cam), d = rel.dot(fwd);
+                    const x = rel.dot(right) / d / th, y = rel.dot(cu) / d / th, r = rad / d / th;
+                    bx.x0 = Math.min(bx.x0, x - r); bx.x1 = Math.max(bx.x1, x + r); bx.y0 = Math.min(bx.y0, y - r); bx.y1 = Math.max(bx.y1, y + r);
+                };
+                sphereMeshes.forEach(m => { grow(all, m.position, m.userData.radius); if (!isBase.has(m)) grow(sub, m.position, m.userData.radius); });
+                if (reactionProgress < 0.01) {
+                    // the leaving group's final position, and (for hydride) the extra H that hydroxide has, so that hydride and hydroxide share one zoom
+                    grow(all, new THREE.Vector3(0.67 + 0.5 * (C_BR_LENGTH + 2.1), -0.866 * (C_BR_LENGTH + 2.1), 0), RADII[currentMode].Br);
+                    if (currentBase === 'hydride') grow(all, atomMeshes.baseH.position.clone().add(new THREE.Vector3(-0.32, 0.905, 0)), RADII[currentMode].H);
+                }
+                return { sub, all };
+            };
+            let cam = pos.clone();
+            if (!noFit) {
+                for (let i = 0; i < 4; i++) {
+                    const m = measure(cam), h = m.all.y1 - m.all.y0, w = m.all.x1 - m.all.x0;
+                    const k = Math.min((regionTop - regionBottom) * 0.97 / h, asp * 2 * 0.7 / w);
+                    const dist = Math.min(MAX_DIST - 0.5, Math.max(7, cam.clone().sub(target).length() / k));
+                    cam = target.clone().add(cam.clone().sub(target).setLength(dist));
+                }
+            }
+            const m = measure(cam);
+            return { pos: cam, shift: { x: -(m.sub.x0 + m.sub.x1) / 2, y: (regionTop + regionBottom) / 2 - (m.all.y0 + m.all.y1) / 2 } };
+        }
+        function centeredShift(pos, target, up) { return fitView(pos, target, up, true).shift; }
+        function applyViewShift() {
+            const W = window.innerWidth, H = window.innerHeight;
+            camera.setViewOffset(W, H, -viewShift.x * H / 2, viewShift.y * H / 2, W, H);
+        }
+        const ROTATE_SPEED = 0.005, FINE_ROTATE_SPEED = 0.001;   // radians per pixel
+        const MIN_DIST = 3, MAX_DIST = 24;
+        function orientCamera() {
+            camera.up.copy(camUp);
+            camera.lookAt(controls.target);
+        }
+        function rotateView(dx, dy, roll, speed) {
+            const off = camera.position.clone().sub(controls.target);
+            const back = off.clone().normalize();
+            const right = new THREE.Vector3().crossVectors(camUp, back).normalize();
+            const up = new THREE.Vector3().crossVectors(back, right).normalize();
+            const q = new THREE.Quaternion();
+            if (roll) {
+                q.setFromAxisAngle(back, -dx * speed);       // spin about the line of sight
+                camUp.applyQuaternion(q);
+            } else {
+                q.setFromAxisAngle(up, -dx * speed);
+                const q2 = new THREE.Quaternion().setFromAxisAngle(right, -dy * speed);
+                q.multiply(q2);
+                off.applyQuaternion(q);
+                camUp.applyQuaternion(q);
+                camera.position.copy(controls.target).add(off);
+            }
+            // re-orthogonalise to avoid drift
+            const b2 = camera.position.clone().sub(controls.target).normalize();
+            camUp.sub(b2.multiplyScalar(camUp.dot(b2))).normalize();
+        }
+        document.getElementById('canvas-container').addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const off = camera.position.clone().sub(controls.target);
+            const d = Math.min(MAX_DIST, Math.max(MIN_DIST, off.length() * Math.exp(e.deltaY * 0.0007)));
+            camera.position.copy(controls.target).add(off.setLength(d));
+        }, { passive: false });
+        document.getElementById('canvas-container').addEventListener('contextmenu', e => e.preventDefault());
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+        dirLight.position.set(5, 10, 7);
+        scene.add(dirLight);
+
+        let moleculeGroup = new THREE.Group();
+        let orbitalGroup = new THREE.Group();
+        let labelGroup = new THREE.Group();
+        scene.add(moleculeGroup);
+        scene.add(orbitalGroup);
+        scene.add(labelGroup);
+
+        let atomMeshes = {};
+        let bondMeshes = [];
+        let orbitalMeshes = [];
+
+        // Dynamic 3D Billboard Sprite Labels (Greek α and β)
+        function createTextSprite(text, colorHex) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.font = 'bold 85px "Times New Roman", "Georgia", serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = colorHex;
+            ctx.fillText(text, 64, 64);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, depthTest: false });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(0.65, 0.65, 1);
+            sprite.renderOrder = 999;
+            return sprite;
+        }
+
+        const alphaLabel = createTextSprite('α', '#f97316');
+        const betaLabel = createTextSprite('β', '#f97316');
+
+        const getMaterial = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.1 });
+        const bondMaterial = new THREE.MeshStandardMaterial({ color: BOND_COLOR, roughness: 0.4 });
+        const baseBondMaterial = new THREE.MeshStandardMaterial({ color: BOND_COLOR, roughness: 0.4, transparent: true });   // bonds of / to the base fade with it
+        
+        const makeOrbitalMat = (color) => new THREE.MeshPhysicalMaterial({
+            color, transparent: true, opacity: 0.6, roughness: 0.15, metalness: 0,
+            clearcoat: 0.8, clearcoatRoughness: 0.2, side: THREE.DoubleSide, depthWrite: false
+        });
+        const redOrbitalMat = makeOrbitalMat(0xef4444);
+        const blueOrbitalMat = makeOrbitalMat(0x3b82f6);
+
+        // Soft radial yellow halo, drawn additively around the reactive atoms
+        function createGlowTexture() {
+            const c = document.createElement('canvas');
+            c.width = 128; c.height = 128;
+            const g = c.getContext('2d');
+            const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+            grad.addColorStop(0.00, 'rgba(255,245,160,1.0)');
+            grad.addColorStop(0.25, 'rgba(255,225,60,0.85)');
+            grad.addColorStop(0.50, 'rgba(255,200,0,0.45)');
+            grad.addColorStop(0.75, 'rgba(255,170,0,0.15)');
+            grad.addColorStop(1.00, 'rgba(255,170,0,0.0)');
+            g.fillStyle = grad;
+            g.fillRect(0, 0, 128, 128);
+            return new THREE.CanvasTexture(c);
+        }
+        const glowTexture = createGlowTexture();
+        function createGlowSprite() {
+            const mat = new THREE.SpriteMaterial({
+                map: glowTexture, transparent: true, opacity: 0, blending: THREE.AdditiveBlending,
+                depthWrite: false, depthTest: true
+            });
+            const sp = new THREE.Sprite(mat);
+            sp.visible = false;
+            sp.renderOrder = 998;
+            return sp;
+        }
+
+        const GLOW_COLOR = new THREE.Color(0xffd21a);   // shared by Br and the anti-periplanar beta-H
+
+        function createSphere(radius, color) {
+            const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 32, 32), getMaterial(color));
+            mesh.userData.baseColor = new THREE.Color(color);
+            mesh.userData.radius = radius;
+            sphereMeshes.push(mesh);
+            return mesh;
+        }
+
+        // One lobe of a 2p orbital: tapers to a point at the nucleus, then swells smoothly into
+        // a truly spherical (hemispherical) outer end.
+        function createPOrbitalLobeGeometry() {
+            const points = [];
+            const L = 1.4;          // total lobe length
+            const R = 0.5;          // radius of the spherical end cap (= maximum lobe radius)
+            const yc = L - R;       // centre of the cap sphere
+            const Nneck = 60, Ncap = 40;
+            // Neck: radius rises from 0 at the nucleus to R at the sphere's equator, with zero slope there
+            // so it blends smoothly into the cap.
+            for (let i = 0; i < Nneck; i++) {
+                const s = i / Nneck;
+                points.push(new THREE.Vector2(R * Math.sin((Math.PI / 2) * Math.pow(s, 1.2)), s * yc));
+            }
+            // Cap: exact hemisphere of radius R
+            for (let i = 0; i <= Ncap; i++) {
+                const phi = (Math.PI / 2) * (i / Ncap);
+                points.push(new THREE.Vector2(R * Math.cos(phi), yc + R * Math.sin(phi)));
+            }
+            const geom = new THREE.LatheGeometry(points, 64);
+            geom.computeVertexNormals();
+            return geom;
+        }
+
+        const pOrbitalGeom = createPOrbitalLobeGeometry();
+
+        function createPOrbitalPair() {
+            const topLobe = new THREE.Mesh(pOrbitalGeom, redOrbitalMat);
+            const botLobe = new THREE.Mesh(pOrbitalGeom, blueOrbitalMat);
+            botLobe.rotation.x = Math.PI;
+            const pair = new THREE.Group();
+            pair.add(topLobe);
+            pair.add(botLobe);
+            return pair;
+        }
+
+        function buildMolecule() {
+            scene.remove(moleculeGroup);
+            scene.remove(orbitalGroup);
+            scene.remove(labelGroup);
+
+            moleculeGroup = new THREE.Group();
+            orbitalGroup = new THREE.Group();
+            labelGroup = new THREE.Group();
+
+            scene.add(moleculeGroup);
+            scene.add(orbitalGroup);
+            scene.add(labelGroup);
+
+            atomMeshes = {};
+            bondMeshes = [];
+            orbitalMeshes = [];
+            sphereMeshes = [];
+
+            atomMeshes.cAlpha = createSphere(RADII[currentMode].C, ATOM_COLORS.C);
+            atomMeshes.cBeta = createSphere(RADII[currentMode].C, ATOM_COLORS.C);
+            atomMeshes.br = createSphere(RADII[currentMode].Br, ATOM_COLORS.Br);
+            // Base atom: the H of hydride, or the O of hydroxide / tert-butoxide
+            atomMeshes.baseH = createSphere(currentBase === 'hydride' ? RADII[currentMode].Base : RADII[currentMode].O, ATOM_COLORS.Base);
+
+            Object.values(atomMeshes).forEach(m => moleculeGroup.add(m));
+
+            // Rest of the base: the H of OH-, or the tert-butyl group of (CH3)3CO-
+            baseExtras = { hOH: null, c: null, me: [] };
+            if (currentBase === 'hydroxide') {
+                baseExtras.hOH = createSphere(RADII[currentMode].H, ATOM_COLORS.H);
+                moleculeGroup.add(baseExtras.hOH);
+            } else if (currentBase === 'tbuo') {
+                baseExtras.c = createSphere(RADII[currentMode].C, ATOM_COLORS.C);
+                moleculeGroup.add(baseExtras.c);
+                for (let k = 0; k < 3; k++) {
+                    const me = { type: 'C', mesh: createSphere(RADII[currentMode].C, ATOM_COLORS.C), hs: [] };
+                    moleculeGroup.add(me.mesh);
+                    for (let j = 0; j < 3; j++) {
+                        const h = createSphere(RADII[currentMode].H, ATOM_COLORS.H);
+                        me.hs.push(h);
+                        moleculeGroup.add(h);
+                    }
+                    baseExtras.me.push(me);
+                }
+            }
+
+            baseMeshList = [atomMeshes.baseH, baseExtras.hOH, baseExtras.c, ...baseExtras.me.flatMap(me => [me.mesh, ...me.hs])].filter(Boolean);
+            baseMeshList.forEach(m => { m.material.transparent = true; });
+
+            // Substituents (H atoms, CH3 or CH2CH3 groups) on C_alpha and C_beta
+            const makeTreeMeshes = (node) => {
+                node.mesh = createSphere(node.el === 'C' ? RADII[currentMode].C : RADII[currentMode].H, node.el === 'C' ? ATOM_COLORS.C : ATOM_COLORS.H);
+                if (node.tag) node.mesh.userData.tag = node.tag;
+                moleculeGroup.add(node.mesh);
+                node.kids.forEach(makeTreeMeshes);
+            };
+            const makeSub = (spec, theta, tag) => {
+                if (typeof spec === 'object') {
+                    // a branched group described by a tree of atoms (isopropyl, sec-butyl)
+                    const tree = JSON.parse(JSON.stringify(spec.tree));
+                    makeTreeMeshes(tree);
+                    return { type: 'T', theta, c4: null, mesh: tree.mesh, hs: [], tree };
+                }
+                const type = spec;
+                const isC = type === 'C' || type === 'E';
+                const sub = {
+                    type, theta, c4: null,
+                    mesh: createSphere(isC ? RADII[currentMode].C : RADII[currentMode].H, isC ? ATOM_COLORS.C : ATOM_COLORS.H),
+                    hs: []
+                };
+                if (tag) sub.mesh.userData.tag = tag;
+                moleculeGroup.add(sub.mesh);
+                const addH = () => {
+                    const h = createSphere(RADII[currentMode].H, ATOM_COLORS.H);
+                    moleculeGroup.add(h);
+                    return h;
+                };
+                if (type === 'C') {
+                    for (let k = 0; k < 3; k++) sub.hs.push(addH());
+                } else if (type === 'E') {
+                    // ethyl: C(H)(H)-CH3 ; sub.mesh is the CH2 carbon, sub.c4 the terminal methyl
+                    sub.hs.push(addH(), addH());
+                    sub.c4 = { type: 'C', mesh: createSphere(RADII[currentMode].C, ATOM_COLORS.C), hs: [addH(), addH(), addH()] };
+                    if (tag === 'C5') sub.c4.mesh.userData.tag = 'C6';
+                    moleculeGroup.add(sub.c4.mesh);
+                }
+                return sub;
+            };
+            const cfg = getSubstrateConfig();
+            productType = cfg.product;
+            alphaSubs = cfg.alpha.map((type, i) => makeSub(type, 0, cfg.alphaTags ? cfg.alphaTags[i] : null));
+            betaSubs = cfg.beta.map(([type, theta, tag]) => makeSub(type, theta, tag));
+            atomMeshes.cAlpha.userData.tag = 'C3';
+            atomMeshes.cBeta.userData.tag = cfg.betaTag || 'Cb';
+            atomMeshes.br.userData.tag = 'Br';
+
+            labelGroup.add(alphaLabel);
+            labelGroup.add(betaLabel);
+            glowSprites = { br: createGlowSprite(), h: createGlowSprite() };
+            labelGroup.add(glowSprites.br);
+            labelGroup.add(glowSprites.h);
+            glowHMesh = null;
+            hoveredMesh = null;
+
+            for (let i = 0; i < 160; i++) {
+                const bond = new THREE.Mesh(new THREE.CylinderGeometry(BOND_RADIUS, BOND_RADIUS, 1, 16), bondMaterial);
+                bond.visible = false;
+                moleculeGroup.add(bond);
+                bondMeshes.push(bond);
+            }
+
+            const orbital1 = createPOrbitalPair();
+            const orbital2 = createPOrbitalPair();
+            orbitalGroup.add(orbital1);
+            orbitalGroup.add(orbital2);
+            orbitalMeshes.push(orbital1, orbital2);
+
+            relief = buildReliefModel();
+            updateEnergyGraph();
+            updatePositions();
+        }
+
+        function updateEnergyGraph() {
+            const visual_Ea = 34;
+            let d = "";
+            for (let i = 0; i <= 100; i++) {
+                let t = i / 100;
+                let endothermic_offset = 18 * t;
+                let base_Y = 68 - endothermic_offset;
+                let barrier_Y = visual_Ea * Math.exp(-Math.pow(t - 0.5, 2) / 0.035);
+                let y = base_Y - barrier_Y;
+                let x = 8 + t * 127;
+                d += (i === 0 ? `M ${x},${y} ` : `L ${x},${y} `);
+            }
+            document.getElementById('energy-curve').setAttribute('d', d);
+        }
+
+        function normDeg(a) { return ((a % 360) + 360) % 360; }
+
+        // Index of the C_beta hydrogen that is anti-periplanar (180°) to Br, or -1 if none is.
+        function getAntiIndex() {
+            for (let i = 0; i < betaSubs.length; i++) {
+                if (betaSubs[i].type !== 'H') continue;
+                const a = normDeg(betaSubs[i].theta + rotationDeg);
+                if (a < 0.5 || a > 359.5) return i;
+            }
+            return -1;
+        }
+
+        // All atom meshes belonging to a substituent group (including the far end of an ethyl group)
+        function treeMeshes(node) {
+            return [node.mesh, ...node.kids.flatMap(treeMeshes)];
+        }
+        function subMeshes(sub) {
+            if (sub.tree) return treeMeshes(sub.tree);
+            return [sub.mesh, ...sub.hs, ...(sub.c4 ? [sub.c4.mesh, ...sub.c4.hs] : [])];
+        }
+
+        // ---- Steric relief (dmh only) ----
+        // Real groups bend slightly away from one another when they crowd. After the groups are placed, each branched group
+        // is nudged (a small rigid tilt about the carbon it hangs from) away from any atom it would overlap in space-filling
+        // mode, so atoms never pass through one another however the C-C bonds are turned.
+        const SF_R = { C: 1.25, H: 0.85, Br: 1.5, O: 1.12, B: 0.85 };
+        let relief = null;
+        function buildReliefModel() {
+            if (currentSubstrate !== 'dmh') return null;
+            const atoms = [], bonds = [], idx = new Map();
+            const add = (m, r, base) => { idx.set(m, atoms.length); atoms.push({ m, r, base: !!base }); return atoms.length - 1; };
+            const cA = add(atomMeshes.cAlpha, SF_R.C), cB = add(atomMeshes.cBeta, SF_R.C), br = add(atomMeshes.br, SF_R.Br);
+            bonds.push([cA, cB], [cA, br]);
+            const groups = [];
+            const addTree = (node, parent) => {
+                const i = add(node.mesh, node.el === 'C' ? SF_R.C : SF_R.H); bonds.push([parent, i]);
+                node.kids.forEach(k => addTree(k, i)); return i;
+            };
+            [[alphaSubs, cA], [betaSubs, cB]].forEach(([subs, par]) => subs.forEach(sub => {
+                if (sub.tree) {
+                    const start = atoms.length; addTree(sub.tree, par);
+                    groups.push({ pivot: par, members: Array.from({ length: atoms.length - start }, (_, k) => start + k) });
+                } else {
+                    const i = add(sub.mesh, SF_R.H); bonds.push([par, i]); sub.reliefIdx = i;
+                }
+            }));
+            const x = add(atomMeshes.baseH, currentBase === 'hydride' ? SF_R.B : SF_R.O, true);
+            if (baseExtras.hOH) { const j = add(baseExtras.hOH, SF_R.H, true); bonds.push([x, j]); }
+            if (baseExtras.c) {
+                const c = add(baseExtras.c, SF_R.C, true); bonds.push([x, c]);
+                baseExtras.me.forEach(me => { const mi = add(me.mesh, SF_R.C, true); bonds.push([c, mi]); me.hs.forEach(h => { const hi = add(h, SF_R.H, true); bonds.push([mi, hi]); }); });
+            }
+            // topological distances (bond counts) between all atoms
+            const n = atoms.length, adj = atoms.map(() => []);
+            bonds.forEach(([a, b]) => { adj[a].push(b); adj[b].push(a); });
+            const topo = [];
+            for (let s = 0; s < n; s++) {
+                const d = new Array(n).fill(99); d[s] = 0; const q = [s];
+                for (let h = 0; h < q.length; h++) adj[q[h]].forEach(v => { if (d[v] === 99) { d[v] = d[q[h]] + 1; q.push(v); } });
+                topo.push(d);
+            }
+            groups.forEach(g => {
+                const inG = new Set(g.members);
+                g.others = [];
+                for (let o = 0; o < n; o++) if (!inG.has(o)) g.others.push(o);
+                g.pairs = [];
+                g.members.forEach(a => g.others.forEach(o => {
+                    if (topo[a][o] < 3) return;
+                    if (atoms[o].base && o === x && topo[a][cB] < 3) return;
+                    g.pairs.push([a, o, 1.03 * (atoms[a].r + atoms[o].r)]);
+                }));
+            });
+            return { atoms, groups, cB, x };
+        }
+        function rotateAbout(v, pivot, k, ang) {      // Rodrigues rotation of point v about the axis through pivot with direction k
+            const c = Math.cos(ang), s = Math.sin(ang);
+            const r = v.clone().sub(pivot);
+            const kxr = new THREE.Vector3().crossVectors(k, r);
+            const kdr = k.dot(r);
+            v.copy(pivot).addScaledVector(r, c).addScaledVector(kxr, s).addScaledVector(k, kdr * (1 - c));
+        }
+        function applyRelief(weight) {
+            if (!relief || weight <= 0) return;
+            const A = relief.atoms, maxTilt = 0.30 * weight;
+            relief.groups.forEach(g => { g.tilt = 0; });
+            for (let it = 0; it < 10; it++) {
+                relief.groups.forEach(g => {
+                    const pivot = A[g.pivot].m.position;
+                    const tau = new THREE.Vector3();
+                    g.pairs.forEach(([a, o, dmin]) => {
+                        const pa = A[a].m.position, po = A[o].m.position;
+                        const dx = pa.x - po.x, dy = pa.y - po.y, dz = pa.z - po.z, d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                        if (d >= dmin || d < 1e-6) return;
+                        const f = (dmin - d) / d;
+                        const rx = pa.x - pivot.x, ry = pa.y - pivot.y, rz = pa.z - pivot.z;
+                        tau.x += ry * dz * f - rz * dy * f; tau.y += rz * dx * f - rx * dz * f; tau.z += rx * dy * f - ry * dx * f;
+                    });
+                    const mag = tau.length();
+                    if (mag < 1e-6) return;
+                    let ang = Math.min(0.05, 0.08 * mag);
+                    if (g.tilt + ang > maxTilt) ang = Math.max(0, maxTilt - g.tilt);
+                    if (ang <= 0) return;
+                    g.tilt += ang;
+                    const k = tau.multiplyScalar(1 / mag);
+                    g.members.forEach(i => rotateAbout(A[i].m.position, pivot, k, ang));
+                });
+            }
+        }
+
+        function updatePositions() {
+            const t = reactionProgress;
+            updateDmhSpins();
+            const cBondLen = 1.54 - t * (1.54 - 1.34); // C-C bond contracts to 1.34 Å
+
+            const posCAlpha = new THREE.Vector3(cBondLen / 2, 0, 0);
+            const posCBeta = new THREE.Vector3(-cBondLen / 2, 0, 0);
+
+            atomMeshes.cAlpha.position.copy(posCAlpha);
+            atomMeshes.cBeta.position.copy(posCBeta);
+
+            // Hide alpha/beta labels when looking down the C-C internuclear axis
+            const camDir = camera.position.clone().sub(controls.target).normalize();
+            const ccAxis = new THREE.Vector3(1, 0, 0);
+            const dotAxis = Math.abs(camDir.dot(ccAxis));
+            
+            // The orange labels fade out once the double bond has formed
+            const lf = Math.min(1, Math.max(0, (t - PI_FORMED_T) / 0.12));
+            const labelOpacity = 1 - lf * lf * (3 - 2 * lf);
+            alphaLabel.material.opacity = labelOpacity;
+            betaLabel.material.opacity = labelOpacity;
+            if (!labelsOn || dotAxis > 0.92 || labelOpacity < 0.01) {
+                alphaLabel.visible = false;
+                betaLabel.visible = false;
+            } else {
+                alphaLabel.visible = true;
+                betaLabel.visible = true;
+                alphaLabel.position.copy(posCAlpha);
+                betaLabel.position.copy(posCBeta);
+            }
+
+            // --- 2. ACCURATE TETRAHEDRAL & STAGGERED NEWMAN GEOMETRY ---
+            // Ideal tetrahedral angle = 109.471°
+            // Angle between the two substituent bonds' projections onto the Newman plane's
+            // axial direction: at t=0 each in-plane substituent makes exactly 109.471° with the
+            // C-C bond (i.e. 70.529° from the outward axis -> full angle 141.058°); at t=1 it is 120° (trigonal planar).
+            const TETRA_OUTER = 2 * (90 - 19.4712); // 141.058°
+            const alphaAngle = (TETRA_OUTER + t * (120 - TETRA_OUTER)) * Math.PI / 180;
+            const betaAngle = (TETRA_OUTER + t * (120 - TETRA_OUTER)) * Math.PI / 180;
+
+            // 4. LEAVING GROUP (Br) STARTS CLOSER TO SUBSTRATE, DEPARTS
+            const brDist = C_BR_LENGTH + 2.1 * Math.pow(t, 2); // departs a good distance from the alkene, but stays inside the viewport
+            const posBr = posCAlpha.clone().add(new THREE.Vector3(
+                Math.cos(alphaAngle / 2) * brDist,
+                -Math.sin(alphaAngle / 2) * brDist,
+                0
+            ));
+            atomMeshes.br.position.copy(posBr);
+
+            // 4. HYDRIDE BASE (H⁻) STARTS CLOSER TO SUBSTRATE
+            // Distance from the base atom to the H it removes: same timing for every base, but it ends at the
+            // length of the bond being formed (H-H 0.74 Å for hydride, O-H 0.96 Å for hydroxide / tert-butoxide)
+            const baseBondLen = currentBase === 'hydride' ? 0.74 : 0.96;
+            const hhHydride = Math.max(0.74, 1.8 * (1 - t) - 0.4 * Math.pow(Math.max(0, 0.5 - t), 2));
+            // The base starts well apart from the substrate (a clear gap even in space-filling mode) and closes in
+            // over the first part of the reaction; from there on it moves exactly as before.
+            const baseGapStart = 1.0;
+            const gapT = Math.min(1, t / 0.45);
+            const baseExtraGap = baseGapStart * Math.pow(1 - gapT * gapT * (3 - 2 * gapT), 1);
+            // When no beta-H is anti-periplanar to Br the base backs away, so that the groups swinging past its spot never
+            // pass through it; it glides back in as the reactive conformation is approached.
+            let nearestAnti = 180;
+            betaSubs.forEach(sub => { if (sub.type === 'H') { const a = normDeg(sub.theta + rotationDeg); nearestAnti = Math.min(nearestAnti, a, 360 - a); } });
+            const rw = Math.min(1, Math.max(0, (nearestAnti - 4) / 56)), baseRetreat = BASE_RETREAT[currentBase] * rw * rw * (3 - 2 * rw) * (1 - Math.min(1, t / 0.05));
+            const hhBondDist = baseBondLen + (hhHydride - 0.74) * (1.8 - baseBondLen) / (1.8 - 0.74) + baseExtraGap + baseRetreat;
+            const hBetaBaseDist = (t <= 0.5) 
+                ? CONST_CH_LENGTH + 0.35 * t 
+                : CONST_CH_LENGTH + 0.18;
+
+            let posHBetaTarget = posCBeta.clone().add(new THREE.Vector3(
+                -Math.cos(betaAngle / 2) * hBetaBaseDist,
+                Math.sin(betaAngle / 2) * hBetaBaseDist,
+                0
+            ));
+
+            if (t > 0.5) {
+                const departProgress = (t - 0.5) * 2;
+                const departureVector = new THREE.Vector3(-0.5, 0.7, 0).multiplyScalar(Math.pow(departProgress, 1.3));
+                posHBetaTarget.add(departureVector);
+            }
+
+            const posBase = posHBetaTarget.clone().add(new THREE.Vector3(
+                -Math.cos(betaAngle / 2) * hhBondDist,
+                Math.sin(betaAngle / 2) * hhBondDist,
+                0
+            ));
+
+            atomMeshes.baseH.position.copy(posBase);
+
+            // --- SUBSTITUENTS: spectator H atoms and methyl groups ---
+            // t=0: ideal tetrahedral, staggered geometry (all angles 109.471°).
+            // t=1: ideal sp2 alkene: planar (xz plane), substituent-C-substituent = 117°, C-C-substituent = 121.5°.
+            // In between, unit directions are blended and renormalized.
+            const zTet = Math.sqrt(2 / 3);         // 0.81650
+            const yTet = Math.sqrt(2) / 3;         // 0.47140
+            const xTet = 1 / 3;                    // cos70.529°
+            const halfHCH = 58.5 * Math.PI / 180;  // half of the 117° angle in the alkene
+            const xSp2 = Math.cos(halfHCH);
+            const zSp2 = Math.sin(halfHCH);
+            // side = +1 for C_alpha (substituents point +x, spectators at +y), -1 for C_beta; sz = ±1
+            const spectatorUnit = (side, sz) => new THREE.Vector3(
+                side * (xTet + t * (xSp2 - xTet)),
+                side * (yTet * (1 - t)),
+                sz * (zTet + t * (zSp2 - zTet))
+            ).normalize();
+
+            // Methyl hydrogens: tetrahedral about the methyl carbon, staggered with respect to the
+            // bonds on the carbon it is attached to (one H anti to the other carbon of the C-C bond).
+            const placeMethylHs = (sub, parentPos, otherCarbonPos) => {
+                const u = sub.mesh.position.clone().sub(parentPos).normalize();
+                const ax = otherCarbonPos.clone().sub(parentPos).normalize();
+                const e1 = ax.clone().addScaledVector(u, -ax.dot(u)).normalize();
+                const e2 = new THREE.Vector3().crossVectors(u, e1);
+                const kk = 2 * Math.SQRT2 / 3;
+                for (let k = 0; k < 3; k++) {
+                    const phi = Math.PI + k * 2 * Math.PI / 3;
+                    const d = u.clone().multiplyScalar(1 / 3)
+                        .addScaledVector(e1, kk * Math.cos(phi))
+                        .addScaledVector(e2, kk * Math.sin(phi));
+                    sub.hs[k].position.copy(sub.mesh.position).addScaledVector(d, CONST_CH_LENGTH);
+                }
+            };
+            // Ethyl group: CH2 carbon with two H and a terminal CH3, staggered about the C-CH2 bond
+            // (the CH3 sits anti to the other carbon of the reacting C-C bond).
+            const placeEthyl = (sub, parentPos, otherCarbonPos) => {
+                const u = sub.mesh.position.clone().sub(parentPos).normalize();
+                const ax = otherCarbonPos.clone().sub(parentPos).normalize();
+                const e1 = ax.clone().addScaledVector(u, -ax.dot(u)).normalize();
+                const e2 = new THREE.Vector3().crossVectors(u, e1);
+                const kk = 2 * Math.SQRT2 / 3;
+                const dirK = (k) => {
+                    const phi = Math.PI + k * 2 * Math.PI / 3;
+                    return u.clone().multiplyScalar(1 / 3).addScaledVector(e1, kk * Math.cos(phi)).addScaledVector(e2, kk * Math.sin(phi));
+                };
+                sub.c4.mesh.position.copy(sub.mesh.position).addScaledVector(dirK(0), C_CH3_LENGTH);
+                sub.hs[0].position.copy(sub.mesh.position).addScaledVector(dirK(1), CONST_CH_LENGTH);
+                sub.hs[1].position.copy(sub.mesh.position).addScaledVector(dirK(2), CONST_CH_LENGTH);
+                placeMethylHs(sub.c4, sub.mesh.position, parentPos);
+            };
+            // Branched group (tree of atoms): children are staggered about each C-C bond; the first child sits anti to the
+            // atom two bonds back (for the root carbon: the other carbon of the reacting C-C bond).
+            const placeTreeKids = (node, parentPos, backPos) => {
+                const u = node.mesh.position.clone().sub(parentPos).normalize();
+                const ax = backPos.clone().sub(parentPos).normalize();
+                const e1 = ax.clone().addScaledVector(u, -ax.dot(u)).normalize();
+                const e2 = new THREE.Vector3().crossVectors(u, e1);
+                const kk = 2 * Math.SQRT2 / 3;
+                node.kids.forEach((kid, k) => {
+                    const phi = Math.PI + (k + (SPIN[node.tag] || 0)) * 2 * Math.PI / 3;
+                    const d = u.clone().multiplyScalar(1 / 3).addScaledVector(e1, kk * Math.cos(phi)).addScaledVector(e2, kk * Math.sin(phi));
+                    kid.mesh.position.copy(node.mesh.position).addScaledVector(d, kid.el === 'C' ? C_CH3_LENGTH : CONST_CH_LENGTH);
+                    if (kid.kids.length) placeTreeKids(kid, node.mesh.position, parentPos);
+                });
+            };
+            const placeSub = (sub, carbonPos, unitDir, otherCarbonPos) => {
+                if (sub.type === 'T') {
+                    sub.mesh.position.copy(carbonPos).addScaledVector(unitDir, C_CH3_LENGTH - 0.04 * t);
+                    placeTreeKids(sub.tree, carbonPos, otherCarbonPos);
+                    return;
+                }
+                const isC = sub.type === 'C' || sub.type === 'E';
+                const len = isC ? (C_CH3_LENGTH - 0.04 * t) : CONST_CH_LENGTH;
+                sub.mesh.position.copy(carbonPos).addScaledVector(unitDir, len);
+                if (sub.type === 'C') placeMethylHs(sub, carbonPos, otherCarbonPos);
+                else if (sub.type === 'E') placeEthyl(sub, carbonPos, otherCarbonPos);
+            };
+
+            // C_alpha substituents (slot 0 at +z, slot 1 at -z)
+            placeSub(alphaSubs[0], posCAlpha, spectatorUnit(1, 1), posCBeta);
+            placeSub(alphaSubs[1], posCAlpha, spectatorUnit(1, -1), posCBeta);
+
+            // C_beta substituents. If a beta-H is anti-periplanar to Br the reaction can run, and that H
+            // is the one removed by the base; the other two substituents occupy the two remaining slots.
+            const antiIdx = getAntiIndex();
+            const reactive = antiIdx >= 0;
+            if (reactive) {
+                betaSubs.forEach((sub, i) => {
+                    if (i === antiIdx) { sub.mesh.position.copy(posHBetaTarget); return; }
+                    const a = normDeg(sub.theta + rotationDeg);
+                    const sz = (a > 60 && a < 180) ? 1 : -1;
+                    placeSub(sub, posCBeta, spectatorUnit(-1, sz), posCAlpha);
+                });
+            } else {
+                // Not anti-periplanar: only possible before the reaction starts (t = 0), at any rotation angle.
+                const kk = 2 * Math.SQRT2 / 3;
+                betaSubs.forEach(sub => {
+                    const th = (sub.theta + rotationDeg) * Math.PI / 180;
+                    const dir = new THREE.Vector3(-1 / 3, kk * Math.cos(th), kk * Math.sin(th));
+                    placeSub(sub, posCBeta, dir, posCAlpha);
+                });
+            }
+
+            // --- REST OF THE BASE (OH- hydrogen / tert-butyl group) ---
+            // The base atom (O) approaches along the C-H axis. Its other groups bend away from that axis
+            // away from the substrate's methyl as the O-H bond forms: H-O-H closes from 180° to 104.5°, C-O-H from 130° to 109.5°.
+            if (currentBase !== 'hydride') {
+                const uBase = new THREE.Vector3(Math.cos(betaAngle / 2), -Math.sin(betaAngle / 2), 0); // O -> abstracted H
+                // Bend away from the C3 methyl (if any) so the base's groups avoid the substrate's methyl groups.
+                // bendZ varies smoothly with the rotation angle, so nothing jumps while C3 is being rotated.
+                const c4 = betaSubs.find(sub => sub.type === 'C');
+                let bendZ = 1;
+                // (the base stays exactly where it is while the C-C bond is turned: bendZ is fixed)
+                const wDir = new THREE.Vector3().crossVectors(uBase, new THREE.Vector3(0, 0, 1));   // in-plane, perpendicular to uBase
+                let bendDir = new THREE.Vector3(0, 0, bendZ).addScaledVector(wDir, Math.sqrt(1 - bendZ * bendZ));
+                const bp = (currentSubstrate === 'dmh') ? dmhBaseParams() : null;
+                if (bp && currentBase === 'hydroxide') {
+                    const phi = bp.phi * Math.PI / 180;
+                    bendDir = new THREE.Vector3(0, 0, Math.cos(phi)).addScaledVector(wDir, Math.sin(phi));
+                }
+                if (currentBase === 'tbuo') {
+                    // Spin the tert-butyl group about the H...O axis so that, in the starting view, the oxygen is
+                    // nearer the camera than the carbons and every atom of the group can be seen.
+                    const phi = (bp ? bp.phi : TBUO_SPIN_DEG[currentSubstrate]) * Math.PI / 180;
+                    bendDir = new THREE.Vector3(0, 0, Math.cos(phi)).addScaledVector(wDir, Math.sin(phi));
+                }
+                const dirFrom = (phiDeg) => {
+                    const phi = phiDeg * Math.PI / 180;
+                    return uBase.clone().multiplyScalar(Math.cos(phi)).addScaledVector(bendDir, Math.sin(phi));
+                };
+                if (currentBase === 'hydroxide') {
+                    baseExtras.hOH.position.copy(posBase).addScaledVector(dirFrom(180 - 75.5 * t), 0.96);
+                } else {
+                    const a0 = bp ? bp.ang : 130;   // C-O-H angle at the start (tuned per reactive conformation for the crowded substrate)
+                    const dC = dirFrom(a0 - (a0 - 109.5) * t);                // O -> central carbon
+                    const posC = posBase.clone().addScaledVector(dC, 1.43);
+                    baseExtras.c.position.copy(posC);
+                    const v = dC.clone().negate();                            // central carbon -> O
+                    const e1 = uBase.clone().addScaledVector(v, -uBase.dot(v)).normalize();
+                    const e2 = new THREE.Vector3().crossVectors(v, e1);
+                    const kk = 2 * Math.SQRT2 / 3;
+                    baseExtras.me.forEach((me, k) => {
+                        const phi = Math.PI + (k + (SPIN.tb || 0)) * 2 * Math.PI / 3;   // staggered about the C-O bond (SPIN.tb: optional extra turn of the group)
+                        const m = v.clone().multiplyScalar(-1 / 3)
+                            .addScaledVector(e1, kk * Math.cos(phi))
+                            .addScaledVector(e2, kk * Math.sin(phi));
+                        me.mesh.position.copy(posC).addScaledVector(m, 1.53);
+                        placeMethylHs(me, posC, posBase);
+                    });
+                }
+            }
+
+            // Small steric relief of crowded groups (fades a little as the planar alkene forms)
+            // (steric relief disabled: nothing but the turning bond moves while the beta carbon is rotated)
+
+            // Endothermic Energy Graph Dot Positioning
+            const visual_Ea = 34;
+            let endothermic_offset = 18 * t;
+            let dot_B = 68 - endothermic_offset;
+            let dot_A = visual_Ea * Math.exp(-Math.pow(t - 0.5, 2) / 0.035);
+            let dot_y = dot_B - dot_A;
+            let dot_x = 8 + t * 127;
+            const dot = document.getElementById('energy-dot');
+            dot.setAttribute('cx', dot_x);
+            dot.setAttribute('cy', dot_y);
+
+            // Bond Rendering
+            let bIdx = 0;
+            const updateBond = (p1, p2, forceHide, isDashed = false, customRadius = BOND_RADIUS, offsetVec = null) => {
+                const dist = p1.distanceTo(p2);
+                if (forceHide || currentMode === 'SF' || dist > 5.5) return;
+
+                let startP1 = offsetVec ? p1.clone().add(offsetVec) : p1;
+                let startP2 = offsetVec ? p2.clone().add(offsetVec) : p2;
+
+                if (isDashed) {
+                    const dashCount = 5;
+                    const dashLength = dist / (dashCount * 2 - 1);
+                    const dir = startP2.clone().sub(startP1).normalize();
+                    for (let j = 0; j < dashCount; j++) {
+                        const b = bondMeshes[bIdx++];
+                        if (!b) return;
+                        b.visible = true;
+                        b.scale.set(customRadius / BOND_RADIUS, dashLength, customRadius / BOND_RADIUS);
+                        const offset = (j * 2 + 0.5) * dashLength;
+                        b.position.copy(startP1).add(dir.clone().multiplyScalar(offset));
+                        b.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+                    }
+                } else {
+                    const b = bondMeshes[bIdx++];
+                    if (!b) return;
+                    b.visible = true;
+                    b.scale.set(customRadius / BOND_RADIUS, dist, customRadius / BOND_RADIUS);
+                    b.position.copy(startP1).lerp(startP2, 0.5);
+                    b.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), startP2.clone().sub(startP1).normalize());
+                }
+            };
+
+            // C=C DOUBLE BOND: always viewable from any angle (the two lines are offset perpendicular to the view).
+            // The partial pi bond is dashed in exactly the same window (0.20 <= t <= 0.70) as the dashed C-H and
+            // C-leaving-group bonds, and becomes solid when those bonds are gone.
+            const inTransitionWindow = (t >= 0.20 && t <= 0.70);
+
+            if (t > 0.20) {
+                let viewOffsetDir = new THREE.Vector3().crossVectors(ccAxis, camDir).normalize();
+                if (viewOffsetDir.lengthSq() < 0.01) {
+                    viewOffsetDir.set(0, 0, 1);
+                }
+                // the two lines separate gradually as the pi bond starts to appear
+                const ramp = Math.min(1, (t - 0.20) / 0.15);
+                const smooth = ramp * ramp * (3 - 2 * ramp);
+                const dOffset = viewOffsetDir.multiplyScalar(0.08 * smooth);
+                const sigmaRadius = BOND_RADIUS + (DOUBLE_BOND_RADIUS - BOND_RADIUS) * smooth;
+                updateBond(posCAlpha, posCBeta, false, false, sigmaRadius, dOffset);
+                updateBond(posCAlpha, posCBeta, false, inTransitionWindow, DOUBLE_BOND_RADIUS, dOffset.clone().negate());
+            } else {
+                updateBond(posCAlpha, posCBeta, false, false, BOND_RADIUS);
+            }
+
+            // Synchronized Reaction Bonds
+            const hideBrBond = t > 0.70;
+            updateBond(posCAlpha, posBr, hideBrBond, inTransitionWindow);
+
+            const hideBetaHBond = t > 0.70;
+            if (reactive) updateBond(posCBeta, posHBetaTarget, hideBetaHBond, inTransitionWindow);
+
+            const baseBondIdx = new Set();
+            const baseBondStart = bIdx;
+            const forceHHHide = t < 0.20;
+            if (!forceHHHide) {
+                updateBond(posHBetaTarget, posBase, false, inTransitionWindow);
+            }
+
+            // Bonds inside the base (O-H of hydroxide; O-C, C-CH3 and C-H of tert-butoxide)
+            if (currentBase === 'hydroxide') {
+                updateBond(posBase, baseExtras.hOH.position, false);
+            } else if (currentBase === 'tbuo') {
+                updateBond(posBase, baseExtras.c.position, false);
+                baseExtras.me.forEach(me => {
+                    updateBond(baseExtras.c.position, me.mesh.position, false);
+                    me.hs.forEach(h => updateBond(me.mesh.position, h.position, false));
+                });
+            }
+
+            for (let k = baseBondStart; k < bIdx; k++) baseBondIdx.add(k);
+
+            // Substituent bonds (spectator C-H, C-CH3 and the methyl C-H bonds)
+            const addTreeBonds = (node) => node.kids.forEach(kid => {
+                updateBond(node.mesh.position, kid.mesh.position, false);
+                addTreeBonds(kid);
+            });
+            const addSubBonds = (sub, carbonPos) => {
+                updateBond(carbonPos, sub.mesh.position, false);
+                if (sub.tree) { addTreeBonds(sub.tree); return; }
+                sub.hs.forEach(h => updateBond(sub.mesh.position, h.position, false));
+                if (sub.c4) {
+                    updateBond(sub.mesh.position, sub.c4.mesh.position, false);
+                    sub.c4.hs.forEach(h => updateBond(sub.c4.mesh.position, h.position, false));
+                }
+            };
+            alphaSubs.forEach(sub => addSubBonds(sub, posCAlpha));
+            betaSubs.forEach((sub, i) => {
+                if (reactive && i === antiIdx) return;
+                addSubBonds(sub, posCBeta);
+            });
+
+            while (bIdx < bondMeshes.length) {
+                bondMeshes[bIdx++].visible = false;
+            }
+            // The base (atoms and the bonds in / to it) fades with baseFade
+            baseBondMaterial.opacity = baseFade;
+            bondMeshes.forEach((b, i) => {
+                const isBase = baseBondIdx.has(i);
+                b.material = isBase ? baseBondMaterial : bondMaterial;
+                if (isBase && baseFade < 0.01) b.visible = false;
+            });
+            baseMeshList.forEach(m => { m.material.opacity = baseFade; m.visible = baseFade > 0.01; });
+
+            // --- PI ORBITALS ---
+            // The ethene plane is the xz plane (carbons + 4 spectator H), so the p orbitals point along y,
+            // the axis along which the Br and H leave. They appear only after the transition state (t > 0.5),
+            // grow to full size, and then persist in the product.
+            const orbitalGrow = Math.min(1, Math.max(0, (t - 0.5) / 0.3));
+            const orbitalScale = orbitalGrow * orbitalGrow * (3 - 2 * orbitalGrow); // smoothstep
+            orbitalGroup.visible = showOrbitals && orbitalScale > 0;
+            if (orbitalGroup.visible) {
+                orbitalMeshes[0].position.copy(posCAlpha);
+                orbitalMeshes[0].quaternion.identity();
+                orbitalMeshes[0].scale.setScalar(orbitalScale);
+                orbitalMeshes[1].position.copy(posCBeta);
+                orbitalMeshes[1].quaternion.identity();
+                orbitalMeshes[1].scale.setScalar(orbitalScale);
+            }
+        }
+
+        const PLAY_ICON = `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+        const PAUSE_ICON = `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
+        // Keep the text panels in step with the simulation state
+        let lastUIKey = '';
+        function syncUI() {
+            const locked = reactionProgress > 0 || isPlaying;
+            const key = `${currentSubstrate}|${rotationDeg}|${locked}`;
+            if (key === lastUIKey) return;
+            lastUIKey = key;
+
+            document.getElementById('drag-hint').textContent = locked
+                ? 'Return to Reactants to rotate into different conformations.'
+                : 'Click and drag any atom on the beta-carbon to rotate into different conformations.';
+        }
+
+        // (E) / (Z) geometry of the alkene that the current reactive conformation of (3R,4R)-3-bromo-4-methylhexane gives.
+        // The higher-priority group on each alkene carbon is compared: on the alpha carbon (C3) and on the beta carbon, the
+        // two end up on the same side (Z) or on opposite sides (E) of the double bond (the +z / -z slots of the alkene plane).
+        function alkeneGeometry() {
+            if (getAntiIndex() < 0) return null;
+            if (currentSubstrate === 'butane' && currentBase !== 'tbuo') {      // 2-butene: the two methyls on the same / opposite sides
+                const a = alphaSubs.find(x => x.type === 'C'), b = betaSubs.find(x => x.type === 'C');
+                return (a.mesh.position.z > 0) === (b.mesh.position.z > 0) ? 'cis' : 'trans';
+            }
+            if (currentSubstrate !== 'dmh') return null;
+            const hof = currentBase === 'tbuo';
+            const rootOf = (subs, tag) => { const sub = subs.find(x => x.mesh.userData.tag === tag); return sub ? sub.mesh : null; };
+            const a = rootOf(alphaSubs, hof ? 'C4' : 'C2'), b = rootOf(betaSubs, hof ? 'C1' : 'C5');
+            if (!a || !b) return null;
+            return (a.position.z > 0) === (b.position.z > 0) ? 'Z' : 'E';
+        }
+
+        function showBlockedHint() {
+            blockedHintUntil = performance.now() + 2800;
+        }
+
+        // Place a floating HTML label just below the substrate on screen (but above the bottom controls)
+        function placeLabelBelowSubstrate(el, atBottom = false) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            const p = new THREE.Vector3(0, atBottom ? 0 : -2.2, 0).project(camera);
+            let x = rect.left + (p.x * 0.5 + 0.5) * rect.width;
+            let y = rect.top + (-p.y * 0.5 + 0.5) * rect.height;
+            if (!atBottom && sphereMeshes.length) {
+                // just below the lowest atom of the substrate (so the substrate always sits above the label), at its middle
+                const isBase = new Set(baseMeshList), th = Math.tan(22.5 * Math.PI / 180);
+                const fwd = controls.target.clone().sub(camera.position).normalize();
+                let low = -Infinity, x0 = Infinity, x1 = -Infinity;
+                sphereMeshes.forEach(m => {
+                    if (isBase.has(m)) return;
+                    const sp = screenPos(m.position), d = m.position.clone().sub(camera.position).dot(fwd), r = m.userData.radius / d / th;
+                    low = Math.max(low, (1 - (sp.y - r)) * rect.height / 2); x0 = Math.min(x0, sp.x - r); x1 = Math.max(x1, sp.x + r);
+                });
+                y = rect.top + low + 10;
+                x = rect.left + rect.width / 2 + ((x0 + x1) / 2) * rect.height / 2;
+            }
+            const panelTop = document.getElementById('bottom-panel').getBoundingClientRect().top;
+            const w = el.offsetWidth || 300, h = el.offsetHeight || 24;
+            y = atBottom ? panelTop - 14 - h : Math.min(y, panelTop - 14 - h);
+            // Keep clear of the energy-graph pop-up when it is open
+            const graph = document.getElementById('graph-container');
+            if (!graph.classList.contains('hidden')) {
+                const gr = graph.getBoundingClientRect();
+                const vOverlap = y < gr.bottom + 8 && y + h > gr.top - 8;
+                const hOverlap = x + w / 2 > gr.left - 12 && x - w / 2 < gr.right + 12;
+                if (vOverlap && hOverlap) {
+                    const shiftedX = gr.left - 12 - w / 2;
+                    if (shiftedX - w / 2 >= 8) x = shiftedX;   // slide left of the graph
+                    else y = gr.top - 12 - h;                  // not enough room: sit just above the graph
+                }
+            }
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+        }
+
+        // Yellow glow on Br and the anti-periplanar beta-H, hover highlight, and the REACTIVE CONFORMATION label.
+        // The glow fades in when the conformation is reactive and fades out quickly once the reaction starts.
+        function updateGlowAndLabels(now) {
+            const dt = Math.min(0.1, (now - lastFrameTime) / 1000);
+            lastFrameTime = now;
+
+            const antiIdx = getAntiIndex();
+            if (antiIdx >= 0) glowHMesh = betaSubs[antiIdx].mesh;
+            const target = (labelsOn && antiIdx >= 0 && reactionProgress === 0 && !isPlaying) ? 1 : 0;
+            glow = target > glow ? Math.min(target, glow + 6 * dt) : Math.max(target, glow - 4 * dt);
+            const pulse = 0.85 + 0.15 * Math.sin(now / 1000 * 5);
+
+            // Halo sprites
+            [['br', atomMeshes.br, RADII[currentMode].Br], ['h', glowHMesh, RADII[currentMode].H]].forEach(([k, mesh, r]) => {
+                const sp = glowSprites[k];
+                if (!sp) return;
+                sp.visible = !!(mesh && glow > 0.01);
+                if (sp.visible) {
+                    sp.position.copy(mesh.position);
+                    // Halo radius scales with the atom so the glow looks equally strong around large Br and small H
+                    const haloR = Math.max(r * (currentMode === 'BS' ? 3.2 : 1.6), r + 0.6);
+                    const d = 2 * haloR * (0.92 + 0.1 * pulse);
+                    sp.scale.set(d, d, 1);
+                    sp.material.opacity = Math.min(1, glow * pulse);
+                }
+            });
+
+            // Atom emissive: yellow glow on the reactive pair, blue highlight on the hovered/dragged C3 atom
+            if (hoveredMesh && !(drag || canDragNow())) hoveredMesh = null;
+            const atoms = [atomMeshes.cAlpha, atomMeshes.cBeta, atomMeshes.br, atomMeshes.baseH,
+                ...alphaSubs.flatMap(subMeshes),
+                ...betaSubs.flatMap(subMeshes)];
+            atoms.forEach(m => {
+                const mat = m.material;
+                const base = m.userData.baseColor;
+                if (glow > 0.01 && (m === atomMeshes.br || m === glowHMesh)) {
+                    // Br and the beta-H take on exactly the same glowing yellow
+                    mat.color.copy(base).lerp(GLOW_COLOR, Math.min(1, glow));
+                    mat.emissive.copy(GLOW_COLOR);
+                    mat.emissiveIntensity = 0.7 * glow * pulse;
+                } else {
+                    if (!mat.color.equals(base)) mat.color.copy(base);
+                    if (m === hoveredMesh) {
+                        mat.emissive.setHex(0x3b82f6);
+                        mat.emissiveIntensity = 0.55;
+                    } else {
+                        mat.emissiveIntensity = 0;
+                    }
+                }
+            });
+
+            // REACTIVE CONFORMATION label (yellow), below the substrate
+            const lab = document.getElementById('reactive-label');
+            if (glow > 0.01) {
+
+                placeLabelBelowSubstrate(lab);
+                lab.style.visibility = 'visible';
+                lab.style.opacity = String(glow);
+                lab.style.transform = `translate(-50%, 0) scale(${0.92 + 0.08 * glow})`;
+            } else {
+                lab.style.visibility = 'hidden';
+            }
+
+            // ZAITSEV / HOFMANN PRODUCT label: fades in as the product forms and stays at the bottom
+            const plab = document.getElementById('product-label');
+            const pf = Math.min(1, Math.max(0, (reactionProgress - 0.7) / 0.2));
+            const pOpacity = pf * pf * (3 - 2 * pf);
+            const blab = document.getElementById('alkene-label');
+            if (labelsOn && productType && pOpacity > 0.01) {
+                const hof = productType === 'hofmann';
+                const ez = alkeneGeometry();
+                const text = hof ? 'HOFMANN PRODUCT' : 'ZAITSEV PRODUCT';
+                if (plab.textContent !== text) plab.textContent = text;
+                plab.classList.toggle('hofmann', hof);
+                plab.classList.toggle('zaitsev', !hof);
+                const btext = ez ? ((ez === 'E' || ez === 'Z') ? '(' + ez + ')-ALKENE' : ez + '-ALKENE') : '';
+                if (blab.textContent !== btext) blab.textContent = btext;
+                // Both labels stay fixed at the bottom of the window (they never follow the molecule): the product label
+                // with the cis / trans / (E) / (Z) bubble to its right, the pair centred in the window.
+                const rect = renderer.domElement.getBoundingClientRect();
+                const panelTop = document.getElementById('bottom-panel').getBoundingClientRect().top;
+                const w1 = plab.offsetWidth || 260, w2 = btext ? (blab.offsetWidth || 150) : 0, gap = btext ? 14 : 0, h = plab.offsetHeight || 36;
+                let left = rect.left + rect.width / 2 - (w1 + gap + w2) / 2;
+                const y = panelTop - 14 - h;
+                const graph = document.getElementById('graph-container');
+                if (!graph.classList.contains('hidden')) {
+                    const gr = graph.getBoundingClientRect();
+                    if (y < gr.bottom + 8 && y + h > gr.top - 8 && left + w1 + gap + w2 > gr.left - 12 && left < gr.right + 12) {
+                        const shifted = gr.left - 12 - (w1 + gap + w2);
+                        if (shifted >= 8) left = shifted; else left = Math.max(8, left);
+                    }
+                }
+                plab.style.left = (left + w1 / 2) + 'px'; plab.style.top = y + 'px';
+                plab.style.visibility = 'visible'; plab.style.opacity = String(pOpacity);
+                plab.style.transform = `translate(-50%, 0) scale(${0.92 + 0.08 * pOpacity})`;
+                if (btext) {
+                    blab.style.left = (left + w1 + gap + w2 / 2) + 'px'; blab.style.top = y + 'px';
+                    blab.style.visibility = 'visible'; blab.style.opacity = String(pOpacity);
+                    blab.style.transform = `translate(-50%, 0) scale(${0.92 + 0.08 * pOpacity})`;
+                } else blab.style.visibility = 'hidden';
+            } else {
+                plab.style.visibility = 'hidden';
+                blab.style.visibility = 'hidden';
+            }
+
+            // Transient message if the user tries to start a non-reactive conformation
+            const hintEl = document.getElementById('blocked-hint');
+            const hintOn = now < blockedHintUntil && glow < 0.01;
+            if (hintOn) placeLabelBelowSubstrate(hintEl);
+            hintEl.style.opacity = hintOn ? '1' : '0';
+        }
+
+        // Smooth camera transitions between preset views: the camera swings around the molecule
+        // (spherical interpolation of its direction) while its distance eases to the new value.
+        let camTween = null;
+        // Jump straight to a view (no swing), used when the substrate or base changes
+        function setCameraNow(toPos, toTarget, toUp, toShift) {
+            camTween = null; shiftTween = null; autoCenter = true;
+            const sh = toShift || { x: 0, y: 0 }; viewShift.x = sh.x; viewShift.y = sh.y;
+            controls.target.copy(toTarget);
+            camera.position.copy(toPos);
+            camUp.copy(toUp || new THREE.Vector3(0, 1, 0));
+        }
+        function animateCameraTo(toPos, toTarget, toUp, toShift, dur) {
+            shiftTween = null; autoCenter = true;
+            const fromTarget = controls.target.clone();
+            const offFrom = camera.position.clone().sub(fromTarget);
+            const offTo = toPos.clone().sub(toTarget);
+            camTween = {
+                shiftFrom: { x: viewShift.x, y: viewShift.y }, shiftTo: toShift || { x: 0, y: 0 }, upFrom: camUp.clone(), upTo: (toUp || new THREE.Vector3(0, 1, 0)).clone(), start: performance.now(), dur: dur || 1500, toPos: toPos.clone(),
+                fromTarget, toTarget: toTarget.clone(),
+                dirFrom: offFrom.clone().normalize(), distFrom: offFrom.length(), distTo: offTo.length(),
+                q: new THREE.Quaternion().setFromUnitVectors(offFrom.clone().normalize(), offTo.clone().normalize())
+            };
+        }
+        function updateCameraTween(now) {
+            if (!camTween) return;
+            const k = Math.min(1, (now - camTween.start) / camTween.dur);
+            const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;   // ease in-out
+            const q = new THREE.Quaternion().slerp(camTween.q, e);
+            const dir = camTween.dirFrom.clone().applyQuaternion(q);
+            const dist = camTween.distFrom + (camTween.distTo - camTween.distFrom) * e;
+            controls.target.copy(camTween.fromTarget).lerp(camTween.toTarget, e);
+            camera.position.copy(controls.target).addScaledVector(dir, dist);
+            camUp.copy(camTween.upFrom).lerp(camTween.upTo, e);
+            viewShift.x = camTween.shiftFrom.x + (camTween.shiftTo.x - camTween.shiftFrom.x) * e;
+            viewShift.y = camTween.shiftFrom.y + (camTween.shiftTo.y - camTween.shiftFrom.y) * e;
+            if (camUp.lengthSq() < 1e-6) camUp.set(0, 1, 0);
+            camUp.normalize();
+            if (k >= 1) {
+                camUp.copy(camTween.upTo);
+                viewShift.x = camTween.shiftTo.x; viewShift.y = camTween.shiftTo.y;
+                camera.position.copy(camTween.toPos);
+                controls.target.copy(camTween.toTarget);
+                camTween = null;
+            }
+        }
+        // Any manual camera input cancels a transition in progress
+        ['pointerdown', 'wheel'].forEach(evt =>
+            document.getElementById('canvas-container').addEventListener(evt, () => { camTween = null; shiftTween = null; autoCenter = false; }, true));
+
+
+        // ---- Smooth glide of the picture on screen ----
+        const smooth01 = (u) => u * u * (3 - 2 * u);
+        const ease3 = (u) => u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+        function tweenShiftTo(to, dur) {
+            shiftTween = { from: { x: viewShift.x, y: viewShift.y }, to, start: performance.now(), dur };
+        }
+        function updateShiftTween(now) {
+            if (!shiftTween) return;
+            const u = Math.min(1, (now - shiftTween.start) / shiftTween.dur), e = ease3(u);
+            viewShift.x = shiftTween.from.x + (shiftTween.to.x - shiftTween.from.x) * e;
+            viewShift.y = shiftTween.from.y + (shiftTween.to.y - shiftTween.from.y) * e;
+            if (u >= 1) shiftTween = null;
+        }
+        // Where a point appears on screen (half-window-heights, +x right, +y up) with the camera as it is now
+        function screenPos(p) {
+            const fwd = controls.target.clone().sub(camera.position).normalize();
+            const right = new THREE.Vector3().crossVectors(fwd, camUp).normalize();
+            const cu = new THREE.Vector3().crossVectors(right, fwd).normalize();
+            const rel = p.clone().sub(camera.position), d = rel.dot(fwd), th = Math.tan(22.5 * Math.PI / 180);
+            return { x: rel.dot(right) / d / th + viewShift.x, y: rel.dot(cu) / d / th + viewShift.y };
+        }
+
+        // ---- Changing the base ----
+        // 1. the old base fades out, 2. the new base fades in (the substrate does not move), 3. the whole picture glides,
+        // slowly and smoothly, up or down (and sideways) until substrate and base are centred in the window.
+        // Phases 1 and 2 are tracked by baseSwitch; the glide is an ordinary shiftTween.
+        const BASE_FADE_MS = 500, BASE_GLIDE_MS = 3000;
+        function swapBaseNow(newBase) {
+            // The model (and camera frame) changes with the base; keep the substrate exactly where it is on screen.
+            const before = screenPos(atomMeshes.cAlpha.position), dOld = camera.position.distanceTo(controls.target);
+            currentBase = newBase;
+            baseFade = 0;
+            resetSimulation();
+            const sv = sideView();
+            // new model frame, but the old zoom: the substrate does not move or change size while the base fades in
+            const posOld = sv.target.clone().add(sv.pos.clone().sub(sv.target).setLength(dOld));
+            setCameraNow(posOld, sv.target, sv.up, { x: 0, y: 0 });
+            const now0 = screenPos(atomMeshes.cAlpha.position);
+            viewShift.x = before.x - now0.x; viewShift.y = before.y - now0.y;
+            autoCenter = true;
+            return sv;
+        }
+        function startBaseSwitch(newBase) {
+            if (baseSwitch) completeBaseSwitch();
+            if (newBase === currentBase) return;
+            isPlaying = false;
+            document.getElementById('btn-play').innerHTML = PLAY_ICON;
+            if (typeof endDrag === 'function') endDrag();
+            shiftTween = null; camTween = null;
+            baseSwitch = { phase: 'out', start: performance.now(), newBase, target: null };
+        }
+        function completeBaseSwitch() {     // jump to the end state of an animation in progress
+            const bs = baseSwitch; baseSwitch = null;
+            if (bs.phase === 'out') swapBaseNow(bs.newBase);
+            baseFade = 1; shiftTween = null;
+            { const sv = sideView(); setCameraNow(sv.pos, sv.target, sv.up, sv.shift); }
+        }
+        function updateBaseSwitch(now) {
+            if (!baseSwitch) return;
+            const bs = baseSwitch, u = Math.min(1, (now - bs.start) / BASE_FADE_MS);
+            if (bs.phase === 'out') {
+                baseFade = 1 - smooth01(u);
+                if (u >= 1) { bs.target = swapBaseNow(bs.newBase); baseFade = 0; bs.phase = 'in'; bs.start = now; }
+            } else {
+                baseFade = smooth01(u);
+                if (u >= 1) { baseFade = 1; baseSwitch = null; animateCameraTo(bs.target.pos, bs.target.target, bs.target.up, bs.target.shift, BASE_GLIDE_MS); }   // slowly zoom / glide to the fitted view (the user can already interact)
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updateBaseSwitch(performance.now());
+            updateCameraTween(performance.now());
+            updateShiftTween(performance.now());
+            orientCamera();
+            applyViewShift();
+
+            // Playback can't continue from the reactants if no beta-H is anti-periplanar
+            if (isPlaying && reactionProgress <= 0 && getAntiIndex() < 0) {
+                isPlaying = false;
+                document.getElementById('btn-play').innerHTML = PLAY_ICON;
+            }
+            syncUI();
+            updateGlowAndLabels(performance.now());
+
+            if (isPlaying) {
+                const speed = (isQuarterSpeed ? (baseSpeed / 4) : baseSpeed) * playDirection;
+                reactionProgress += speed;
+
+                if (isLooping) {
+                    if (reactionProgress >= 1) {
+                        reactionProgress = 1;
+                        playDirection = -1;
+                    } else if (reactionProgress <= 0) {
+                        reactionProgress = 0;
+                        playDirection = 1;
+                    }
+                } else {
+                    if (reactionProgress > 1) {
+                        reactionProgress = 1;
+                        isPlaying = false;
+                        document.getElementById('btn-play').innerHTML = `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+                    }
+                }
+                document.getElementById('reaction-slider').value = reactionProgress;
+                updatePositions();
+            } else {
+                updatePositions(); // Continuous update so double bonds remain billboarded during orbit controls
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Event Listeners
+        function recenterAfterRebuild() {     // atom sizes changed: glide to the new centre if the view is still in its preset position
+            if (autoCenter && !baseSwitch) tweenShiftTo(centeredShift(camera.position, controls.target, camUp), 900);
+        }
+        document.getElementById('btn-bs').addEventListener('click', () => {
+            currentMode = 'BS';
+            document.getElementById('btn-bs').classList.replace('bg-gray-700', 'bg-blue-600');
+            document.getElementById('btn-sf').classList.replace('bg-blue-600', 'bg-gray-700');
+            buildMolecule(); recenterAfterRebuild();
+        });
+
+        document.getElementById('btn-sf').addEventListener('click', () => {
+            currentMode = 'SF';
+            document.getElementById('btn-sf').classList.replace('bg-gray-700', 'bg-blue-600');
+            document.getElementById('btn-bs').classList.replace('bg-blue-600', 'bg-gray-700');
+            buildMolecule(); recenterAfterRebuild();
+        });
+
+        document.getElementById('btn-newman').addEventListener('click', () => {
+            { let p = new THREE.Vector3(-8 * BASE_VIEW_SCALE[currentBase], 0, 0); const o = new THREE.Vector3(0, 0, 0), u = new THREE.Vector3(0, 1, 0);
+              if (currentSubstrate === 'dmh' || currentSubstrate === 'butane') {      // the big substrates: pull back until every atom is in view (and clear of the label)
+                  const d = Math.max(fitView(p, o, u).pos.length(), (currentSubstrate === 'dmh' ? 13 : 8) * BASE_VIEW_SCALE[currentBase]);
+                  p = new THREE.Vector3(-Math.min(d, MAX_DIST - 0.5), 0, 0);
+              }
+              animateCameraTo(p, o, u, centeredShift(p, o, u)); }
+        });
+
+        document.getElementById('btn-labels').addEventListener('click', () => {
+            labelsOn = !labelsOn;
+            document.getElementById('btn-labels').textContent = labelsOn ? 'LABELS: ON' : 'LABELS: OFF';
+        });
+        document.getElementById('btn-side').addEventListener('click', () => {
+            // Side view (perpendicular to the C-C axis, from slightly above) for the current substrate / base
+            { const sv = sideView(); animateCameraTo(sv.pos, sv.target, sv.up, sv.shift); }
+        });
+
+        document.getElementById('btn-orbitals').addEventListener('click', (e) => {
+            showOrbitals = !showOrbitals;
+            if (showOrbitals) {
+                e.target.innerText = "HIDE P ORBITALS";
+                e.target.classList.replace('border-purple-500', 'border-purple-300');
+                e.target.classList.add('bg-purple-600', 'text-white');
+            } else {
+                e.target.innerText = "SHOW P ORBITALS";
+                e.target.classList.remove('bg-purple-600', 'text-white');
+                e.target.classList.add('border-purple-500', 'text-purple-300');
+            }
+            updatePositions();
+        });
+
+        document.getElementById('btn-graph-toggle').addEventListener('click', (e) => {
+            const graphDiv = document.getElementById('graph-container');
+            const isHidden = graphDiv.classList.contains('hidden');
+
+            if (isHidden) {
+                graphDiv.classList.replace('hidden', 'flex');
+                e.target.innerText = "HIDE ENERGY GRAPH";
+                e.target.classList.replace('text-green-400', 'text-white');
+                e.target.classList.replace('bg-gray-800', 'bg-green-600');
+            } else {
+                graphDiv.classList.replace('flex', 'hidden');
+                e.target.innerText = "SHOW ENERGY GRAPH";
+                e.target.classList.replace('text-white', 'text-green-400');
+                e.target.classList.replace('bg-green-600', 'bg-gray-800');
+            }
+        });
+
+        const slider = document.getElementById('reaction-slider');
+        slider.addEventListener('input', (e) => {
+            if (baseSwitch) { e.target.value = reactionProgress; return; }
+            reactionProgress = parseFloat(e.target.value);
+            if (reactionProgress > 0 && getAntiIndex() < 0) {
+                // E2 requires an anti-periplanar beta-H
+                reactionProgress = 0;
+                e.target.value = 0;
+                showBlockedHint();
+            }
+            isPlaying = false;
+            document.getElementById('btn-play').innerHTML = `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+            updatePositions();
+        });
+
+        document.getElementById('btn-play').addEventListener('click', () => {
+            if (baseSwitch) return;
+            if (reactionProgress >= 1) reactionProgress = 0;
+            if (reactionProgress <= 0 && getAntiIndex() < 0) {
+                showBlockedHint();   // E2 requires an anti-periplanar beta-H
+                return;
+            }
+            isPlaying = !isPlaying;
+            playDirection = 1;
+            document.getElementById('btn-play').innerHTML = isPlaying 
+                ? `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
+                : `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+        });
+
+        document.getElementById('btn-speed').addEventListener('click', (e) => {
+            isQuarterSpeed = !isQuarterSpeed;
+            if (isQuarterSpeed) {
+                e.target.innerText = "1/4 Speed";
+                e.target.classList.replace('bg-gray-700', 'bg-red-600');
+            } else {
+                e.target.innerText = "1x Speed";
+                e.target.classList.replace('bg-red-600', 'bg-gray-700');
+            }
+        });
+
+        document.getElementById('btn-loop').addEventListener('click', (e) => {
+            isLooping = !isLooping;
+            if (isLooping) {
+                e.target.innerText = "Loop: ON";
+                e.target.classList.replace('bg-gray-700', 'bg-blue-600');
+            } else {
+                e.target.innerText = "Loop: OFF";
+                e.target.classList.replace('bg-blue-600', 'bg-gray-700');
+            }
+        });
+
+        // Reset the simulation to the reactants (used when the substrate or base changes)
+        // Starting rotation of the beta carbon: the lowest-energy conformation of the chosen substrate
+        function initialRotation() {
+            if (currentSubstrate !== 'dmh') return 0;
+            return (currentBase === 'tbuo' ? DMH.h.rot0 : DMH.z.rot0);
+        }
+        function resetSimulation() {
+            reactionProgress = 0;
+            isPlaying = false;
+            playDirection = 1;
+            rotationDeg = initialRotation();
+            glow = 0;
+            if (typeof endDrag === 'function') endDrag();
+            document.getElementById('reaction-slider').value = 0;
+            document.getElementById('btn-play').innerHTML = PLAY_ICON;
+            lastUIKey = '';
+            buildMolecule();
+        }
+
+        // Substrate selection
+        document.getElementById('substrate-select').addEventListener('change', (e) => {
+            baseSwitch = null; baseFade = 1; shiftTween = null;
+            currentSubstrate = e.target.value;
+            resetSimulation();
+            { const sv = sideView(); setCameraNow(sv.pos, sv.target, sv.up, sv.shift); }   // jump to this substrate's starting view (no spinning), centred
+        });
+
+        // Base selection: the old base fades out, the new one fades in, then the picture glides to the centre of the window
+        document.getElementById('base-select').addEventListener('change', (e) => startBaseSwitch(e.target.value));
+
+        // ---- Direct manipulation: click and drag any atom on C3 to rotate C3 about the C3-C2 bond ----
+        // The camera stays fixed while dragging. Only possible before the reaction starts.
+        const raycaster = new THREE.Raycaster();
+        const domEl = renderer.domElement;
+        domEl.style.touchAction = 'none';
+        let drag = null;
+
+        const canDragNow = () => reactionProgress === 0 && !isPlaying && !baseSwitch;
+        const c3Meshes = () => betaSubs.flatMap(subMeshes);
+        const pointerPx = (e) => {
+            const r = domEl.getBoundingClientRect();
+            return { x: e.clientX - r.left, y: e.clientY - r.top };
+        };
+        const projectPx = (v) => {
+            const p = v.clone().project(camera);
+            return { x: (p.x * 0.5 + 0.5) * domEl.clientWidth, y: (-p.y * 0.5 + 0.5) * domEl.clientHeight };
+        };
+        const pickC3 = (px) => {
+            raycaster.setFromCamera(new THREE.Vector2(px.x / domEl.clientWidth * 2 - 1, -(px.y / domEl.clientHeight) * 2 + 1), camera);
+            const hits = raycaster.intersectObjects(c3Meshes(), false);
+            return hits.length ? hits[0].object : null;
+        };
+
+        function beginDrag(mesh, px) {
+            const p0 = mesh.position.clone();
+            const q0 = projectPx(p0);
+            drag = {
+                mesh, x0: p0.x, rho: Math.hypot(p0.y, p0.z), a0: Math.atan2(p0.z, p0.y),
+                startPsi: rotationDeg, prev: 0, offX: px.x - q0.x, offY: px.y - q0.y
+            };
+        }
+
+        // The grabbed atom travels on a circle about the C-C (x) axis. Find the rotation, near the previous one,
+        // whose on-screen position is closest to the pointer (works from any camera angle).
+        function updateDrag(px) {
+            const tx = px.x - drag.offX, ty = px.y - drag.offY;
+            const cost = (dDeg) => {
+                const a = drag.a0 + dDeg * Math.PI / 180;
+                const q = projectPx(new THREE.Vector3(drag.x0, drag.rho * Math.cos(a), drag.rho * Math.sin(a)));
+                return (q.x - tx) * (q.x - tx) + (q.y - ty) * (q.y - ty);
+            };
+            let best = drag.prev, bestC = Infinity;
+            for (let d = drag.prev - 45; d <= drag.prev + 45; d += 1) {
+                const c = cost(d);
+                if (c < bestC) { bestC = c; best = d; }
+            }
+            const center = best;
+            for (let d = center - 1; d <= center + 1; d += 0.1) {
+                const c = cost(d);
+                if (c < bestC) { bestC = c; best = d; }
+            }
+            drag.prev = best;
+            let psi = drag.startPsi + best;
+            const n60 = Math.round(psi / 60) * 60;
+            if (Math.abs(psi - n60) <= 7) psi = n60;   // magnetic snap to staggered / eclipsed positions
+            rotationDeg = normDeg(psi);
+        }
+
+        function endDrag() {
+            if (!drag) return;
+            drag = null;
+            hoveredMesh = null;
+            controls.enabled = true;
+            domEl.style.cursor = '';
+        }
+
+        let viewDrag = null;
+        document.getElementById('canvas-container').addEventListener('pointerdown', (e) => {
+            if (e.button === 0 && canDragNow()) {
+                const px = pointerPx(e);
+                const m = pickC3(px);
+                if (m) {
+                    controls.enabled = false;           // keep the camera fixed while rotating the beta carbon
+                    beginDrag(m, px);
+                    hoveredMesh = m;
+                    domEl.style.cursor = 'grabbing';
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return;
+                }
+            }
+            if (e.button === 0 || e.button === 2) {
+                viewDrag = { x: e.clientX, y: e.clientY };
+                domEl.style.cursor = 'move';
+            }
+        }, true);
+        window.addEventListener('pointermove', (e) => {
+            if (!viewDrag) return;
+            const dx = e.clientX - viewDrag.x, dy = e.clientY - viewDrag.y;
+            viewDrag.x = e.clientX; viewDrag.y = e.clientY;
+            rotateView(dx, dy, e.shiftKey, e.altKey ? FINE_ROTATE_SPEED : ROTATE_SPEED);
+        });
+        const endViewDrag = () => { if (viewDrag) { viewDrag = null; domEl.style.cursor = ''; } };
+        window.addEventListener('pointerup', endViewDrag);
+        window.addEventListener('pointercancel', endViewDrag);
+
+        window.addEventListener('pointermove', (e) => {
+            if (drag) {
+                if (!canDragNow()) { endDrag(); return; }
+                updateDrag(pointerPx(e));
+                return;
+            }
+            if (e.target !== domEl || !canDragNow()) {
+                if (hoveredMesh) { hoveredMesh = null; domEl.style.cursor = ''; }
+                return;
+            }
+            const m = pickC3(pointerPx(e));
+            hoveredMesh = m;
+            domEl.style.cursor = m ? 'grab' : '';
+        });
+        window.addEventListener('pointerup', endDrag);
+        window.addEventListener('pointercancel', endDrag);
+
+        // Arrow keys slide the whole picture up / down / left / right
+        window.addEventListener('keydown', (e) => {
+            const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
+            if (!k || (e.target && e.target.tagName === 'SELECT')) return;
+            e.preventDefault();
+            camTween = null; shiftTween = null; autoCenter = false;
+            const step = e.shiftKey ? 0.15 : 0.05;
+            viewShift.x += k[0] * step; viewShift.y += k[1] * step;
+        });
+        ['substrate-select', 'base-select'].forEach(id => document.getElementById(id).addEventListener('change', (e) => e.target.blur()));
+        document.getElementById('reaction-slider').addEventListener('change', (e) => e.target.blur());
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            if (autoCenter && !baseSwitch && !camTween && !shiftTween) {
+                const sh = centeredShift(camera.position, controls.target, camUp); viewShift.x = sh.x; viewShift.y = sh.y;
+            }
+            applyViewShift();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        buildMolecule();
+        { const sv = sideView(); setCameraNow(sv.pos, sv.target, sv.up, sv.shift); }   // open centred
+        animate();
+    </script>
+</body>
+</html>
