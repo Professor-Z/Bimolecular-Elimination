@@ -2287,7 +2287,9 @@ Br</text>
             updateGlowAndLabels(performance.now());
 
             if (isPlaying) {
-                const speed = (isQuarterSpeed ? (baseSpeed / 4) : baseSpeed) * playDirection;
+                // the leaving group and the conjugate acid of the base (t > 0.70) depart more slowly: playback eases down to 45 % speed there
+                const dep = Math.min(1, Math.max(0, (reactionProgress - 0.64) / 0.08)), slow = 1 - 0.55 * dep * dep * (3 - 2 * dep);
+                const speed = (isQuarterSpeed ? (baseSpeed / 4) : baseSpeed) * playDirection * slow;
                 reactionProgress += speed;
 
                 if (isLooping) {
