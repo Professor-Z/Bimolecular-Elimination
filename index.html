@@ -23,6 +23,11 @@
             background: #dc2626; color: #fff; font-weight: 800; font-size: 0.85rem; line-height: 1.25; letter-spacing: 0.06em; border: 1px solid #fca5a5;
             box-shadow: 0 0 14px rgba(239,68,68,0.7), 0 0 28px rgba(239,68,68,0.35); cursor: pointer; transition: background-color .15s; }
         #btn-predict:hover { background: #ef4444; }
+        #beta-panel { position: fixed; right: 16px; top: 148px; z-index: 24; width: 18rem; padding: 0.8rem 1rem; border-radius: 0.75rem; text-align: center; font-size: 0.9rem; font-weight: 700; line-height: 1.35;
+            background: rgba(30,41,59,0.92); border: 1.5px solid #facc15; color: #fef9c3; box-shadow: 0 0 16px rgba(250,204,21,0.5); opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s; }
+        #beta-panel.on { opacity: 1; visibility: visible; }
+        #beta-panel.wrong { border-color: #ef4444; color: #fecaca; box-shadow: 0 0 16px rgba(239,68,68,0.55); }
+        #beta-panel.right { border-color: #22c55e; color: #bbf7d0; box-shadow: 0 0 16px rgba(34,197,94,0.55); }
         #quiz-modal { position: fixed; left: 16px; top: 148px; z-index: 24; display: none; }   /* a panel under the button, on the left, so the molecule stays visible */
         #quiz-modal.open { display: block; }
         #quiz-card { background: #fff; color: #111827; border-radius: 0.9rem; width: min(380px, 92vw); max-height: calc(100vh - 260px); overflow: auto; padding: 1.5rem 0.8rem 0.8rem; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
@@ -368,6 +373,8 @@ Br</text>
             <div id="quiz-msg">Predict the MAJOR product in the reaction above. You can use the simulation to help visualize how the product forms.</div>
         </div>
     </div>
+
+    <div id="beta-panel">Click the β carbon that is most likely to react under these conditions.</div>
 
     <div id="blocked-hint" class="floating-label">NOT REACTIVE: Try rotating β-carbon</div>
 
@@ -775,9 +782,9 @@ Br</text>
             ctx.font = 'bold 85px "Times New Roman", "Georgia", serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = colorHex;
-            ctx.fillText(text, 64, 64);
-
+            ctx.lineJoin = 'round'; ctx.lineWidth = 5; ctx.strokeStyle = '#000000';      // thin black outline for legibility
+            ctx.strokeText(text, 64, 64);
+            ctx.fillStyle = colorHex; ctx.fillText(text, 64, 64);
             const texture = new THREE.CanvasTexture(canvas);
             const spriteMaterial = new THREE.SpriteMaterial({ map: texture, depthTest: false });
             const sprite = new THREE.Sprite(spriteMaterial);
@@ -786,8 +793,9 @@ Br</text>
             return sprite;
         }
 
-        const alphaLabel = createTextSprite('α', '#f97316');
-        const betaLabel = createTextSprite('β', '#f97316');
+        const alphaLabel = createTextSprite('α', '#22e55e');
+        const betaLabel = createTextSprite('β', '#22e55e');
+        const betaLabel2 = createTextSprite('β', '#22e55e');   // the second β-carbon (the one that is part of a substituent on Cα), shown for the 3-bromo-4-methylhexane substrates
 
         const getMaterial = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.1 });
         const bondMaterial = new THREE.MeshStandardMaterial({ color: BOND_COLOR, roughness: 0.4 });
@@ -827,6 +835,9 @@ Br</text>
             return sp;
         }
 
+        const hoverGlow = createGlowSprite();          // faint yellow halo around the carbon under the pointer (the atom itself stays grey)
+        hoverGlow.material.color.set(0xffe14d); hoverGlow.material.opacity = 0.6;
+        scene.add(hoverGlow);
         const GLOW_COLOR = new THREE.Color(0xffd21a);   // shared by Br and the anti-periplanar beta-H
 
         function createSphere(radius, color) {
@@ -971,6 +982,7 @@ Br</text>
 
             labelGroup.add(alphaLabel);
             labelGroup.add(betaLabel);
+            labelGroup.add(betaLabel2);
             glowSprites = { br: createGlowSprite(), h: createGlowSprite() };
             labelGroup.add(glowSprites.br);
             labelGroup.add(glowSprites.h);
@@ -1124,6 +1136,10 @@ Br</text>
             const labelOpacity = 1 - lf * lf * (3 - 2 * lf);
             alphaLabel.material.opacity = labelOpacity;
             betaLabel.material.opacity = labelOpacity;
+            betaLabel2.material.opacity = labelOpacity;
+            const ob = (isDmh() && labelsOn) ? otherBetaMesh() : null;
+            betaLabel2.visible = !!ob && dotAxis <= 0.92 && labelOpacity >= 0.01;
+            if (betaLabel2.visible) betaLabel2.position.copy(ob.position);
             if (!labelsOn || dotAxis > 0.92 || labelOpacity < 0.01) {
                 alphaLabel.visible = false;
                 betaLabel.visible = false;
@@ -1499,7 +1515,7 @@ Br</text>
 
             document.getElementById('drag-hint').textContent = locked
                 ? 'Return to Reactants to rotate into different conformations.'
-                : 'Click and drag any atom on the beta-carbon to rotate into different conformations.';
+                : 'Click and drag any atom on the β-carbon to rotate into different conformations.';
         }
 
         // (E) / (Z) geometry of the alkene that the current reactive conformation of (3R,4S)-3-bromo-4-methylhexane gives.
@@ -1612,6 +1628,59 @@ Br</text>
 
         // Yellow glow on Br and the anti-periplanar beta-H, hover highlight, and the REACTIVE CONFORMATION label.
         // The glow fades in when the conformation is reactive and fades out quickly once the reaction starts.
+        // ---- Step 1 for the 3-bromo-4-methylhexane substrates: choose the β-carbon that reacts. Until it is chosen, the C-C bonds
+        // cannot be rotated and the reaction cannot be run. Hydride (small) -> the more substituted β-carbon (C4, Zaitsev);
+        // tert-butoxide (bulky) -> the less hindered β-carbon (C2, Hofmann). Both are the β-carbon that the model rotates (the lower-left one).
+        let betaChosen = true, betaMsgUntil = 0, betaState = 'ask', betaKeep = false, betaRot0 = 0, gateHover = null;
+        const betaPanel = document.getElementById('beta-panel');
+        const BETA_PROMPT = 'Click the β carbon that is most likely to react under these conditions.';
+        const gateOn = () => isDmh() && !betaChosen;
+        function setBetaPanel(state, text) { betaState = state; betaPanel.className = (betaPanel.classList.contains('on') ? 'on ' : '') + (state === 'ask' ? '' : state); betaPanel.textContent = text; }
+        function resetBetaGate() {
+            betaChosen = !isDmh(); betaMsgUntil = 0; betaKeep = false;
+            setBetaPanel('ask', BETA_PROMPT);
+            setLabelsOn(!isDmh());       // the labels start hidden for these substrates
+        }
+        function setLabelsOn(on) { labelsOn = on; document.getElementById('btn-labels').textContent = on ? 'LABELS: ON' : 'LABELS: OFF'; }
+        function otherBetaMesh() {
+            const sub = alphaSubs.find(x => x.mesh && x.mesh.userData.tag === (currentBase === 'tbuo' ? 'C4' : 'C2'));
+            return sub ? sub.mesh : null;
+        }
+        // every carbon of the substrate can be clicked while the choice is open (not the base's own carbons)
+        function carbonMeshes() {
+            return [atomMeshes.cAlpha, atomMeshes.cBeta, ...alphaSubs.flatMap(subMeshes), ...betaSubs.flatMap(subMeshes)]
+                .filter(m => m && m.userData.baseColor && m.userData.baseColor.getHex() === ATOM_COLORS.C);
+        }
+        function pickBeta(px) {
+            raycaster.setFromCamera(new THREE.Vector2(px.x / domEl.clientWidth * 2 - 1, -(px.y / domEl.clientHeight) * 2 + 1), camera);
+            const hit = raycaster.intersectObjects(carbonMeshes(), false);
+            if (!hit.length) return null;
+            const m = hit[0].object, ob = otherBetaMesh();
+            return { mesh: m, kind: m === atomMeshes.cBeta ? 'reacting' : m === ob ? 'other' : m === atomMeshes.cAlpha ? 'alpha' : 'far' };
+        }
+        function chooseBeta(which) {
+            const hof = currentBase === 'tbuo';
+            if (which === 'reacting') {
+                betaChosen = true; betaKeep = true; betaRot0 = rotationDeg;      // the green message stays until the β-carbon has actually been rotated
+                setBetaPanel('right', hof
+                    ? 'Correct! The bulky tert-butoxide removes the more accessible β-H, on the less hindered β-carbon (Hofmann). Now rotate the β-carbon into the reactive conformation and run the reaction.'
+                    : 'Correct! Hydride is small, so it removes the β-H on the more substituted β-carbon (Zaitsev). Now rotate the β-carbon into the reactive conformation and run the reaction.');
+            } else if (which === 'alpha') {
+                setBetaPanel('wrong', 'That is the α-carbon: it carries the leaving group (Br). Click a β-carbon, a carbon directly attached to it.');
+            } else if (which === 'far') {
+                setBetaPanel('wrong', 'That carbon is not next to the carbon bearing Br. Click a β-carbon, a carbon directly attached to the α-carbon.');
+            } else {
+                setBetaPanel('wrong', hof
+                    ? 'Not quite. tert-Butoxide is bulky, so it removes the most accessible β-H. Which β-carbon is less hindered?'
+                    : 'Not quite. Hydride is a small base, so it favors the more stable, more substituted alkene (Zaitsev). Which β-carbon is more substituted?');
+            }
+        }
+        function blockedByGate() {      // called when the user tries to run the reaction before choosing
+            if (!gateOn()) return false;
+            setBetaPanel('wrong', 'First click the β-carbon that is most likely to react.');
+            return true;
+        }
+
         // ---- Practice questions: major product for (3R,4R) / (3R,4S)-3-bromo-4-methylhexane with NaH or t-BuOK ----
         // Four questions (substrate x base). Hydride (small base) -> Zaitsev alkene, stereospecific: (3R,4R) gives (E)-3-methylhex-3-ene, (3R,4S) gives (Z). tert-Butoxide -> Hofmann alkene, (E)-4-methylhex-2-ene is major.
         const QUIZ_PROMPT = 'Predict the MAJOR product in the reaction above. You can use the simulation to help visualize how the product forms.';
@@ -1652,6 +1721,13 @@ Br</text>
         }));
 
         function updateGlowAndLabels(now) {
+            if (betaKeep) {
+                let dd = Math.abs(normDeg(rotationDeg - betaRot0)); if (dd > 180) dd = 360 - dd;
+                if (dd > 3 || reactionProgress > 0) betaKeep = false;      // the β-carbon has been turned: the prompt can go
+            }
+            if (!gateOn()) gateHover = null;
+            { const show = (gateOn() && !baseSwitch && !camTween && baseFade >= 1) || betaKeep;
+              if (show !== betaPanel.classList.contains('on')) betaPanel.classList.toggle('on', show); }
             { const Q = currentQuiz(), showQ = !!Q;
               const key = Q ? currentSubstrate + '/' + currentBase : '';
               if (key !== quizKey) {                       // substrate or base changed: show that question, unanswered
@@ -1709,6 +1785,12 @@ Br</text>
                     }
                 }
             });
+
+            // faint radiant yellow glow around the carbon the pointer is over during the β-carbon choice
+            if (gateHover && gateOn()) {
+                const hr = gateHover.userData.radius, d = 2 * Math.max(hr * (currentMode === 'BS' ? 3.0 : 1.7), hr + 0.55);
+                hoverGlow.position.copy(gateHover.position); hoverGlow.scale.set(d, d, 1); hoverGlow.visible = true;
+            } else hoverGlow.visible = false;
 
             // REACTIVE CONFORMATION label (yellow), below the substrate
             const lab = document.getElementById('reactive-label');
@@ -1889,12 +1971,19 @@ Br</text>
             if (baseSwitch) completeBaseSwitch();
             if (newBase === currentBase) return;
             blockedHintActive = false;
+            betaChosen = !isDmh(); betaMsgUntil = 0; betaKeep = false; setBetaPanel('ask', BETA_PROMPT); setLabelsOn(!isDmh());
             isPlaying = false;
             document.getElementById('btn-play').innerHTML = PLAY_ICON;
             if (typeof endDrag === 'function') endDrag();
             shiftTween = null; camTween = null;
             baseSwitch = { phase: 'out', start: performance.now(), newBase, target: null };
         }
+        window.addEventListener('pointermove', (e) => {      // pointer cursor over a β-carbon while the choice is open
+            if (!gateOn() || baseSwitch || drag || viewDrag || e.target !== domEl) { gateHover = null; return; }
+            const w = pickBeta(pointerPx(e));
+            gateHover = w ? w.mesh : null;
+            domEl.style.cursor = w ? 'pointer' : '';
+        });
         function completeBaseSwitch() {     // jump to the end state of an animation in progress
             const bs = baseSwitch; baseSwitch = null;
             if (bs.phase === 'out') swapBaseNow(bs.newBase);
@@ -2080,6 +2169,7 @@ Br</text>
         const slider = document.getElementById('reaction-slider');
         slider.addEventListener('input', (e) => {
             if (baseSwitch) { e.target.value = reactionProgress; return; }
+            if (blockedByGate()) { e.target.value = 0; reactionProgress = 0; return; }
             reactionProgress = parseFloat(e.target.value);
             if (reactionProgress > 0 && getAntiIndex() < 0) {
                 // E2 requires an anti-periplanar beta-H
@@ -2094,6 +2184,7 @@ Br</text>
 
         document.getElementById('btn-play').addEventListener('click', () => {
             if (baseSwitch) return;
+            if (blockedByGate()) return;
             if (reactionProgress >= 1) reactionProgress = 0;
             if (reactionProgress <= 0 && getAntiIndex() < 0) {
                 showBlockedHint();   // E2 requires an anti-periplanar beta-H
@@ -2141,6 +2232,7 @@ Br</text>
             playDirection = 1;
             rotationDeg = initialRotation();
             glow = 0; blockedHintActive = false;
+            resetBetaGate();
             if (typeof endDrag === 'function') endDrag();
             document.getElementById('reaction-slider').value = 0;
             document.getElementById('btn-play').innerHTML = PLAY_ICON;
@@ -2166,7 +2258,7 @@ Br</text>
         domEl.style.touchAction = 'none';
         let drag = null;
 
-        const canDragNow = () => reactionProgress === 0 && !isPlaying && !baseSwitch;
+        const canDragNow = () => reactionProgress === 0 && !isPlaying && !baseSwitch && !gateOn();
         const c3Meshes = () => betaSubs.flatMap(subMeshes);
         const pointerPx = (e) => {
             const r = domEl.getBoundingClientRect();
@@ -2227,6 +2319,10 @@ Br</text>
 
         let viewDrag = null;
         document.getElementById('canvas-container').addEventListener('pointerdown', (e) => {
+            if (e.button === 0 && gateOn() && !baseSwitch) {
+                const w = pickBeta(pointerPx(e));
+                if (w) { chooseBeta(w.kind); e.stopPropagation(); e.preventDefault(); return; }
+            }
             if (e.button === 0 && canDragNow()) {
                 const px = pointerPx(e);
                 const m = pickC3(px);
