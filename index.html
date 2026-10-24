@@ -2319,7 +2319,15 @@
         const instrKey = () => isE1() ? 'e1' + currentSubstrate : currentSubstrate;
         const instrModal = document.getElementById('instr-modal'), instrSeen = new Set();
         let instrOpen = false;
+        // the instructions panel always sits just above the reaction slider (never over it); the practice-question panel (z-index 24) stays on top of it
+        function placeInstr() {
+            const r = document.getElementById('bottom-panel').getBoundingClientRect(), need = Math.max(62, window.innerHeight - r.top + 12);
+            instrModal.style.bottom = need + 'px';
+            document.getElementById('instr-card').style.maxHeight = Math.max(120, window.innerHeight - need - 90) + 'px';
+        }
+        window.addEventListener('resize', () => { if (instrOpen) placeInstr(); });
         function openInstr() {
+            placeInstr();
             document.getElementById('instr-text').innerHTML = ital(instrText());
             instrModal.classList.add('open'); instrOpen = true;
         }
@@ -2410,6 +2418,7 @@
         }
 
         function updateGlowAndLabels(now) {
+            if (instrOpen) placeInstr();
             if (!zoomDragging) {         // keep the zoom slider in step with the view (scroll wheel, preset views, automatic fitting)
                 const zv = zoomToValue(camera.position.distanceTo(controls.target));
                 if (Math.abs(parseFloat(zoomSlider.value) - zv) > 0.002) zoomSlider.value = zv;
