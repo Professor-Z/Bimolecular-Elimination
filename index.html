@@ -36,8 +36,12 @@
         #btn-predict:hover { background: #ef4444; }
         #beta-panel { position: fixed; right: 16px; top: 148px; z-index: 24; width: 18rem; padding: 0.8rem 1rem; border-radius: 0.75rem; text-align: center; font-size: 0.9rem; font-weight: 700; line-height: 1.35;
             background: rgba(30,41,59,0.92); border: 1.5px solid #facc15; color: #fef9c3; box-shadow: 0 0 16px rgba(250,204,21,0.5); opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s; }
+        .bp-row { display: flex; gap: 8px; justify-content: center; margin-top: 0.6rem; }
+        .bp-btn { flex: 1; padding: 5px 8px; font-size: 0.8rem; font-weight: 700; border-radius: 0.5rem; background: rgba(250,204,21,0.15); border: 1px solid currentColor; color: inherit; cursor: pointer; }
+        .bp-btn:hover { background: rgba(250,204,21,0.35); }
         #beta-panel.on { opacity: 1; visibility: visible; }
         #beta-panel.wrong { border-color: #ef4444; color: #fecaca; box-shadow: 0 0 16px rgba(239,68,68,0.55); }
+        #beta-panel.minor { border-color: #fb923c; color: #fed7aa; box-shadow: 0 0 16px rgba(251,146,60,0.6); }
         #beta-panel.right { border-color: #22c55e; color: #bbf7d0; box-shadow: 0 0 16px rgba(34,197,94,0.55); }
         #btn-play.glow { box-shadow: 0 0 10px 3px rgba(250,204,21,0.6), 0 0 24px 7px rgba(250,204,21,0.3); }
         /* Zoom: a blue ZOOM tab (text reads bottom to top) on the far right edge; hovering it slides the vertical slider out */
@@ -79,15 +83,30 @@
         #quiz-msg.wrong { color: #991b1b; background: #fee2e2; border: 1px solid #fca5a5; }
         #quiz-msg.right { color: #14532d; background: #dcfce7; border: 1px solid #22c55e; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.04em; }
         select option { background: #1e293b; color: #ffffff; }
+        .mech-select { background: transparent; border: none; outline: none; cursor: pointer; padding: 0; margin: 0 0 0 -2px; display: block; }
+        .mech-select:focus { outline: none; }
+        #e1-steps { display: none; width: 100%; margin-bottom: 0.5rem; padding: 0 0.5rem; font-size: 0.72rem; font-weight: 700; }
+        #e1-steps.on { display: flex; gap: 6px; }
+        #e1-steps div { flex: 1; text-align: center; padding-bottom: 3px; border-bottom: 2px solid #facc15; color: #fde68a; }
+        input[type=range].e1::-webkit-slider-runnable-track { background: var(--e1bg, linear-gradient(90deg, #4b5563 0, #4b5563 calc(50% - 7px), #facc15 calc(50% - 7px), #facc15 calc(50% + 7px), #4b5563 calc(50% + 7px), #4b5563 100%)); }
+        #minor-label { visibility: hidden; font-size: 19px; letter-spacing: 0.14em; padding: 6px 20px; border-radius: 9999px; background: transparent; border: 1.5px solid currentColor; }
+        #minor-label.minor { color: #fb923c; text-shadow: 0 0 6px rgba(251,146,60,0.95), 0 0 16px rgba(251,146,60,0.75), 0 0 32px rgba(251,146,60,0.5); box-shadow: 0 0 14px rgba(251,146,60,0.6); }
+        #minor-label.major { color: #60a5fa; text-shadow: 0 0 6px rgba(96,165,250,0.95), 0 0 16px rgba(96,165,250,0.75), 0 0 32px rgba(96,165,250,0.5); box-shadow: 0 0 14px rgba(96,165,250,0.6); }
+        .floating-label.chg { display: flex; align-items: center; justify-content: center; box-sizing: border-box; visibility: hidden; width: 30px; height: 30px; line-height: 0; text-align: center; font-size: 0; border-radius: 50%; background: transparent; transform: translate(-50%, -50%); }
+        #cation-charge { color: #60a5fa; border: 2px solid #60a5fa; text-shadow: 0 0 6px rgba(96,165,250,0.9); box-shadow: 0 0 8px rgba(96,165,250,0.6); }
+        #lg-charge, #base-charge { color: #ef4444; border: 2px solid #ef4444; text-shadow: 0 0 6px rgba(239,68,68,0.9); box-shadow: 0 0 8px rgba(239,68,68,0.6); }
+        #cation-label { visibility: hidden; font-size: 19px; letter-spacing: 0.14em; padding: 6px 20px; border-radius: 9999px;
+            color: #60a5fa; background: transparent; border: 1.5px solid currentColor; text-shadow: 0 0 6px rgba(96,165,250,0.95), 0 0 16px rgba(96,165,250,0.75); box-shadow: 0 0 14px rgba(96,165,250,0.6); }
         input[type=range]:disabled { opacity: 0.35; }
         input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-webkit-slider-runnable-track { cursor: not-allowed; }
         button:disabled { opacity: 0.35; cursor: not-allowed; }
         @keyframes flashWarn { 0%,100% { background: transparent; } 30% { background: rgba(239,68,68,0.35); } }
+        .floating-label:not(#blocked-hint) { transition: opacity .45s ease, visibility .45s; }
         .floating-label { position: fixed; left: 0; top: 0; z-index: 5; pointer-events: none; white-space: nowrap; opacity: 0; font-weight: 800; transform: translate(-50%, 0); }
         #reactive-label { visibility: hidden; color: #facc15; font-size: 19px; letter-spacing: 0.14em;
             text-shadow: 0 0 6px rgba(250,204,21,0.95), 0 0 16px rgba(250,204,21,0.75), 0 0 32px rgba(250,204,21,0.5); }
         #product-label { visibility: hidden; font-size: 19px; letter-spacing: 0.14em; padding: 6px 20px; border-radius: 9999px;
-            background: rgba(15,23,42,0.62); border: 1px solid currentColor; }
+            background: transparent; border: 1.5px solid currentColor; }
         #product-label.hofmann { color: #4ade80;
             text-shadow: 0 0 6px rgba(74,222,128,0.95), 0 0 16px rgba(74,222,128,0.75), 0 0 32px rgba(74,222,128,0.5);
             box-shadow: 0 0 14px rgba(74,222,128,0.6), inset 0 0 10px rgba(74,222,128,0.25); }
@@ -95,7 +114,7 @@
             text-shadow: 0 0 6px rgba(74,222,128,0.95), 0 0 16px rgba(74,222,128,0.75), 0 0 32px rgba(74,222,128,0.5);
             box-shadow: 0 0 14px rgba(74,222,128,0.6), inset 0 0 10px rgba(74,222,128,0.25); }
         #alkene-label { visibility: hidden; font-size: 19px; letter-spacing: 0.14em; padding: 6px 20px; border-radius: 9999px;
-            color: #ffffff; background: #1f7bff; border: 1px solid #7db7ff; box-shadow: 0 0 14px rgba(31,123,255,0.85), 0 0 30px rgba(31,123,255,0.5); }
+            color: #c084fc; background: transparent; border: 1.5px solid currentColor; text-shadow: 0 0 6px rgba(192,132,252,0.95), 0 0 16px rgba(192,132,252,0.75), 0 0 32px rgba(192,132,252,0.5); box-shadow: 0 0 14px rgba(192,132,252,0.6); }
         #blocked-hint { width: max-content; white-space: nowrap; text-align: center;
             color: #ff3b3b; font-size: 19px; letter-spacing: 0.14em; transition: opacity 0.3s ease;
             text-shadow: 0 0 6px rgba(255,45,45,0.9), 0 0 16px rgba(255,45,45,0.7), 0 0 32px rgba(255,45,45,0.5);
@@ -119,8 +138,11 @@
         <div id="controls-panel" class="glass-panel">
             <div class="cp-row">
                 <div class="cp-title">
-                    <h1 class="text-lg font-bold leading-tight text-blue-400">E2 Reaction</h1>
-                    <div class="text-xs font-semibold text-gray-400">Bimolecular Elimination</div>
+                    <select id="mech-select" class="mech-select text-lg font-bold leading-tight text-blue-400" aria-label="Reaction mechanism">
+                        <option value="e2">E2 Reaction</option>
+                        <option value="e1">E1 Reaction</option>
+                    </select>
+                    <div id="mech-sub" class="text-xs font-semibold text-gray-400">Bimolecular Elimination</div>
                 </div>
                 <div class="cp-group text-sm text-gray-300">
                     <span class="text-gray-400">Substrate:</span>
@@ -134,20 +156,20 @@
                 <div class="cp-group text-sm text-gray-300">
                     <span class="text-gray-400">Base:</span>
                     <select id="base-select" class="bg-slate-800 text-red-400 text-xs font-semibold rounded border border-gray-600 px-1.5 py-1 cursor-pointer focus:outline-none focus:border-blue-400">
-                        <option value="hydride">Hydride: H⁻</option>
-                        <option value="tbuo">tert-Butoxide: (CH₃)₃CO⁻</option>
+                        <option value="hydride">ethoxide: CH₃CH₂O⁻</option>
+                        <option value="tbuo">𝑡𝑒𝑟𝑡-butoxide: (CH₃)₃CO⁻</option>
                     </select>
                 </div>
                 <div class="cp-group">
                     <button id="btn-bs" class="cp-btn bg-blue-600 hover:bg-blue-500">BALL & STICK</button>
                     <button id="btn-sf" class="cp-btn bg-gray-700 hover:bg-gray-600">SPACE FILLING</button>
-                    <button id="btn-newman" class="cp-btn bg-blue-600 hover:bg-blue-500">NEWMAN PROJECTION</button>
+                    <button id="btn-newman" class="cp-btn bg-gray-700 hover:bg-gray-600">NEWMAN PROJECTION</button>
                     <button id="btn-side" class="cp-btn bg-blue-600 hover:bg-blue-500">SIDE VIEW</button>
-                    <button id="btn-labels" class="cp-btn bg-gray-700 hover:bg-gray-600">LABELS: ON</button>
+                    <button id="btn-labels" class="cp-btn bg-green-600 hover:bg-green-500">LABELS: ON</button>
                     <button id="btn-orbitals" class="cp-btn border border-purple-500 text-purple-300 hover:bg-purple-600 hover:text-white">SHOW P ORBITALS</button>
                 </div>
             </div>
-            <div id="drag-hint" class="text-xs font-semibold text-green-400 mt-2 leading-snug text-center w-full"></div>
+            <div id="drag-hint" style="display:none" class="text-xs font-semibold text-green-400 mt-2 leading-snug text-center w-full"></div>
         </div>
         <div id="controls-tab">CONTROLS</div>
     </div>
@@ -156,9 +178,10 @@
     <!-- Bottom Center Reaction Progress Controls -->
     <div id="bottom-panel" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl z-10 interactive">
         <div class="glass-panel flex flex-col items-center">
+            <div id="e1-steps"><div>1. Loss of leaving group to form carbocation</div><div>2. Deprotonation of β-hydrogen to form the product</div></div>
             <div class="flex justify-between w-full text-xs text-gray-400 mb-2 font-semibold px-2">
                 <span>Reactants</span>
-                <span>Transition State</span>
+                <span id="lab-mid">Transition State</span>
                 <span>Products</span>
             </div>
             <div class="flex items-center w-full space-x-3">
@@ -184,228 +207,227 @@
     <div id="reactive-label" class="floating-label">REACTIVE CONFORMATION</div>
     <div id="product-label" class="floating-label"></div>
     <div id="alkene-label" class="floating-label"></div>
+    <div id="cation-charge" class="floating-label chg"><svg viewBox="0 0 26 26" width="26" height="26" style="display:block;filter:drop-shadow(0 0 3px currentColor)"><path d="M7 13H19M13 7V19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></div>
+    <div id="lg-charge" class="floating-label chg"><svg viewBox="0 0 26 26" width="26" height="26" style="display:block;filter:drop-shadow(0 0 3px currentColor)"><path d="M7 13H19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></div>
+    <div id="base-charge" class="floating-label chg"><svg viewBox="0 0 26 26" width="26" height="26" style="display:block;filter:drop-shadow(0 0 3px currentColor)"><path d="M7 13H19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></div>
+    <div id="cation-label" class="floating-label">CARBOCATION INTERMEDIATE</div>
+    <div id="minor-label" class="floating-label">MAJOR</div>
     <!-- Practice question (3R,4R substrate with hydride) -->
     <button id="btn-predict" style="display:none">PREDICT THE MAJOR PRODUCT</button>
     <div id="quiz-modal">
         <div id="quiz-card">
             <button id="quiz-close" aria-label="Close">&times;</button>
-            <svg class="quiz-svg" id="qs-R-h" viewBox="0 30 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none">
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4401.93 L 1642.5,4388.07 L 1891.92,4244.07 L 1891.92,4257.93 L 1642.5,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1891.92,4257.93 L 1891.92,4244.07 L 2141.33,4388.07 L 2141.33,4401.93 L 1891.92,4257.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4388.07 L 1642.5,4401.93 L 1393.09,4257.93 L 1393.09,4244.07 L 1642.5,4388.07 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 2141.33,4401.93 L 2141.33,4388.07 L 2387.75,4245.8 L 2393.75,4256.2 L 2141.33,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1393.09,4244.07 L 1393.09,4257.93 L 1146.67,4400.2 L 1140.67,4389.8 L 1393.09,4244.07 Z " />
-<text x="0" y="0" stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 48.361 69.2)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >
-Br</text>
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1897.92,4201.09 L 1885.92,4201.09 L 1883.67,4189.09 L 1900.16,4189.09 L 1897.92,4201.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1908.89,4142.5 L 1874.94,4142.5 L 1872.7,4130.5 L 1911.13,4130.5 L 1908.89,4142.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1919.86,4083.91 L 1863.97,4083.91 L 1861.73,4071.91 L 1922.1,4071.91 L 1919.86,4083.91 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1636.5,4445.06 L 1648.5,4445.06 L 1649.72,4457.06 L 1635.28,4457.06 L 1636.5,4445.06 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1630.76,4501.55 L 1654.24,4501.55 L 1655.46,4513.55 L 1629.54,4513.55 L 1630.76,4501.55 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1625.02,4558.03 L 1659.98,4558.03 L 1661.2,4570.03 L 1623.8,4570.03 L 1625.02,4558.03 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1619.27,4614.52 L 1665.73,4614.52 L 1666.95,4626.52 L 1618.05,4626.52 L 1619.27,4614.52 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1613.53,4671 L 1671.47,4671 L 1672.69,4683 L 1612.31,4683 L 1613.53,4671 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3716.94,4311 L 2640,4311 L 2640,4299 L 3716.94,4299 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<path stroke="#000000" stroke-width="1" fill="none" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<text x="0" y="0" stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 125.667 77.3)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >
-NaH</text>
-
-
-
-
-
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4583.79,3854.88 L 4577.79,3851.42 L 4577.79,3844.49 L 4827.21,3700.49 L 4827.21,3714.34 L 4583.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4632.63,3886.54 L 4626.63,3876.15 L 4824.21,3762.08 L 4830.21,3772.47 L 4632.63,3886.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4827.21,3714.34 L 4827.21,3700.49 L 5076.62,3844.49 L 5076.62,3858.34 L 4827.21,3714.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4577.79,3844.49 L 4577.79,3851.42 L 4571.79,3854.88 L 4328.38,3714.34 L 4328.38,3700.49 L 4577.79,3844.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 5076.62,3858.34 L 5076.62,3844.49 L 5323.04,3702.22 L 5329.04,3712.61 L 5076.62,3858.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4328.38,3700.49 L 4328.38,3714.34 L 4081.96,3856.61 L 4075.96,3846.22 L 4328.38,3700.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4571.79,3854.88 L 4577.79,3851.42 L 4583.79,3854.88 L 4583.79,4139.42 L 4571.79,4139.42 L 4571.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4486.29,4937.43 L 4480.29,4933.96 L 4480.29,4927.04 L 4729.71,4783.04 L 4729.71,4796.89 L 4486.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4535.13,4969.09 L 4529.13,4958.7 L 4726.71,4844.63 L 4732.71,4855.02 L 4535.13,4969.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4729.71,4796.89 L 4729.71,4783.04 L 4979.12,4927.04 L 4979.12,4940.89 L 4729.71,4796.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4480.29,4927.04 L 4480.29,4933.96 L 4474.29,4937.43 L 4227.88,4795.16 L 4233.88,4784.77 L 4480.29,4927.04 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4979.12,4940.89 L 4979.12,4927.04 L 5225.54,4784.77 L 5231.54,4795.16 L 4979.12,4940.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,4937.43 L 4480.29,4933.96 L 4486.29,4937.43 L 4486.29,5225.43 L 4474.29,5218.5 L 4474.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,5218.5 L 4486.29,5225.43 L 4233.88,5371.16 L 4227.88,5360.77 L 4474.29,5218.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3868.39 L 6317.79,3854.54 L 6567.21,3710.54 L 6567.21,3724.39 L 6317.79,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6567.21,3724.39 L 6567.21,3710.54 L 6816.62,3854.54 L 6816.62,3868.39 L 6567.21,3724.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6590.13,3677.77 L 6596.13,3667.37 L 6819.62,3796.41 L 6813.62,3806.8 L 6590.13,3677.77 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3854.54 L 6317.79,3868.39 L 6068.38,3724.39 L 6068.38,3710.54 L 6317.79,3854.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6816.62,3868.39 L 6816.62,3854.54 L 7063.04,3712.27 L 7069.04,3722.66 L 6816.62,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6068.38,3710.54 L 6068.38,3724.39 L 5821.96,3866.66 L 5815.96,3856.27 L 6068.38,3710.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4948.39 L 6415.29,4934.54 L 6664.71,4790.54 L 6664.71,4804.39 L 6415.29,4948.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6664.71,4804.39 L 6664.71,4790.54 L 6920.12,4938 L 6908.12,4944.93 L 6664.71,4804.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6661.71,4862.52 L 6667.71,4852.13 L 6865.28,4966.2 L 6859.28,4976.59 L 6661.71,4862.52 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4934.54 L 6415.29,4948.39 L 6165.88,4804.39 L 6165.88,4790.54 L 6415.29,4934.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6165.88,4790.54 L 6165.88,4804.39 L 5919.46,4946.66 L 5913.46,4936.27 L 6165.88,4790.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6908.12,4944.93 L 6920.12,4938 L 6920.12,5229.46 L 6908.12,5229.46 L 6908.12,4944.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6311.79,3911.53 L 6323.79,3911.53 L 6325.01,3923.53 L 6310.57,3923.53 L 6311.79,3911.53 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6306.05,3968.01 L 6329.53,3968.01 L 6330.75,3980.01 L 6304.83,3980.01 L 6306.05,3968.01 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6300.31,4024.5 L 6335.28,4024.5 L 6336.5,4036.5 L 6299.09,4036.5 L 6300.31,4024.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6294.57,4080.98 L 6341.02,4080.98 L 6342.24,4092.98 L 6293.35,4092.98 L 6294.57,4080.98 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6288.82,4137.46 L 6346.76,4137.46 L 6347.98,4149.46 L 6287.6,4149.46 L 6288.82,4137.46 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6409.29,4991.53 L 6421.29,4991.53 L 6422.51,5003.53 L 6408.07,5003.53 L 6409.29,4991.53 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6403.55,5048.01 L 6427.03,5048.01 L 6428.25,5060.01 L 6402.33,5060.01 L 6403.55,5048.01 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6397.81,5104.5 L 6432.78,5104.5 L 6434,5116.5 L 6396.59,5116.5 L 6397.81,5104.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6392.07,5160.98 L 6438.52,5160.98 L 6439.74,5172.98 L 6390.85,5172.98 L 6392.07,5160.98 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6386.32,5217.46 L 6444.26,5217.46 L 6445.48,5229.46 L 6385.1,5229.46 L 6386.32,5217.46 Z " />
-<rect class="q-opt" data-opt="TL" x="190" y="36" width="104" height="50" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="36" width="98" height="50" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="96" width="104" height="62" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="96" width="98" height="62" rx="5"/></svg><svg class="quiz-svg" id="qs-R-t" viewBox="0 30 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none">
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4401.93 L 1642.5,4388.07 L 1891.92,4244.07 L 1891.92,4257.93 L 1642.5,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1891.92,4257.93 L 1891.92,4244.07 L 2141.33,4388.07 L 2141.33,4401.93 L 1891.92,4257.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4388.07 L 1642.5,4401.93 L 1393.09,4257.93 L 1393.09,4244.07 L 1642.5,4388.07 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 2141.33,4401.93 L 2141.33,4388.07 L 2387.75,4245.8 L 2393.75,4256.2 L 2141.33,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1393.09,4244.07 L 1393.09,4257.93 L 1146.67,4400.2 L 1140.67,4389.8 L 1393.09,4244.07 Z " />
-<text x="0" y="0" stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 48.361 69.2)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >
-Br</text>
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1897.92,4201.09 L 1885.92,4201.09 L 1883.67,4189.09 L 1900.16,4189.09 L 1897.92,4201.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1908.89,4142.5 L 1874.94,4142.5 L 1872.7,4130.5 L 1911.13,4130.5 L 1908.89,4142.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1919.86,4083.91 L 1863.97,4083.91 L 1861.73,4071.91 L 1922.1,4071.91 L 1919.86,4083.91 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1636.5,4445.06 L 1648.5,4445.06 L 1649.72,4457.06 L 1635.28,4457.06 L 1636.5,4445.06 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1630.76,4501.55 L 1654.24,4501.55 L 1655.46,4513.55 L 1629.54,4513.55 L 1630.76,4501.55 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1625.02,4558.03 L 1659.98,4558.03 L 1661.2,4570.03 L 1623.8,4570.03 L 1625.02,4558.03 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1619.27,4614.52 L 1665.73,4614.52 L 1666.95,4626.52 L 1618.05,4626.52 L 1619.27,4614.52 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1613.53,4671 L 1671.47,4671 L 1672.69,4683 L 1612.31,4683 L 1613.53,4671 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3716.94,4311 L 2640,4311 L 2640,4299 L 3716.94,4299 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<path stroke="#000000" stroke-width="1" fill="none" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<text x="0" y="0" stroke="none" fill="#000000" text-anchor="middle" transform="matrix(0.0666667 0 0 0.0666667 142 77.3)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >t-BuOK</text>
-
-
-
-
-
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4583.79,3854.88 L 4577.79,3851.42 L 4577.79,3844.49 L 4827.21,3700.49 L 4827.21,3714.34 L 4583.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4632.63,3886.54 L 4626.63,3876.15 L 4824.21,3762.08 L 4830.21,3772.47 L 4632.63,3886.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4827.21,3714.34 L 4827.21,3700.49 L 5076.62,3844.49 L 5076.62,3858.34 L 4827.21,3714.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4577.79,3844.49 L 4577.79,3851.42 L 4571.79,3854.88 L 4328.38,3714.34 L 4328.38,3700.49 L 4577.79,3844.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 5076.62,3858.34 L 5076.62,3844.49 L 5323.04,3702.22 L 5329.04,3712.61 L 5076.62,3858.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4328.38,3700.49 L 4328.38,3714.34 L 4081.96,3856.61 L 4075.96,3846.22 L 4328.38,3700.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4571.79,3854.88 L 4577.79,3851.42 L 4583.79,3854.88 L 4583.79,4139.42 L 4571.79,4139.42 L 4571.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4486.29,4937.43 L 4480.29,4933.96 L 4480.29,4927.04 L 4729.71,4783.04 L 4729.71,4796.89 L 4486.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4535.13,4969.09 L 4529.13,4958.7 L 4726.71,4844.63 L 4732.71,4855.02 L 4535.13,4969.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4729.71,4796.89 L 4729.71,4783.04 L 4979.12,4927.04 L 4979.12,4940.89 L 4729.71,4796.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4480.29,4927.04 L 4480.29,4933.96 L 4474.29,4937.43 L 4227.88,4795.16 L 4233.88,4784.77 L 4480.29,4927.04 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4979.12,4940.89 L 4979.12,4927.04 L 5225.54,4784.77 L 5231.54,4795.16 L 4979.12,4940.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,4937.43 L 4480.29,4933.96 L 4486.29,4937.43 L 4486.29,5225.43 L 4474.29,5218.5 L 4474.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,5218.5 L 4486.29,5225.43 L 4233.88,5371.16 L 4227.88,5360.77 L 4474.29,5218.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3868.39 L 6317.79,3854.54 L 6567.21,3710.54 L 6567.21,3724.39 L 6317.79,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6567.21,3724.39 L 6567.21,3710.54 L 6816.62,3854.54 L 6816.62,3868.39 L 6567.21,3724.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6590.13,3677.77 L 6596.13,3667.37 L 6819.62,3796.41 L 6813.62,3806.8 L 6590.13,3677.77 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3854.54 L 6317.79,3868.39 L 6068.38,3724.39 L 6068.38,3710.54 L 6317.79,3854.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6816.62,3868.39 L 6816.62,3854.54 L 7063.04,3712.27 L 7069.04,3722.66 L 6816.62,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6068.38,3710.54 L 6068.38,3724.39 L 5821.96,3866.66 L 5815.96,3856.27 L 6068.38,3710.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4948.39 L 6415.29,4934.54 L 6664.71,4790.54 L 6664.71,4804.39 L 6415.29,4948.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6664.71,4804.39 L 6664.71,4790.54 L 6920.12,4938 L 6908.12,4944.93 L 6664.71,4804.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6661.71,4862.52 L 6667.71,4852.13 L 6865.28,4966.2 L 6859.28,4976.59 L 6661.71,4862.52 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4934.54 L 6415.29,4948.39 L 6165.88,4804.39 L 6165.88,4790.54 L 6415.29,4934.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6165.88,4790.54 L 6165.88,4804.39 L 5919.46,4946.66 L 5913.46,4936.27 L 6165.88,4790.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6908.12,4944.93 L 6920.12,4938 L 6920.12,5229.46 L 6908.12,5229.46 L 6908.12,4944.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6311.79,3911.53 L 6323.79,3911.53 L 6325.01,3923.53 L 6310.57,3923.53 L 6311.79,3911.53 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6306.05,3968.01 L 6329.53,3968.01 L 6330.75,3980.01 L 6304.83,3980.01 L 6306.05,3968.01 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6300.31,4024.5 L 6335.28,4024.5 L 6336.5,4036.5 L 6299.09,4036.5 L 6300.31,4024.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6294.57,4080.98 L 6341.02,4080.98 L 6342.24,4092.98 L 6293.35,4092.98 L 6294.57,4080.98 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6288.82,4137.46 L 6346.76,4137.46 L 6347.98,4149.46 L 6287.6,4149.46 L 6288.82,4137.46 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6409.29,4991.53 L 6421.29,4991.53 L 6422.51,5003.53 L 6408.07,5003.53 L 6409.29,4991.53 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6403.55,5048.01 L 6427.03,5048.01 L 6428.25,5060.01 L 6402.33,5060.01 L 6403.55,5048.01 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6397.81,5104.5 L 6432.78,5104.5 L 6434,5116.5 L 6396.59,5116.5 L 6397.81,5104.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6392.07,5160.98 L 6438.52,5160.98 L 6439.74,5172.98 L 6390.85,5172.98 L 6392.07,5160.98 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6386.32,5217.46 L 6444.26,5217.46 L 6445.48,5229.46 L 6385.1,5229.46 L 6386.32,5217.46 Z " />
-<rect class="q-opt" data-opt="TL" x="190" y="36" width="104" height="50" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="36" width="98" height="50" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="96" width="104" height="62" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="96" width="98" height="62" rx="5"/></svg><svg class="quiz-svg" id="qs-S-h" viewBox="0 30 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none">
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4401.93 L 1642.5,4388.07 L 1891.92,4244.07 L 1891.92,4257.93 L 1642.5,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1891.92,4257.93 L 1891.92,4244.07 L 2141.33,4388.07 L 2141.33,4401.93 L 1891.92,4257.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4388.07 L 1642.5,4401.93 L 1393.09,4257.93 L 1393.09,4244.07 L 1642.5,4388.07 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 2141.33,4401.93 L 2141.33,4388.07 L 2387.75,4245.8 L 2393.75,4256.2 L 2141.33,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1393.09,4244.07 L 1393.09,4257.93 L 1146.67,4400.2 L 1140.67,4389.8 L 1393.09,4244.07 Z " />
-<text x="0" y="0" stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 48.361 69.2)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >
-Br</text>
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1897.92,4201.09 L 1885.92,4201.09 L 1883.67,4189.09 L 1900.16,4189.09 L 1897.92,4201.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1908.89,4142.5 L 1874.94,4142.5 L 1872.7,4130.5 L 1911.13,4130.5 L 1908.89,4142.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1919.86,4083.91 L 1863.97,4083.91 L 1861.73,4071.91 L 1922.1,4071.91 L 1919.86,4083.91 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3716.94,4311 L 2640,4311 L 2640,4299 L 3716.94,4299 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<path stroke="#000000" stroke-width="1" fill="none" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<text x="0" y="0" stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 125.667 77.3)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >
-NaH</text>
-
-
-
-
-
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4583.79,3854.88 L 4577.79,3851.42 L 4577.79,3844.49 L 4827.21,3700.49 L 4827.21,3714.34 L 4583.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4632.63,3886.54 L 4626.63,3876.15 L 4824.21,3762.08 L 4830.21,3772.47 L 4632.63,3886.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4827.21,3714.34 L 4827.21,3700.49 L 5076.62,3844.49 L 5076.62,3858.34 L 4827.21,3714.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4577.79,3844.49 L 4577.79,3851.42 L 4571.79,3854.88 L 4328.38,3714.34 L 4328.38,3700.49 L 4577.79,3844.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 5076.62,3858.34 L 5076.62,3844.49 L 5323.04,3702.22 L 5329.04,3712.61 L 5076.62,3858.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4328.38,3700.49 L 4328.38,3714.34 L 4081.96,3856.61 L 4075.96,3846.22 L 4328.38,3700.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4571.79,3854.88 L 4577.79,3851.42 L 4583.79,3854.88 L 4583.79,4139.42 L 4571.79,4139.42 L 4571.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4486.29,4937.43 L 4480.29,4933.96 L 4480.29,4927.04 L 4729.71,4783.04 L 4729.71,4796.89 L 4486.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4535.13,4969.09 L 4529.13,4958.7 L 4726.71,4844.63 L 4732.71,4855.02 L 4535.13,4969.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4729.71,4796.89 L 4729.71,4783.04 L 4979.12,4927.04 L 4979.12,4940.89 L 4729.71,4796.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4480.29,4927.04 L 4480.29,4933.96 L 4474.29,4937.43 L 4227.88,4795.16 L 4233.88,4784.77 L 4480.29,4927.04 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4979.12,4940.89 L 4979.12,4927.04 L 5225.54,4784.77 L 5231.54,4795.16 L 4979.12,4940.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,4937.43 L 4480.29,4933.96 L 4486.29,4937.43 L 4486.29,5225.43 L 4474.29,5218.5 L 4474.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,5218.5 L 4486.29,5225.43 L 4233.88,5371.16 L 4227.88,5360.77 L 4474.29,5218.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3868.39 L 6317.79,3854.54 L 6567.21,3710.54 L 6567.21,3724.39 L 6317.79,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6567.21,3724.39 L 6567.21,3710.54 L 6816.62,3854.54 L 6816.62,3868.39 L 6567.21,3724.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6590.13,3677.77 L 6596.13,3667.37 L 6819.62,3796.41 L 6813.62,3806.8 L 6590.13,3677.77 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3854.54 L 6317.79,3868.39 L 6068.38,3724.39 L 6068.38,3710.54 L 6317.79,3854.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6816.62,3868.39 L 6816.62,3854.54 L 7063.04,3712.27 L 7069.04,3722.66 L 6816.62,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6068.38,3710.54 L 6068.38,3724.39 L 5821.96,3866.66 L 5815.96,3856.27 L 6068.38,3710.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4948.39 L 6415.29,4934.54 L 6664.71,4790.54 L 6664.71,4804.39 L 6415.29,4948.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6664.71,4804.39 L 6664.71,4790.54 L 6920.12,4938 L 6908.12,4944.93 L 6664.71,4804.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6661.71,4862.52 L 6667.71,4852.13 L 6865.28,4966.2 L 6859.28,4976.59 L 6661.71,4862.52 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4934.54 L 6415.29,4948.39 L 6165.88,4804.39 L 6165.88,4790.54 L 6415.29,4934.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6165.88,4790.54 L 6165.88,4804.39 L 5919.46,4946.66 L 5913.46,4936.27 L 6165.88,4790.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6908.12,4944.93 L 6920.12,4938 L 6920.12,5229.46 L 6908.12,5229.46 L 6908.12,4944.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4401.9 L 1610,4690 L 1675,4690 Z" /><path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3868.39 L 6286,4152 L 6349.6,4152 Z" /><path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4948.39 L 6383.5,5232 L 6447,5232 Z" /><rect class="q-opt" data-opt="TL" x="190" y="36" width="104" height="50" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="36" width="98" height="50" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="96" width="104" height="62" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="96" width="98" height="62" rx="5"/></svg><svg class="quiz-svg" id="qs-S-t" viewBox="0 30 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none">
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4401.93 L 1642.5,4388.07 L 1891.92,4244.07 L 1891.92,4257.93 L 1642.5,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1891.92,4257.93 L 1891.92,4244.07 L 2141.33,4388.07 L 2141.33,4401.93 L 1891.92,4257.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4388.07 L 1642.5,4401.93 L 1393.09,4257.93 L 1393.09,4244.07 L 1642.5,4388.07 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 2141.33,4401.93 L 2141.33,4388.07 L 2387.75,4245.8 L 2393.75,4256.2 L 2141.33,4401.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1393.09,4244.07 L 1393.09,4257.93 L 1146.67,4400.2 L 1140.67,4389.8 L 1393.09,4244.07 Z " />
-<text x="0" y="0" stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 48.361 69.2)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >
-Br</text>
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1897.92,4201.09 L 1885.92,4201.09 L 1883.67,4189.09 L 1900.16,4189.09 L 1897.92,4201.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1908.89,4142.5 L 1874.94,4142.5 L 1872.7,4130.5 L 1911.13,4130.5 L 1908.89,4142.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1919.86,4083.91 L 1863.97,4083.91 L 1861.73,4071.91 L 1922.1,4071.91 L 1919.86,4083.91 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3716.94,4311 L 2640,4311 L 2640,4299 L 3716.94,4299 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<path stroke="#000000" stroke-width="1" fill="none" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 3820.93,4305 C 3820.93,4305 3700.94,4336 3700.94,4336 C 3700.94,4336 3715.94,4318.56 3715.94,4305 C 3715.94,4291 3700.94,4273 3700.94,4273 C 3700.94,4273 3820.93,4305 3820.93,4305 C 3820.93,4305 3820.93,4305 3820.93,4305 " />
-<text x="0" y="0" stroke="none" fill="#000000" text-anchor="middle" transform="matrix(0.0666667 0 0 0.0666667 142 77.3)" font-style="normal" font-weight="normal" font-size="200px" font-family="Arial" >t-BuOK</text>
-
-
-
-
-
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4583.79,3854.88 L 4577.79,3851.42 L 4577.79,3844.49 L 4827.21,3700.49 L 4827.21,3714.34 L 4583.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4632.63,3886.54 L 4626.63,3876.15 L 4824.21,3762.08 L 4830.21,3772.47 L 4632.63,3886.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4827.21,3714.34 L 4827.21,3700.49 L 5076.62,3844.49 L 5076.62,3858.34 L 4827.21,3714.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4577.79,3844.49 L 4577.79,3851.42 L 4571.79,3854.88 L 4328.38,3714.34 L 4328.38,3700.49 L 4577.79,3844.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 5076.62,3858.34 L 5076.62,3844.49 L 5323.04,3702.22 L 5329.04,3712.61 L 5076.62,3858.34 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4328.38,3700.49 L 4328.38,3714.34 L 4081.96,3856.61 L 4075.96,3846.22 L 4328.38,3700.49 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4571.79,3854.88 L 4577.79,3851.42 L 4583.79,3854.88 L 4583.79,4139.42 L 4571.79,4139.42 L 4571.79,3854.88 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4486.29,4937.43 L 4480.29,4933.96 L 4480.29,4927.04 L 4729.71,4783.04 L 4729.71,4796.89 L 4486.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4535.13,4969.09 L 4529.13,4958.7 L 4726.71,4844.63 L 4732.71,4855.02 L 4535.13,4969.09 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4729.71,4796.89 L 4729.71,4783.04 L 4979.12,4927.04 L 4979.12,4940.89 L 4729.71,4796.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4480.29,4927.04 L 4480.29,4933.96 L 4474.29,4937.43 L 4227.88,4795.16 L 4233.88,4784.77 L 4480.29,4927.04 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4979.12,4940.89 L 4979.12,4927.04 L 5225.54,4784.77 L 5231.54,4795.16 L 4979.12,4940.89 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,4937.43 L 4480.29,4933.96 L 4486.29,4937.43 L 4486.29,5225.43 L 4474.29,5218.5 L 4474.29,4937.43 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 4474.29,5218.5 L 4486.29,5225.43 L 4233.88,5371.16 L 4227.88,5360.77 L 4474.29,5218.5 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3868.39 L 6317.79,3854.54 L 6567.21,3710.54 L 6567.21,3724.39 L 6317.79,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6567.21,3724.39 L 6567.21,3710.54 L 6816.62,3854.54 L 6816.62,3868.39 L 6567.21,3724.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6590.13,3677.77 L 6596.13,3667.37 L 6819.62,3796.41 L 6813.62,3806.8 L 6590.13,3677.77 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3854.54 L 6317.79,3868.39 L 6068.38,3724.39 L 6068.38,3710.54 L 6317.79,3854.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6816.62,3868.39 L 6816.62,3854.54 L 7063.04,3712.27 L 7069.04,3722.66 L 6816.62,3868.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6068.38,3710.54 L 6068.38,3724.39 L 5821.96,3866.66 L 5815.96,3856.27 L 6068.38,3710.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4948.39 L 6415.29,4934.54 L 6664.71,4790.54 L 6664.71,4804.39 L 6415.29,4948.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6664.71,4804.39 L 6664.71,4790.54 L 6920.12,4938 L 6908.12,4944.93 L 6664.71,4804.39 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6661.71,4862.52 L 6667.71,4852.13 L 6865.28,4966.2 L 6859.28,4976.59 L 6661.71,4862.52 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4934.54 L 6415.29,4948.39 L 6165.88,4804.39 L 6165.88,4790.54 L 6415.29,4934.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6165.88,4790.54 L 6165.88,4804.39 L 5919.46,4946.66 L 5913.46,4936.27 L 6165.88,4790.54 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6908.12,4944.93 L 6920.12,4938 L 6920.12,5229.46 L 6908.12,5229.46 L 6908.12,4944.93 Z " />
-<path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 1642.5,4401.9 L 1610,4690 L 1675,4690 Z" /><path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6317.79,3868.39 L 6286,4152 L 6349.6,4152 Z" /><path stroke="none" fill="#000000" transform="matrix(0.0666667 0 0 0.0666667 -73.3333 -200.2)" d="M 6415.29,4948.39 L 6383.5,5232 L 6447,5232 Z" /><rect class="q-opt" data-opt="TL" x="190" y="36" width="104" height="50" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="36" width="98" height="50" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="96" width="104" height="62" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="96" width="98" height="62" rx="5"/></svg>
+            <svg class="quiz-svg" id="qs-R-h" viewBox="0 0 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none"><g stroke="#000" stroke-width="1.6" stroke-linecap="round" fill="none">
+<line x1="13.0" y1="79.2" x2="28.6" y2="70.2"/>
+<line x1="28.6" y1="70.2" x2="44.2" y2="79.2"/>
+<line x1="44.2" y1="79.2" x2="59.8" y2="70.2"/>
+<line x1="59.8" y1="70.2" x2="75.4" y2="79.2"/>
+<line x1="75.4" y1="79.2" x2="91.0" y2="70.2"/>
+<line x1="46.3" y1="83.7" x2="42.2" y2="83.7" stroke-width="1.6"/>
+<line x1="47.3" y1="88.2" x2="41.1" y2="88.2" stroke-width="1.6"/>
+<line x1="48.4" y1="92.7" x2="40.1" y2="92.7" stroke-width="1.6"/>
+<line x1="57.7" y1="66.2" x2="61.8" y2="66.2" stroke-width="1.6"/>
+<line x1="56.7" y1="62.2" x2="62.9" y2="62.2" stroke-width="1.6"/>
+<line x1="55.6" y1="58.3" x2="63.9" y2="58.3" stroke-width="1.6"/>
+<text x="59.8" y="51.3" text-anchor="middle" font-size="13" font-family="Arial" stroke="none" fill="#000">Br</text>
+<line x1="98" y1="66" x2="176" y2="66"/><path d="M176,66 l-7,-3.5 l0,7 z" fill="#000"/><text x="137" y="57" text-anchor="middle" font-size="12" font-family="Arial" stroke="none" fill="#000">NaOEt</text>
+<line x1="203.0" y1="28.5" x2="218.6" y2="19.5"/>
+<line x1="218.6" y1="19.5" x2="234.2" y2="28.5"/>
+<line x1="234.2" y1="28.5" x2="234.2" y2="46.5"/>
+<line x1="235.1" y1="30.1" x2="250.7" y2="21.1"/>
+<line x1="233.3" y1="26.9" x2="248.9" y2="17.9"/>
+<line x1="249.8" y1="19.5" x2="265.4" y2="28.5"/>
+<line x1="265.4" y1="28.5" x2="281.0" y2="19.5"/>
+<line x1="312.0" y1="28.5" x2="327.6" y2="19.5"/>
+<line x1="327.6" y1="19.5" x2="343.2" y2="28.5"/>
+<line x1="345.3" y1="33.0" x2="341.2" y2="33.0" stroke-width="1.6"/>
+<line x1="346.3" y1="37.5" x2="340.1" y2="37.5" stroke-width="1.6"/>
+<line x1="347.4" y1="42.0" x2="339.1" y2="42.0" stroke-width="1.6"/>
+<line x1="343.2" y1="28.5" x2="358.8" y2="19.5"/>
+<line x1="357.9" y1="21.1" x2="373.5" y2="30.1"/>
+<line x1="359.7" y1="17.9" x2="375.3" y2="26.9"/>
+<line x1="374.4" y1="28.5" x2="390.0" y2="19.5"/>
+<line x1="226.4" y1="88.0" x2="210.8" y2="79.0"/>
+<line x1="227.3" y1="89.6" x2="242.9" y2="80.6"/>
+<line x1="225.5" y1="86.4" x2="241.1" y2="77.4"/>
+<line x1="242.0" y1="79.0" x2="257.6" y2="88.0"/>
+<line x1="257.6" y1="88.0" x2="273.2" y2="79.0"/>
+<line x1="226.4" y1="88.0" x2="226.4" y2="106.0"/>
+<line x1="226.4" y1="106.0" x2="210.8" y2="115.0"/>
+<line x1="319.8" y1="92.5" x2="335.4" y2="83.5"/>
+<line x1="335.4" y1="83.5" x2="351.0" y2="92.5"/>
+<line x1="353.1" y1="97.0" x2="348.9" y2="97.0" stroke-width="1.6"/>
+<line x1="354.1" y1="101.5" x2="347.9" y2="101.5" stroke-width="1.6"/>
+<line x1="355.1" y1="106.0" x2="346.9" y2="106.0" stroke-width="1.6"/>
+<line x1="351.0" y1="92.5" x2="366.6" y2="83.5"/>
+<line x1="365.7" y1="85.1" x2="381.3" y2="94.1"/>
+<line x1="367.5" y1="81.9" x2="383.1" y2="90.9"/>
+<line x1="382.2" y1="92.5" x2="382.2" y2="110.5"/>
+</g><rect class="q-opt" data-opt="TL" x="190" y="4" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="4" width="98" height="58" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="68" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="68" width="98" height="58" rx="5"/></svg><svg class="quiz-svg" id="qs-R-t" viewBox="0 0 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none"><g stroke="#000" stroke-width="1.6" stroke-linecap="round" fill="none">
+<line x1="13.0" y1="79.2" x2="28.6" y2="70.2"/>
+<line x1="28.6" y1="70.2" x2="44.2" y2="79.2"/>
+<line x1="44.2" y1="79.2" x2="59.8" y2="70.2"/>
+<line x1="59.8" y1="70.2" x2="75.4" y2="79.2"/>
+<line x1="75.4" y1="79.2" x2="91.0" y2="70.2"/>
+<line x1="46.3" y1="83.7" x2="42.2" y2="83.7" stroke-width="1.6"/>
+<line x1="47.3" y1="88.2" x2="41.1" y2="88.2" stroke-width="1.6"/>
+<line x1="48.4" y1="92.7" x2="40.1" y2="92.7" stroke-width="1.6"/>
+<line x1="57.7" y1="66.2" x2="61.8" y2="66.2" stroke-width="1.6"/>
+<line x1="56.7" y1="62.2" x2="62.9" y2="62.2" stroke-width="1.6"/>
+<line x1="55.6" y1="58.3" x2="63.9" y2="58.3" stroke-width="1.6"/>
+<text x="59.8" y="51.3" text-anchor="middle" font-size="13" font-family="Arial" stroke="none" fill="#000">Br</text>
+<line x1="98" y1="66" x2="176" y2="66"/><path d="M176,66 l-7,-3.5 l0,7 z" fill="#000"/><text x="137" y="57" text-anchor="middle" font-size="12" font-family="Arial" stroke="none" fill="#000"><tspan font-style="italic">t</tspan>-BuOK</text>
+<line x1="203.0" y1="28.5" x2="218.6" y2="19.5"/>
+<line x1="218.6" y1="19.5" x2="234.2" y2="28.5"/>
+<line x1="234.2" y1="28.5" x2="234.2" y2="46.5"/>
+<line x1="235.1" y1="30.1" x2="250.7" y2="21.1"/>
+<line x1="233.3" y1="26.9" x2="248.9" y2="17.9"/>
+<line x1="249.8" y1="19.5" x2="265.4" y2="28.5"/>
+<line x1="265.4" y1="28.5" x2="281.0" y2="19.5"/>
+<line x1="312.0" y1="28.5" x2="327.6" y2="19.5"/>
+<line x1="327.6" y1="19.5" x2="343.2" y2="28.5"/>
+<line x1="345.3" y1="33.0" x2="341.2" y2="33.0" stroke-width="1.6"/>
+<line x1="346.3" y1="37.5" x2="340.1" y2="37.5" stroke-width="1.6"/>
+<line x1="347.4" y1="42.0" x2="339.1" y2="42.0" stroke-width="1.6"/>
+<line x1="343.2" y1="28.5" x2="358.8" y2="19.5"/>
+<line x1="357.9" y1="21.1" x2="373.5" y2="30.1"/>
+<line x1="359.7" y1="17.9" x2="375.3" y2="26.9"/>
+<line x1="374.4" y1="28.5" x2="390.0" y2="19.5"/>
+<line x1="226.4" y1="88.0" x2="210.8" y2="79.0"/>
+<line x1="227.3" y1="89.6" x2="242.9" y2="80.6"/>
+<line x1="225.5" y1="86.4" x2="241.1" y2="77.4"/>
+<line x1="242.0" y1="79.0" x2="257.6" y2="88.0"/>
+<line x1="257.6" y1="88.0" x2="273.2" y2="79.0"/>
+<line x1="226.4" y1="88.0" x2="226.4" y2="106.0"/>
+<line x1="226.4" y1="106.0" x2="210.8" y2="115.0"/>
+<line x1="319.8" y1="92.5" x2="335.4" y2="83.5"/>
+<line x1="335.4" y1="83.5" x2="351.0" y2="92.5"/>
+<line x1="353.1" y1="97.0" x2="348.9" y2="97.0" stroke-width="1.6"/>
+<line x1="354.1" y1="101.5" x2="347.9" y2="101.5" stroke-width="1.6"/>
+<line x1="355.1" y1="106.0" x2="346.9" y2="106.0" stroke-width="1.6"/>
+<line x1="351.0" y1="92.5" x2="366.6" y2="83.5"/>
+<line x1="365.7" y1="85.1" x2="381.3" y2="94.1"/>
+<line x1="367.5" y1="81.9" x2="383.1" y2="90.9"/>
+<line x1="382.2" y1="92.5" x2="382.2" y2="110.5"/>
+</g><rect class="q-opt" data-opt="TL" x="190" y="4" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="4" width="98" height="58" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="68" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="68" width="98" height="58" rx="5"/></svg><svg class="quiz-svg" id="qs-S-h" viewBox="0 0 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none"><g stroke="#000" stroke-width="1.6" stroke-linecap="round" fill="none">
+<line x1="13.0" y1="79.2" x2="28.6" y2="70.2"/>
+<line x1="28.6" y1="70.2" x2="44.2" y2="79.2"/>
+<line x1="44.2" y1="79.2" x2="59.8" y2="70.2"/>
+<line x1="59.8" y1="70.2" x2="75.4" y2="79.2"/>
+<line x1="75.4" y1="79.2" x2="91.0" y2="70.2"/>
+<polygon points="44.2,79.2 41.0,97.2 47.4,97.2" fill="#000" stroke="#000" stroke-width="0.6"/>
+<line x1="57.7" y1="66.2" x2="61.8" y2="66.2" stroke-width="1.6"/>
+<line x1="56.7" y1="62.2" x2="62.9" y2="62.2" stroke-width="1.6"/>
+<line x1="55.6" y1="58.3" x2="63.9" y2="58.3" stroke-width="1.6"/>
+<text x="59.8" y="51.3" text-anchor="middle" font-size="13" font-family="Arial" stroke="none" fill="#000">Br</text>
+<line x1="98" y1="66" x2="176" y2="66"/><path d="M176,66 l-7,-3.5 l0,7 z" fill="#000"/><text x="137" y="57" text-anchor="middle" font-size="12" font-family="Arial" stroke="none" fill="#000">NaOEt</text>
+<line x1="203.0" y1="28.5" x2="218.6" y2="19.5"/>
+<line x1="218.6" y1="19.5" x2="234.2" y2="28.5"/>
+<line x1="234.2" y1="28.5" x2="234.2" y2="46.5"/>
+<line x1="235.1" y1="30.1" x2="250.7" y2="21.1"/>
+<line x1="233.3" y1="26.9" x2="248.9" y2="17.9"/>
+<line x1="249.8" y1="19.5" x2="265.4" y2="28.5"/>
+<line x1="265.4" y1="28.5" x2="281.0" y2="19.5"/>
+<line x1="312.0" y1="28.5" x2="327.6" y2="19.5"/>
+<line x1="327.6" y1="19.5" x2="343.2" y2="28.5"/>
+<polygon points="343.2,28.5 340.0,46.5 346.4,46.5" fill="#000" stroke="#000" stroke-width="0.6"/>
+<line x1="343.2" y1="28.5" x2="358.8" y2="19.5"/>
+<line x1="357.9" y1="21.1" x2="373.5" y2="30.1"/>
+<line x1="359.7" y1="17.9" x2="375.3" y2="26.9"/>
+<line x1="374.4" y1="28.5" x2="390.0" y2="19.5"/>
+<line x1="226.4" y1="88.0" x2="210.8" y2="79.0"/>
+<line x1="227.3" y1="89.6" x2="242.9" y2="80.6"/>
+<line x1="225.5" y1="86.4" x2="241.1" y2="77.4"/>
+<line x1="242.0" y1="79.0" x2="257.6" y2="88.0"/>
+<line x1="257.6" y1="88.0" x2="273.2" y2="79.0"/>
+<line x1="226.4" y1="88.0" x2="226.4" y2="106.0"/>
+<line x1="226.4" y1="106.0" x2="210.8" y2="115.0"/>
+<line x1="319.8" y1="92.5" x2="335.4" y2="83.5"/>
+<line x1="335.4" y1="83.5" x2="351.0" y2="92.5"/>
+<polygon points="351.0,92.5 347.8,110.5 354.2,110.5" fill="#000" stroke="#000" stroke-width="0.6"/>
+<line x1="351.0" y1="92.5" x2="366.6" y2="83.5"/>
+<line x1="365.7" y1="85.1" x2="381.3" y2="94.1"/>
+<line x1="367.5" y1="81.9" x2="383.1" y2="90.9"/>
+<line x1="382.2" y1="92.5" x2="382.2" y2="110.5"/>
+</g><rect class="q-opt" data-opt="TL" x="190" y="4" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="4" width="98" height="58" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="68" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="68" width="98" height="58" rx="5"/></svg><svg class="quiz-svg" id="qs-S-t" viewBox="0 0 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none"><g stroke="#000" stroke-width="1.6" stroke-linecap="round" fill="none">
+<line x1="13.0" y1="79.2" x2="28.6" y2="70.2"/>
+<line x1="28.6" y1="70.2" x2="44.2" y2="79.2"/>
+<line x1="44.2" y1="79.2" x2="59.8" y2="70.2"/>
+<line x1="59.8" y1="70.2" x2="75.4" y2="79.2"/>
+<line x1="75.4" y1="79.2" x2="91.0" y2="70.2"/>
+<polygon points="44.2,79.2 41.0,97.2 47.4,97.2" fill="#000" stroke="#000" stroke-width="0.6"/>
+<line x1="57.7" y1="66.2" x2="61.8" y2="66.2" stroke-width="1.6"/>
+<line x1="56.7" y1="62.2" x2="62.9" y2="62.2" stroke-width="1.6"/>
+<line x1="55.6" y1="58.3" x2="63.9" y2="58.3" stroke-width="1.6"/>
+<text x="59.8" y="51.3" text-anchor="middle" font-size="13" font-family="Arial" stroke="none" fill="#000">Br</text>
+<line x1="98" y1="66" x2="176" y2="66"/><path d="M176,66 l-7,-3.5 l0,7 z" fill="#000"/><text x="137" y="57" text-anchor="middle" font-size="12" font-family="Arial" stroke="none" fill="#000"><tspan font-style="italic">t</tspan>-BuOK</text>
+<line x1="203.0" y1="28.5" x2="218.6" y2="19.5"/>
+<line x1="218.6" y1="19.5" x2="234.2" y2="28.5"/>
+<line x1="234.2" y1="28.5" x2="234.2" y2="46.5"/>
+<line x1="235.1" y1="30.1" x2="250.7" y2="21.1"/>
+<line x1="233.3" y1="26.9" x2="248.9" y2="17.9"/>
+<line x1="249.8" y1="19.5" x2="265.4" y2="28.5"/>
+<line x1="265.4" y1="28.5" x2="281.0" y2="19.5"/>
+<line x1="312.0" y1="28.5" x2="327.6" y2="19.5"/>
+<line x1="327.6" y1="19.5" x2="343.2" y2="28.5"/>
+<polygon points="343.2,28.5 340.0,46.5 346.4,46.5" fill="#000" stroke="#000" stroke-width="0.6"/>
+<line x1="343.2" y1="28.5" x2="358.8" y2="19.5"/>
+<line x1="357.9" y1="21.1" x2="373.5" y2="30.1"/>
+<line x1="359.7" y1="17.9" x2="375.3" y2="26.9"/>
+<line x1="374.4" y1="28.5" x2="390.0" y2="19.5"/>
+<line x1="226.4" y1="88.0" x2="210.8" y2="79.0"/>
+<line x1="227.3" y1="89.6" x2="242.9" y2="80.6"/>
+<line x1="225.5" y1="86.4" x2="241.1" y2="77.4"/>
+<line x1="242.0" y1="79.0" x2="257.6" y2="88.0"/>
+<line x1="257.6" y1="88.0" x2="273.2" y2="79.0"/>
+<line x1="226.4" y1="88.0" x2="226.4" y2="106.0"/>
+<line x1="226.4" y1="106.0" x2="210.8" y2="115.0"/>
+<line x1="319.8" y1="92.5" x2="335.4" y2="83.5"/>
+<line x1="335.4" y1="83.5" x2="351.0" y2="92.5"/>
+<polygon points="351.0,92.5 347.8,110.5 354.2,110.5" fill="#000" stroke="#000" stroke-width="0.6"/>
+<line x1="351.0" y1="92.5" x2="366.6" y2="83.5"/>
+<line x1="365.7" y1="85.1" x2="381.3" y2="94.1"/>
+<line x1="367.5" y1="81.9" x2="383.1" y2="90.9"/>
+<line x1="382.2" y1="92.5" x2="382.2" y2="110.5"/>
+</g><rect class="q-opt" data-opt="TL" x="190" y="4" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="4" width="98" height="58" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="68" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="68" width="98" height="58" rx="5"/></svg><svg class="quiz-svg" id="qs-dmb" viewBox="0 0 401 131" xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none"><g stroke="#000" stroke-width="1.6" stroke-linecap="round" fill="none">
+<line x1="69.4" y1="77.2" x2="53.8" y2="68.2"/>
+<line x1="53.8" y1="68.2" x2="38.2" y2="77.2"/>
+<line x1="38.2" y1="77.2" x2="38.2" y2="95.2"/>
+<line x1="38.2" y1="77.2" x2="22.6" y2="86.2"/>
+<line x1="38.2" y1="77.2" x2="22.6" y2="68.2"/>
+<line x1="51.7" y1="64.2" x2="55.8" y2="64.2" stroke-width="1.6"/>
+<line x1="50.7" y1="60.2" x2="56.9" y2="60.2" stroke-width="1.6"/>
+<line x1="49.6" y1="56.3" x2="57.9" y2="56.3" stroke-width="1.6"/>
+<text x="53.8" y="49.3" text-anchor="middle" font-size="13" font-family="Arial" stroke="none" fill="#000">Br</text>
+<line x1="98" y1="66" x2="176" y2="66"/><path d="M176,66 l-7,-3.5 l0,7 z" fill="#000"/><text x="137" y="57" text-anchor="middle" font-size="12" font-family="Arial" stroke="none" fill="#000">EtOH, &#916;</text>
+<line x1="264.5" y1="35.9" x2="248.9" y2="44.9"/>
+<line x1="266.3" y1="39.1" x2="250.7" y2="48.1"/>
+<line x1="249.8" y1="46.5" x2="234.2" y2="37.5"/>
+<line x1="234.2" y1="37.5" x2="234.2" y2="19.5"/>
+<line x1="234.2" y1="37.5" x2="218.6" y2="46.5"/>
+<line x1="234.2" y1="37.5" x2="218.6" y2="28.5"/>
+<line x1="360.0" y1="31.2" x2="342.0" y2="31.2"/>
+<line x1="360.0" y1="34.8" x2="342.0" y2="34.8"/>
+<line x1="360.0" y1="33.0" x2="375.6" y2="42.0"/>
+<line x1="360.0" y1="33.0" x2="375.6" y2="24.0"/>
+<line x1="342.0" y1="33.0" x2="326.4" y2="42.0"/>
+<line x1="342.0" y1="33.0" x2="326.4" y2="24.0"/>
+<line x1="281.0" y1="92.5" x2="265.4" y2="101.5"/>
+<line x1="265.4" y1="101.5" x2="256.3" y2="96.3"/>
+<line x1="243.3" y1="96.3" x2="234.2" y2="101.5"/>
+<line x1="234.2" y1="101.5" x2="234.2" y2="119.5"/>
+<line x1="234.2" y1="101.5" x2="218.6" y2="110.5"/>
+<line x1="234.2" y1="101.5" x2="218.6" y2="92.5"/>
+<line x1="218.6" y1="92.5" x2="218.6" y2="74.5"/>
+<line x1="218.6" y1="92.5" x2="203.0" y2="101.5"/>
+<text x="249.8" y="97.0" text-anchor="middle" font-size="13" font-family="Arial" stroke="none" fill="#000">O</text>
+<line x1="360.6" y1="119.5" x2="360.6" y2="101.5"/>
+<line x1="357.0" y1="119.5" x2="357.0" y2="101.5"/>
+<line x1="358.8" y1="101.5" x2="374.4" y2="92.5"/>
+<line x1="358.8" y1="101.5" x2="343.2" y2="92.5"/>
+<line x1="343.2" y1="92.5" x2="343.2" y2="74.5"/>
+<line x1="343.2" y1="92.5" x2="327.6" y2="101.5"/>
+</g><rect class="q-opt" data-opt="TL" x="190" y="4" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="TR" x="302" y="4" width="98" height="58" rx="5"/><rect class="q-opt" data-opt="BL" x="190" y="68" width="104" height="58" rx="5"/><rect class="q-opt" data-opt="BR" x="302" y="68" width="98" height="58" rx="5"/></svg>
 
             <div id="quiz-msg">Predict the MAJOR product in the reaction above. You can use the simulation to help visualize how the product forms.</div>
         </div>
@@ -608,10 +630,16 @@ Br</text>
                 const p = DMH.z, a = [groupP(p.pOrder), 'H'];
                 return { alpha: p.alphaSwap ? a.reverse() : a, alphaTags: p.alphaSwap ? ['H3', 'C2'] : ['C2', 'H3'], beta: p.beta, betaTag: 'C4', product: 'zaitsev', rot0: p.rot0 };
             }
+            if (currentSubstrate === 'dmb') {      // 3-bromo-2,2-dimethylbutane (E1 only)
+                if (e1Phase === 0) return { alpha: ['C', 'H'], beta: [['C', 0], ['C', 120], ['C', 240]], product: 'zaitsev' };      // C3 (cation) with C4 methyl / H; C2 carries three methyls
+                // after the 1,2-methyl shift the tertiary carbocation is the α-carbon: two methyls; C3 (H, two methyls) is a β-carbon.
+                if (hofFrame()) return { alpha: ['C', { type: 'T', tree: TN('C', 'C3', [TN('H', 'H3'), TCH3('C4a'), TCH3('C4b')]) }], beta: [['H', 0], ['H', 120], ['H', 240]], product: 'hofmann' };
+                return { alpha: ['C', 'C'], beta: [['H', 0], ['C', 120], ['C', 240]], product: 'zaitsev' };
+            }
             if (currentSubstrate === 'ethane') {
                 return { alpha: ['H', 'H'], beta: [['H', 0], ['H', 120], ['H', 240]], product: null };
             }
-            if (currentBase === 'tbuo') {
+            if (hofFrame()) {
                 return { alpha: ['H', 'E'], beta: [['H', 0], ['H', 120], ['H', 240]], product: 'hofmann' };
             }
             return { alpha: ['C', 'H'], beta: [['H', 0], ['H', 120], ['C', 240]], product: 'zaitsev' };
@@ -627,11 +655,38 @@ Br</text>
         const isDmh = () => currentSubstrate === 'dmh' || currentSubstrate === 'dmhR';
         // Bases: hydride (H-), hydroxide (OH-), tert-butoxide ((CH3)3CO-). Bigger bases need a wider view.
         let currentBase = 'hydride';
+        // Reaction mechanism: 'e2' (concerted) or 'e1' (two steps: loss of the leaving group -> carbocation, then deprotonation).
+        // E1 progress: 0 = reactant, 0.5 = carbocation intermediate (the slider pauses there), 1 = alkene.
+        let mech = 'e2';
+        const isE1 = () => mech === 'e1';
+        const E1_BR_TRAVEL = 2.6;   // E1: how far (Å) Br- travels from the α-carbon in step 1
+        // 3-bromo-2,2-dimethylbutane ('dmb') has an extra step: after the secondary carbocation (end of step 1, progress E1_B1) a methyl group
+        // shifts to give the tertiary carbocation (progress E1_B2), and only then is a β-H removed.  For 2-bromobutane B1 = B2 = 0.5.
+        const isDmb = () => currentSubstrate === 'dmb';
+        const isBut = () => currentSubstrate === 'butane' || currentSubstrate === 'dmb';
+        const E1_B1 = () => isDmb() ? 0.3 : 0.5, E1_B2 = () => isDmb() ? 0.6 : 0.5;
+        let e1Phase = 0;       // dmb: 0 = before the methyl shift (secondary cation), 1 = after it (tertiary cation; the model is rebuilt)
+        let e1Mig = -1;        // dmb: index (in betaSubs) of the methyl group that shifts
+        let centerVisible = false, fitFrac = null, e1GrpSpin = 0, e1MigRot = 0, rShowAt = 0, rTextSet = false, rotTween = null, morph = null, minorAsk = false, minorAskAt = 0, minorAskDone = false, rewind = null, guideActive = false, guideRot0 = 0, guideDone = false, activeView = 'side';
+        const e1AtRest2 = () => isE1() && reactionProgress === E1_B2() && (!isDmb() || e1Phase === 1);      // resting at the intermediate from which a β-H is removed
+        const e1AtRest = () => isE1() && (reactionProgress === E1_B1() || reactionProgress === E1_B2());
+        let rStage = 0;        // rearrangement questions at the first carbocation: 0 idle, 1 rearrange?, 2 which shift?, 3 which carbon?, 4 press play, 5 done
+        const E1_CORRECT_IDX = 0;   // E1_CORRECT_IDX: the C3 hydrogen that gives the major (E)-2-butene
+        let c1Deg = 0, c1Idx = 0, c1Spin = [0, 0];       // E1: turn of the C1 methyl group (alphaSubs[c1Idx]) about its bond; c1Spin keeps the other methyl's turn (3-bromo-2,2-dimethylbutane)
+        const c1Of = (i) => i === c1Idx ? c1Deg : (c1Spin[i] || 0);
+        const c1Select = (i) => { if (i === c1Idx) return; c1Spin[c1Idx] = c1Deg; c1Idx = i; c1Deg = c1Spin[i] || 0; };
+        const prodT = () => isE1() ? Math.max(0, (reactionProgress - E1_B2()) / (1 - E1_B2())) : reactionProgress;   // progress of the C=C-forming step
+        // E1 with a hydrogen of the C1 methyl group as the one removed: the molecule is rebuilt in the other frame (the one E2 uses for
+        // the Hofmann route), in which C1 is the turning β-carbon.  e1Hof tells which frame E1 is in.
+        let e1Hof = false, e1Rot3 = 0, e1Pick = 'c3', e1PickIdx = 0;
+        const hofFrame = () => currentBase === 'tbuo' || (isE1() && e1Hof);
+        const rotatable = () => isE1() ? (reactionProgress === 0 || reactionProgress === E1_B1() || e1AtRest2()) : reactionProgress === 0;
         let labelsOn = true;   // LABELS button: alpha/beta labels, reactive-conformation colouring, product labels
         const TBUO_SPIN_DEG = { ethane: 190, butane: 330 };   // spin of the tert-butyl group about the H...O axis (per substrate view)
-        const BASE_RETREAT = { hydride: 0, hydroxide: 0, tbuo: 0 };   // how far the base backs away (Å) when no beta-H is anti to Br
-        const BASE_VIEW_SCALE = { hydride: 1, hydroxide: 1.15, tbuo: 1.75 };
-        let baseExtras = { hOH: null, c: null, me: [] };
+        const BASE_RETREAT = { hydride: 0, hydroxide: 0, tbuo: 0, etoh: 0 };   // how far the base backs away (Å) when no beta-H is anti to Br
+        const BASE_VIEW_SCALE = { hydride: 1.3, hydroxide: 1.15, tbuo: 1.75, etoh: 1.3 };
+        const ETOH_SPIN_DEG = 160;   // spin of the ethyl group of ethanol about the H...O axis
+        let baseExtras = { hOH: null, c: null, me: [], ch2h: [] };
         const PI_FORMED_T = 0.7;   // progress at which the dashed partial bonds are gone: the C=C pi bond is solid and the alpha/beta labels fade
         let rotationDeg = 0;   // rotation of the beta carbon (front carbon) about the C-C bond, before the reaction starts
         let alphaSubs = [];
@@ -716,7 +771,7 @@ Br</text>
                 const z = dmhToZaitsevFrame(pos, up);
                 vpos = z.pos; vup = z.up; target = z.target;
             }
-            if (currentSubstrate === 'butane' && currentBase === 'tbuo') {
+            if (isBut() && hofFrame()) {
                 // the view is defined in the Zaitsev frame; the tert-butoxide frame is related by the same rigid transform (DMH_R, DMH_T),
                 // so the substrate appears exactly as it does with hydride / hydroxide:  p_H = R p_Z + T
                 const Rm = (v) => new THREE.Vector3(
@@ -726,7 +781,9 @@ Br</text>
                 const T = new THREE.Vector3(DMH_T[0], DMH_T[1], DMH_T[2]);
                 vpos = Rm(vpos).add(T); vup = Rm(vup); target = T.clone();
             }
-            const f = fitView(vpos, target, vup);
+            const keepCV = centerVisible, keepFF = fitFrac;
+            if (isE1()) { centerVisible = true; if (!fitFrac) fitFrac = 0.5; }      // E1: centre exactly what is on screen, filling about half the window
+            let f; try { f = fitView(vpos, target, vup); } finally { centerVisible = keepCV; fitFrac = keepFF; }
             return { pos: f.pos, up: vup, target, shift: f.shift };
         }
         function sideViewPosition() { return sideView().pos; }
@@ -774,6 +831,21 @@ Br</text>
             sweepCache = { key, pts };
             return pts;
         }
+        // E1: ethanol is not on screen for the first part of the reaction; for the zoom it counts where it sits while it removes the β-H.
+        let e1BaseCache = { key: '', pts: [] };
+        function e1BasePoints() {
+            if (!isE1() || !sphereMeshes.length) return [];
+            if (isDmb()) { const s = getAntiSide(); return [{ p: new THREE.Vector3(0.4, 2.8 * s, 0), r: 1.5 }, { p: new THREE.Vector3(0.1, 4.6 * s, 0), r: 1.5 }]; }     // roughly where ethanol sits above the carbocation
+            const key = currentMode + '|' + currentSubstrate + '|' + e1Hof + '|' + getAntiSide();
+            if (e1BaseCache.key === key) return e1BaseCache.pts;
+            const keepT = reactionProgress, keepR = rotationDeg, keepSide = getAntiSide();
+            rotationDeg = 0; reactionProgress = E1_B2() + (1 - E1_B2()) * 0.5; updatePositions();
+            const pts = baseMeshList.map(m => ({ p: m.position.clone(), r: m.userData.radius }));
+            if (getAntiSide() < 0 || keepSide < 0) pts.forEach(q => { q.p.y = -q.p.y; q.p.z = -q.p.z; });
+            rotationDeg = keepR; reactionProgress = keepT; updatePositions();
+            e1BaseCache = { key, pts };
+            return pts;
+        }
         function fitView(pos, target, up, noFit) {
             if (!sphereMeshes.length) return { pos, shift: { x: 0, y: 0 } };
             const W = window.innerWidth, H = window.innerHeight, asp = W / H, th = Math.tan(22.5 * Math.PI / 180);
@@ -791,13 +863,19 @@ Br</text>
                     const x = rel.dot(right) / d / th, y = rel.dot(cu) / d / th, r = rad / d / th;
                     bx.x0 = Math.min(bx.x0, x - r); bx.x1 = Math.max(bx.x1, x + r); bx.y0 = Math.min(bx.y0, y - r); bx.y1 = Math.max(bx.y1, y + r);
                 };
-                const gone = reactionProgress >= 0.85 ? leavingMeshes() : null;      // base, Br and the removed H have flown off
-                sphereMeshes.forEach(m => { if (gone && gone.has(m)) return; grow(all, m.position, m.userData.radius); if (!isBase.has(m)) grow(sub, m.position, m.userData.radius); });
+                const gone = prodT() >= 0.85 ? leavingMeshes() : null;      // base, Br and the removed H have flown off
+                if (centerVisible) {      // view buttons: centre exactly what is on screen now, left-right and top-bottom
+                    sphereMeshes.forEach(m => { if (!m.visible || (gone && gone.has(m)) || (m.material && m.material.opacity < 0.05)) return; grow(all, m.position, m.userData.radius); });
+                    return { sub: all, all };
+                }
+                sphereMeshes.forEach(m => { if (gone && gone.has(m)) return; if (isE1() && isBase.has(m)) return; grow(all, m.position, m.userData.radius); if (!isBase.has(m)) grow(sub, m.position, m.userData.radius); });
+                if (isE1() && !gone) e1BasePoints().forEach(q => grow(all, q.p, q.r));
                 sweepPoints().forEach(q => { grow(all, q.p, q.r); grow(sub, q.p, q.r); });
                 if (reactionProgress < 0.01) {
                     // the leaving group's final position, and (for hydride) the extra H that hydroxide has, so that hydride and hydroxide share one zoom
-                    grow(all, new THREE.Vector3(0.67 + 0.5 * (C_BR_LENGTH + 2.1), -0.866 * (C_BR_LENGTH + 2.1), 0), RADII[currentMode].Br);
-                    if (currentBase === 'hydride') grow(all, atomMeshes.baseH.position.clone().add(new THREE.Vector3(-0.32, 0.905, 0)), RADII[currentMode].H);
+                    const brEnd = isE1() ? E1_BR_TRAVEL : 2.1;
+                    grow(all, new THREE.Vector3(0.67 + 0.5 * (C_BR_LENGTH + brEnd), -0.866 * (C_BR_LENGTH + brEnd), 0), RADII[currentMode].Br);
+                    
                 }
                 return { sub, all };
             };
@@ -805,13 +883,22 @@ Br</text>
             if (!noFit) {
                 for (let i = 0; i < 4; i++) {
                     const m = measure(cam), h = m.all.y1 - m.all.y0, w = m.all.x1 - m.all.x0;
-                    const k = Math.min((regionTop - regionBottom) * 0.97 / h, asp * 2 * 0.7 / w);
-                    const dist = Math.min(MAX_DIST - 0.5, Math.max(7, cam.clone().sub(target).length() / k));
+                    const k = fitFrac ? Math.min(2 * fitFrac / h, asp * 2 * fitFrac / w) : Math.min((regionTop - regionBottom) * 0.97 / h, asp * 2 * 0.7 / w);
+                    const dist = Math.min(MAX_DIST - 0.5, Math.max(fitFrac ? 3.5 : 7, cam.clone().sub(target).length() / k));
                     cam = target.clone().add(cam.clone().sub(target).setLength(dist));
                 }
             }
             const m = measure(cam);
             return { pos: cam, shift: { x: -(m.sub.x0 + m.sub.x1) / 2, y: (regionTop + regionBottom) / 2 - (m.all.y0 + m.all.y1) / 2 } };
+        }
+        // At each carbocation (the leaving group has gone): glide so the substrate sits in the middle of the window, filling about 40% of it
+        let e1WasRest = false;
+        function e1Recenter() {
+            let fit;
+            fitFrac = 0.42; centerVisible = true;
+            try { fit = fitView(camera.position.clone(), controls.target.clone(), camUp.clone()); } finally { fitFrac = null; centerVisible = false; }
+            animateCameraTo(fit.pos, controls.target.clone(), camUp.clone(), fit.shift, 1300);
+            autoCenter = false;
         }
         function centeredShift(pos, target, up) { return fitView(pos, target, up, true).shift; }
         function applyViewShift() {
@@ -825,6 +912,7 @@ Br</text>
             camera.lookAt(controls.target);
         }
         function rotateView(dx, dy, roll, speed) {
+            if (activeView) setActiveView(null);
             const off = camera.position.clone().sub(controls.target);
             const back = off.clone().normalize();
             const right = new THREE.Vector3().crossVectors(camUp, back).normalize();
@@ -1003,13 +1091,23 @@ Br</text>
             atomMeshes.cBeta = createSphere(RADII[currentMode].C, ATOM_COLORS.C);
             atomMeshes.br = createSphere(RADII[currentMode].Br, ATOM_COLORS.Br);
             // Base atom: the H of hydride, or the O of hydroxide / tert-butoxide
-            atomMeshes.baseH = createSphere(currentBase === 'hydride' ? RADII[currentMode].Base : RADII[currentMode].O, ATOM_COLORS.Base);
+            atomMeshes.baseH = createSphere(RADII[currentMode].O, ATOM_COLORS.Base);
 
             Object.values(atomMeshes).forEach(m => moleculeGroup.add(m));
 
             // Rest of the base: the H of OH-, or the tert-butyl group of (CH3)3CO-
-            baseExtras = { hOH: null, c: null, me: [] };
-            if (currentBase === 'hydroxide') {
+            baseExtras = { hOH: null, c: null, me: [], ch2h: [] };
+            if (currentBase === 'etoh' || currentBase === 'hydride') {
+                // ethanol CH3-CH2-O-H (or ethoxide CH3-CH2-O-, the 'hydride' key): baseH is the O; hOH the O-H hydrogen (ethanol only); c the CH2 carbon (with two H); me[0] the CH3
+                if (currentBase === 'etoh') { baseExtras.hOH = createSphere(RADII[currentMode].H, ATOM_COLORS.H); moleculeGroup.add(baseExtras.hOH); }
+                baseExtras.c = createSphere(RADII[currentMode].C, ATOM_COLORS.C);
+                moleculeGroup.add(baseExtras.c);
+                for (let k = 0; k < 2; k++) { const h = createSphere(RADII[currentMode].H, ATOM_COLORS.H); baseExtras.ch2h.push(h); moleculeGroup.add(h); }
+                const me = { type: 'C', mesh: createSphere(RADII[currentMode].C, ATOM_COLORS.C), hs: [] };
+                moleculeGroup.add(me.mesh);
+                for (let j = 0; j < 3; j++) { const h = createSphere(RADII[currentMode].H, ATOM_COLORS.H); me.hs.push(h); moleculeGroup.add(h); }
+                baseExtras.me.push(me);
+            } else if (currentBase === 'hydroxide') {
                 baseExtras.hOH = createSphere(RADII[currentMode].H, ATOM_COLORS.H);
                 moleculeGroup.add(baseExtras.hOH);
             } else if (currentBase === 'tbuo') {
@@ -1027,7 +1125,7 @@ Br</text>
                 }
             }
 
-            baseMeshList = [atomMeshes.baseH, baseExtras.hOH, baseExtras.c, ...baseExtras.me.flatMap(me => [me.mesh, ...me.hs])].filter(Boolean);
+            baseMeshList = [atomMeshes.baseH, baseExtras.hOH, baseExtras.c, ...baseExtras.ch2h, ...baseExtras.me.flatMap(me => [me.mesh, ...me.hs])].filter(Boolean);
             baseMeshList.forEach(m => { m.material.transparent = true; });
 
             // Substituents (H atoms, CH3 or CH2CH3 groups) on C_alpha and C_beta
@@ -1083,7 +1181,7 @@ Br</text>
             glowSprites = { br: createGlowSprite(), h: createGlowSprite() };
             labelGroup.add(glowSprites.br);
             labelGroup.add(glowSprites.h);
-            glowHMesh = null;
+            glowHMesh = null; gateHover = null; hoverGlow.visible = false;
             hoveredMesh = null;
 
             for (let i = 0; i < 160; i++) {
@@ -1111,9 +1209,21 @@ Br</text>
                 if (betaSubs[i].type !== 'H') continue;
                 const a = normDeg(betaSubs[i].theta + rotationDeg);
                 if (a < 0.5 || a > 359.5) return i;
+                if (isE1() && Math.abs(a - 180) < 0.5) return i;      // E1: either lobe of the empty p orbital (the H points up or down)
             }
             return -1;
         }
+        // E1: +1 if the aligned β-H points up (+y), -1 if it points down (the base then comes in from below)
+        function getAntiSide() {
+            if (!isE1()) return 1;
+            for (let i = 0; i < betaSubs.length; i++) {
+                if (betaSubs[i].type !== 'H') continue;
+                const a = normDeg(betaSubs[i].theta + rotationDeg);
+                if (Math.abs(a - 180) < 0.5) return -1;
+            }
+            return 1;
+        }
+        let upSide = 1;
 
         // All atom meshes belonging to a substituent group (including the far end of an ethyl group)
         function treeMeshes(node) {
@@ -1149,7 +1259,7 @@ Br</text>
                     const i = add(sub.mesh, SF_R.H); bonds.push([par, i]); sub.reliefIdx = i;
                 }
             }));
-            const x = add(atomMeshes.baseH, currentBase === 'hydride' ? SF_R.B : SF_R.O, true);
+            const x = add(atomMeshes.baseH, SF_R.O, true);
             if (baseExtras.hOH) { const j = add(baseExtras.hOH, SF_R.H, true); bonds.push([x, j]); }
             if (baseExtras.c) {
                 const c = add(baseExtras.c, SF_R.C, true); bonds.push([x, c]);
@@ -1213,9 +1323,24 @@ Br</text>
         }
 
         function updatePositions() {
-            const t = reactionProgress;
+            if (isE1() && getAntiSide() < 0) {
+                // β-H pointing down: the β-carbon's groups are built as if turned by 180° (H up) and then swung about the C-C axis
+                const keep = rotationDeg; rotationDeg = normDeg(rotationDeg + 180); upSide = -1;
+                try { updatePositionsCore(); } finally { rotationDeg = keep; upSide = 1; }
+            } else { upSide = 1; updatePositionsCore(); }
+        }
+        function updatePositionsCore() {
+            // E2: one parameter t for everything.  E1: tA runs over step 1 (Br leaves, the α-carbon flattens to the carbocation),
+            // t over step 2 (ethanol removes the β-H, the C=C bond forms).
+            const E1 = isE1();
+            const dmbP0 = E1 && isDmb() && e1Phase === 0;          // 3-bromo-2,2-dimethylbutane before the methyl shift is finished
+            const sP = dmbP0 ? Math.min(reactionProgress, E1_B2()) : reactionProgress;
+            const tA = E1 ? Math.min(1, sP / E1_B1()) : sP;
+            const uS = dmbP0 ? Math.min(1, Math.max(0, (sP - E1_B1()) / (E1_B2() - E1_B1()))) : 0;      // progress of the 1,2-methyl shift
+            const t = E1 ? Math.max(0, (sP - E1_B2()) / (1 - E1_B2())) : sP;
             updateDmhSpins();
-            const cBondLen = 1.54 - t * (1.54 - 1.34); // C-C bond contracts to 1.34 Å
+            const cB0 = 1.54 - (E1 ? 0.03 * tA : 0);
+            const cBondLen = cB0 - t * (cB0 - 1.34); // C-C bond contracts to 1.34 Å
 
             const posCAlpha = new THREE.Vector3(cBondLen / 2, 0, 0);
             const posCBeta = new THREE.Vector3(-cBondLen / 2, 0, 0);
@@ -1234,7 +1359,7 @@ Br</text>
             alphaLabel.material.opacity = labelOpacity;
             betaLabel.material.opacity = labelOpacity;
             betaLabel2.material.opacity = labelOpacity;
-            const ob = (isDmh() && labelsOn) ? otherBetaMesh() : null;
+            const ob = ((isDmh() || E1) && labelsOn) ? otherBetaMesh() : null;
             betaLabel2.visible = !!ob && dotAxis <= 0.92 && labelOpacity >= 0.01;
             if (betaLabel2.visible) betaLabel2.position.copy(ob.position);
             if (!labelsOn || dotAxis > 0.92 || labelOpacity < 0.01) {
@@ -1253,7 +1378,7 @@ Br</text>
             // axial direction: at t=0 each in-plane substituent makes exactly 109.471° with the
             // C-C bond (i.e. 70.529° from the outward axis -> full angle 141.058°); at t=1 it is 120° (trigonal planar).
             const TETRA_OUTER = 2 * (90 - 19.4712); // 141.058°
-            const alphaAngle = (TETRA_OUTER + t * (120 - TETRA_OUTER)) * Math.PI / 180;
+            const alphaAngle = (TETRA_OUTER + tA * (120 - TETRA_OUTER)) * Math.PI / 180;
             const betaAngle = (TETRA_OUTER + t * (120 - TETRA_OUTER)) * Math.PI / 180;
 
             // 4. LEAVING GROUP (Br) STARTS CLOSER TO SUBSTRATE, DEPARTS
@@ -1262,20 +1387,36 @@ Br</text>
             const flyX = Math.min(1, Math.max(0, (t - 0.70) / 0.23)), flyS = flyX * flyX * (3 - 2 * flyX);
             const goneX = Math.min(1, Math.max(0, (t - 0.88) / 0.12)), goneS = goneX * goneX * (3 - 2 * goneX);
             const flyUp = camUp.clone().normalize().multiplyScalar(flyS * 1.7 * camera.position.distanceTo(controls.target));
-            const brDist = C_BR_LENGTH + 2.1 * Math.pow(t, 2); // departs a good distance from the alkene, but stays inside the viewport
-            const posBr = posCAlpha.clone().add(new THREE.Vector3(
-                Math.cos(alphaAngle / 2) * brDist,
-                -Math.sin(alphaAngle / 2) * brDist,
-                0
-            ));
+            const brDist = E1 ? C_BR_LENGTH + E1_BR_TRAVEL * tA * tA : C_BR_LENGTH + 2.1 * Math.pow(t, 2); // departs a good distance from the alkene, but stays inside the viewport
+            // (E1 with C1 as the turning carbon: the leaving group departs away from C3, which sits in the other slot of this frame, so that
+            // the picture does not change when the model is rebuilt in this frame)
+            const hdir = new THREE.Vector3(1, 0, 0);
+            if (E1 && e1Hof) {
+                const a58 = 58.5 * Math.PI / 180, zT = Math.sqrt(2 / 3);
+                const tx = 1 / 3 + tA * (Math.cos(a58) - 1 / 3), tz = -(zT + tA * (Math.sin(a58) - zT)), L = Math.hypot(tx, tz);
+                hdir.set(1 + tA * (-tx / L - 1), 0, tA * (-tz / L)).normalize();
+            }
+            const posBr = posCAlpha.clone().addScaledVector(hdir, Math.cos(alphaAngle / 2) * brDist);
+            posBr.y -= Math.sin(alphaAngle / 2) * brDist;
             posBr.sub(flyUp);
+            let brGone = goneS;
+            if (E1) {       // the leaving group drifts out of the window and fades while the carbocation forms (step 1)
+                const bu = Math.min(1, Math.max(0, (tA - 0.35) / 0.6)), bf = bu * bu * (3 - 2 * bu);
+                posBr.sub(camUp.clone().normalize().multiplyScalar(bf * 1.4 * camera.position.distanceTo(controls.target)));
+                brGone = Math.max(goneS, bf);
+            }
+            if (E1 && isDmb()) {       // Br- drifts off and fades while the methyl group shifts
+                const bs = e1Phase === 1 ? 1 : Math.min(1, uS / 0.7), bsm = bs * bs * (3 - 2 * bs);
+                posBr.sub(camUp.clone().normalize().multiplyScalar(bsm * 1.4 * camera.position.distanceTo(controls.target)));
+                brGone = Math.max(brGone, bsm);
+            }
             atomMeshes.br.position.copy(posBr);
-            atomMeshes.br.material.transparent = true; atomMeshes.br.material.opacity = 1 - goneS; atomMeshes.br.visible = goneS < 0.99;
+            atomMeshes.br.material.transparent = true; atomMeshes.br.material.opacity = 1 - brGone; atomMeshes.br.visible = brGone < 0.99;
 
             // 4. HYDRIDE BASE (H⁻) STARTS CLOSER TO SUBSTRATE
             // Distance from the base atom to the H it removes: same timing for every base, but it ends at the
             // length of the bond being formed (H-H 0.74 Å for hydride, O-H 0.96 Å for hydroxide / tert-butoxide)
-            const baseBondLen = currentBase === 'hydride' ? 0.74 : 0.96;
+            const baseBondLen = 0.96;
             const hhHydride = Math.max(0.74, 1.8 * (1 - t) - 0.4 * Math.pow(Math.max(0, 0.5 - t), 2));
             // The base starts well apart from the substrate (a clear gap even in space-filling mode) and closes in
             // over the first part of the reaction; from there on it moves exactly as before.
@@ -1303,7 +1444,7 @@ Br</text>
                 const departureVector = new THREE.Vector3(-0.5, 0.7, 0).multiplyScalar(Math.pow(departProgress, 1.3));
                 posHBetaTarget.add(departureVector);
             }
-            posHBetaTarget.add(flyUp);   // the abstracted H and the base fly out together
+            posHBetaTarget.add(E1 ? new THREE.Vector3(0, flyUp.length(), 0) : flyUp);   // the abstracted H and the base fly out together
 
             const posBase = posHBetaTarget.clone().add(new THREE.Vector3(
                 -Math.cos(betaAngle / 2) * hhBondDist,
@@ -1311,6 +1452,14 @@ Br</text>
                 0
             ));
 
+            // E1: ethanol is not part of step 1; in step 2 it comes in from outside the window (from above on screen, the way the
+            // base leaves in E2) and settles on the β-H it removes.
+            let baseVis = 1;
+            if (E1) {
+                const e = Math.min(1, t / 0.5), es = 1 - Math.pow(1 - e, 3);
+                posBase.y += (1 - es) * 1.7 * camera.position.distanceTo(controls.target);      // along the p-orbital axis, from the side the β-H points to (the swing below turns it to -y)
+                baseVis = Math.min(1, t / 0.06);
+            }
             atomMeshes.baseH.position.copy(posBase);
 
             // --- SUBSTITUENTS: spectator H atoms and methyl groups ---
@@ -1324,22 +1473,25 @@ Br</text>
             const xSp2 = Math.cos(halfHCH);
             const zSp2 = Math.sin(halfHCH);
             // side = +1 for C_alpha (substituents point +x, spectators at +y), -1 for C_beta; sz = ±1
-            const spectatorUnit = (side, sz) => new THREE.Vector3(
-                side * (xTet + t * (xSp2 - xTet)),
-                side * (yTet * (1 - t)),
-                sz * (zTet + t * (zSp2 - zTet))
-            ).normalize();
+            const spectatorUnit = (side, sz) => {
+                // during the methyl shift the α-carbon pyramidalises again (the new C-C bond forms on the +y face), the β-carbon flattens
+                if (uS > 0 && side > 0) return new THREE.Vector3(xSp2 + uS * (xTet - xSp2), -yTet * uS, sz * (zSp2 + uS * (zTet - zSp2))).normalize();
+                const tt = side > 0 ? tA : (uS > 0 ? uS : t); return new THREE.Vector3(
+                side * (xTet + tt * (xSp2 - xTet)),
+                side * (yTet * (1 - tt)),
+                sz * (zTet + tt * (zSp2 - zTet))
+            ).normalize(); };
 
             // Methyl hydrogens: tetrahedral about the methyl carbon, staggered with respect to the
             // bonds on the carbon it is attached to (one H anti to the other carbon of the C-C bond).
-            const placeMethylHs = (sub, parentPos, otherCarbonPos) => {
+            const placeMethylHs = (sub, parentPos, otherCarbonPos, spin = 0) => {
                 const u = sub.mesh.position.clone().sub(parentPos).normalize();
                 const ax = otherCarbonPos.clone().sub(parentPos).normalize();
                 const e1 = ax.clone().addScaledVector(u, -ax.dot(u)).normalize();
                 const e2 = new THREE.Vector3().crossVectors(u, e1);
                 const kk = 2 * Math.SQRT2 / 3;
                 for (let k = 0; k < 3; k++) {
-                    const phi = Math.PI + k * 2 * Math.PI / 3;
+                    const phi = Math.PI + k * 2 * Math.PI / 3 + spin;
                     const d = u.clone().multiplyScalar(1 / 3)
                         .addScaledVector(e1, kk * Math.cos(phi))
                         .addScaledVector(e2, kk * Math.sin(phi));
@@ -1348,14 +1500,14 @@ Br</text>
             };
             // Ethyl group: CH2 carbon with two H and a terminal CH3, staggered about the C-CH2 bond
             // (the CH3 sits anti to the other carbon of the reacting C-C bond).
-            const placeEthyl = (sub, parentPos, otherCarbonPos) => {
+            const placeEthyl = (sub, parentPos, otherCarbonPos, extra = 0) => {
                 const u = sub.mesh.position.clone().sub(parentPos).normalize();
                 const ax = otherCarbonPos.clone().sub(parentPos).normalize();
                 const e1 = ax.clone().addScaledVector(u, -ax.dot(u)).normalize();
                 const e2 = new THREE.Vector3().crossVectors(u, e1);
                 const kk = 2 * Math.SQRT2 / 3;
                 const dirK = (k) => {
-                    const phi = Math.PI + k * 2 * Math.PI / 3;
+                    const phi = Math.PI + k * 2 * Math.PI / 3 + extra;
                     return u.clone().multiplyScalar(1 / 3).addScaledVector(e1, kk * Math.cos(phi)).addScaledVector(e2, kk * Math.sin(phi));
                 };
                 sub.c4.mesh.position.copy(sub.mesh.position).addScaledVector(dirK(0), C_CH3_LENGTH);
@@ -1365,41 +1517,58 @@ Br</text>
             };
             // Branched group (tree of atoms): children are staggered about each C-C bond; the first child sits anti to the
             // atom two bonds back (for the root carbon: the other carbon of the reacting C-C bond).
-            const placeTreeKids = (node, parentPos, backPos) => {
+            const placeTreeKids = (node, parentPos, backPos, extra = 0) => {
                 const u = node.mesh.position.clone().sub(parentPos).normalize();
                 const ax = backPos.clone().sub(parentPos).normalize();
                 const e1 = ax.clone().addScaledVector(u, -ax.dot(u)).normalize();
                 const e2 = new THREE.Vector3().crossVectors(u, e1);
                 const kk = 2 * Math.SQRT2 / 3;
                 node.kids.forEach((kid, k) => {
-                    const phi = Math.PI + (k + (SPIN[node.tag] || 0)) * 2 * Math.PI / 3;
+                    const phi = Math.PI + (k + (SPIN[node.tag] || 0)) * 2 * Math.PI / 3 + extra;
                     const d = u.clone().multiplyScalar(1 / 3).addScaledVector(e1, kk * Math.cos(phi)).addScaledVector(e2, kk * Math.sin(phi));
                     kid.mesh.position.copy(node.mesh.position).addScaledVector(d, kid.el === 'C' ? C_CH3_LENGTH : CONST_CH_LENGTH);
                     if (kid.kids.length) placeTreeKids(kid, node.mesh.position, parentPos);
                 });
             };
-            const placeSub = (sub, carbonPos, unitDir, otherCarbonPos) => {
+            const placeSub = (sub, carbonPos, unitDir, otherCarbonPos, tt = t) => {
                 if (sub.type === 'T') {
-                    sub.mesh.position.copy(carbonPos).addScaledVector(unitDir, C_CH3_LENGTH - 0.04 * t);
-                    placeTreeKids(sub.tree, carbonPos, otherCarbonPos);
+                    sub.mesh.position.copy(carbonPos).addScaledVector(unitDir, C_CH3_LENGTH - 0.04 * tt);
+                    placeTreeKids(sub.tree, carbonPos, otherCarbonPos, E1 ? e1GrpSpin : 0);
                     return;
                 }
                 const isC = sub.type === 'C' || sub.type === 'E';
-                const len = isC ? (C_CH3_LENGTH - 0.04 * t) : CONST_CH_LENGTH;
+                const len = isC ? (C_CH3_LENGTH - 0.04 * tt) : CONST_CH_LENGTH;
                 sub.mesh.position.copy(carbonPos).addScaledVector(unitDir, len);
-                if (sub.type === 'C') placeMethylHs(sub, carbonPos, otherCarbonPos);
-                else if (sub.type === 'E') placeEthyl(sub, carbonPos, otherCarbonPos);
+                if (sub.type === 'C') placeMethylHs(sub, carbonPos, otherCarbonPos, (E1 && alphaSubs.indexOf(sub) >= 0) ? c1Of(alphaSubs.indexOf(sub)) * Math.PI / 180 : 0);
+                else if (sub.type === 'E') placeEthyl(sub, carbonPos, otherCarbonPos, E1 ? e1GrpSpin : 0);
             };
 
             // C_alpha substituents (slot 0 at +z, slot 1 at -z)
-            placeSub(alphaSubs[0], posCAlpha, spectatorUnit(1, 1), posCBeta);
-            placeSub(alphaSubs[1], posCAlpha, spectatorUnit(1, -1), posCBeta);
+            placeSub(alphaSubs[0], posCAlpha, spectatorUnit(1, 1), posCBeta, tA);
+            placeSub(alphaSubs[1], posCAlpha, spectatorUnit(1, -1), posCBeta, tA);
 
             // C_beta substituents. If a beta-H is anti-periplanar to Br the reaction can run, and that H
             // is the one removed by the base; the other two substituents occupy the two remaining slots.
             const antiIdx = getAntiIndex();
             const reactive = antiIdx >= 0;
-            if (reactive) {
+            const shiftOn = dmbP0 && uS > 0 && e1Mig >= 0;
+            let shiftInfo = null;
+            if (shiftOn) {
+                // 1,2-methyl shift: the chosen methyl group (aligned with the empty p orbital, +y) bridges the C-C bond and ends up on C_alpha
+                const eS = uS * uS * (3 - 2 * uS), Lm = C_CH3_LENGTH;
+                const dB = new THREE.Vector3(-(1 - eS) / 3, 0.943, 0).normalize(), dA = new THREE.Vector3(eS / 3, 0.943, 0).normalize();
+                const mPos = posCBeta.clone().addScaledVector(dB, Lm).lerp(posCAlpha.clone().addScaledVector(dA, Lm), eS);
+                const mSub = betaSubs[e1Mig];
+                mSub.mesh.position.copy(mPos);
+                const par = posCBeta.clone().lerp(posCAlpha, eS);
+                placeMethylHs(mSub, par, par.clone().add(new THREE.Vector3(1, 0, 0)), Math.PI * eS);
+                shiftInfo = { eS, mPos };
+                betaSubs.forEach((sub, i) => {
+                    if (i === e1Mig) return;
+                    const a = normDeg(sub.theta + rotationDeg);
+                    placeSub(sub, posCBeta, spectatorUnit(-1, (a > 60 && a < 180) ? 1 : -1), posCAlpha, uS);
+                });
+            } else if (reactive) {
                 betaSubs.forEach((sub, i) => {
                     if (i === antiIdx) { sub.mesh.position.copy(posHBetaTarget); return; }
                     const a = normDeg(sub.theta + rotationDeg);
@@ -1419,7 +1588,7 @@ Br</text>
             // --- REST OF THE BASE (OH- hydrogen / tert-butyl group) ---
             // The base atom (O) approaches along the C-H axis. Its other groups bend away from that axis
             // away from the substrate's methyl as the O-H bond forms: H-O-H closes from 180° to 104.5°, C-O-H from 130° to 109.5°.
-            if (currentBase !== 'hydride') {
+            if (true) {
                 const uBase = new THREE.Vector3(Math.cos(betaAngle / 2), -Math.sin(betaAngle / 2), 0); // O -> abstracted H
                 // Bend away from the C3 methyl (if any) so the base's groups avoid the substrate's methyl groups.
                 // bendZ varies smoothly with the rotation angle, so nothing jumps while C3 is being rotated.
@@ -1443,7 +1612,28 @@ Br</text>
                     const phi = phiDeg * Math.PI / 180;
                     return uBase.clone().multiplyScalar(Math.cos(phi)).addScaledVector(bendDir, Math.sin(phi));
                 };
-                if (currentBase === 'hydroxide') {
+                if (currentBase === 'etoh' || currentBase === 'hydride') {
+                    // ethanol CH3CH2-O-H (ethoxide: no O-H): O has the H and the CH2 on the side away from the β-H it is about to remove; the three bonds
+                    // from O (to the new H, the O-H and the O-C) close up to the tetrahedral (oxonium) arrangement as the O-H bond forms
+                    const phi0 = ETOH_SPIN_DEG * Math.PI / 180;
+                    const bd = new THREE.Vector3(0, 0, Math.cos(phi0)).addScaledVector(wDir, Math.sin(phi0));
+                    const bd2 = new THREE.Vector3().crossVectors(uBase, bd);
+                    const thO = (120 - 10.5 * Math.min(1, t / 0.5)) * Math.PI / 180;
+                    const dirAz = (azDeg) => { const a = azDeg * Math.PI / 180; return uBase.clone().multiplyScalar(Math.cos(thO)).addScaledVector(bd.clone().multiplyScalar(Math.cos(a)).addScaledVector(bd2, Math.sin(a)), Math.sin(thO)); };
+                    const dOC = dirAz(60), dOH = dirAz(-60);
+                    if (baseExtras.hOH) baseExtras.hOH.position.copy(posBase).addScaledVector(dOH, 0.96);
+                    const posC = posBase.clone().addScaledVector(dOC, 1.43);
+                    baseExtras.c.position.copy(posC);
+                    const v = dOC.clone().negate();                            // CH2 carbon -> O
+                    const e1 = uBase.clone().addScaledVector(v, -uBase.dot(v)).normalize();
+                    const e2 = new THREE.Vector3().crossVectors(v, e1);
+                    const kk = 2 * Math.SQRT2 / 3;
+                    const mk = (k) => { const phi = Math.PI + k * 2 * Math.PI / 3; return v.clone().multiplyScalar(-1 / 3).addScaledVector(e1, kk * Math.cos(phi)).addScaledVector(e2, kk * Math.sin(phi)); };
+                    baseExtras.me[0].mesh.position.copy(posC).addScaledVector(mk(0), 1.52);
+                    baseExtras.ch2h[0].position.copy(posC).addScaledVector(mk(1), CONST_CH_LENGTH);
+                    baseExtras.ch2h[1].position.copy(posC).addScaledVector(mk(2), CONST_CH_LENGTH);
+                    placeMethylHs(baseExtras.me[0], posC, posBase);
+                } else if (currentBase === 'hydroxide') {
                     baseExtras.hOH.position.copy(posBase).addScaledVector(dirFrom(180 - 75.5 * t), 0.96);
                 } else {
                     const a0 = bp ? bp.ang : 130;   // C-O-H angle at the start (tuned per reactive conformation for the crowded substrate)
@@ -1471,6 +1661,15 @@ Br</text>
 
             // Bond Rendering
             let bIdx = 0;
+            if (upSide < 0) {      // β-H pointing down: swing the β-carbon's groups and the base about the C-C axis (180°)
+                const sw = (p) => { p.y = -p.y; p.z = -p.z; };
+                new Set([...betaSubs.flatMap(subMeshes), ...baseMeshList]).forEach(m => sw(m.position));
+                sw(posHBetaTarget); sw(posBase);
+            }
+            if (morph) {
+                const k = Math.min(1, (performance.now() - morph.t0) / morph.dur), f = 1 - k * k * (3 - 2 * k);
+                if (k >= 1) morph = null; else morph.items.forEach(it => it.m.position.addScaledVector(it.off, f));
+            }
             const updateBond = (p1, p2, forceHide, isDashed = false, customRadius = BOND_RADIUS, offsetVec = null) => {
                 const dist = p1.distanceTo(p2);
                 if (forceHide || currentMode === 'SF' || dist > 5.5) return;
@@ -1523,8 +1722,9 @@ Br</text>
             }
 
             // Synchronized Reaction Bonds
-            const hideBrBond = t > 0.70;
-            updateBond(posCAlpha, posBr, hideBrBond, inTransitionWindow);
+            // E2: the C-Br bond is dashed in the transition window and gone at t > 0.70.  E1: it stretches and is dashed while Br- leaves in step 1.
+            const hideBrBond = E1 ? tA >= 0.55 : t > 0.70;
+            updateBond(posCAlpha, posBr, hideBrBond, E1 ? tA > 0.05 : inTransitionWindow);
 
             const hideBetaHBond = t > 0.70;
             if (reactive) updateBond(posCBeta, posHBetaTarget, hideBetaHBond, inTransitionWindow);
@@ -1539,6 +1739,12 @@ Br</text>
             // Bonds inside the base (O-H of hydroxide; O-C, C-CH3 and C-H of tert-butoxide)
             if (currentBase === 'hydroxide') {
                 updateBond(posBase, baseExtras.hOH.position, false);
+            } else if (currentBase === 'etoh' || currentBase === 'hydride') {
+                if (baseExtras.hOH) updateBond(posBase, baseExtras.hOH.position, false);
+                updateBond(posBase, baseExtras.c.position, false);
+                baseExtras.ch2h.forEach(h => updateBond(baseExtras.c.position, h.position, false));
+                updateBond(baseExtras.c.position, baseExtras.me[0].mesh.position, false);
+                baseExtras.me[0].hs.forEach(h => updateBond(baseExtras.me[0].mesh.position, h.position, false));
             } else if (currentBase === 'tbuo') {
                 updateBond(posBase, baseExtras.c.position, false);
                 baseExtras.me.forEach(me => {
@@ -1566,6 +1772,13 @@ Br</text>
             alphaSubs.forEach(sub => addSubBonds(sub, posCAlpha));
             betaSubs.forEach((sub, i) => {
                 if (reactive && i === antiIdx) return;
+                if (shiftInfo && i === e1Mig) {          // the shifting methyl: partial bonds to both carbons while it bridges
+                    const e = shiftInfo.eS;
+                    updateBond(posCBeta, shiftInfo.mPos, e > 0.92, e > 0.12);
+                    updateBond(posCAlpha, shiftInfo.mPos, e < 0.08, e < 0.9);
+                    sub.hs.forEach(h => updateBond(sub.mesh.position, h.position, false));
+                    return;
+                }
                 addSubBonds(sub, posCBeta);
             });
 
@@ -1573,29 +1786,38 @@ Br</text>
                 bondMeshes[bIdx++].visible = false;
             }
             // The base (atoms and the bonds in / to it) fades with baseFade
-            baseBondMaterial.opacity = baseFade * (1 - goneS);
+            baseBondMaterial.opacity = baseFade * baseVis * (1 - goneS);
             bondMeshes.forEach((b, i) => {
                 const isBase = baseBondIdx.has(i);
                 b.material = isBase ? baseBondMaterial : bondMaterial;
-                if (isBase && baseFade < 0.01) b.visible = false;
+                if (isBase && baseFade * baseVis < 0.01) b.visible = false;
             });
-            baseMeshList.forEach(m => { m.material.opacity = baseFade * (1 - goneS); m.visible = baseFade * (1 - goneS) > 0.01; });
+            baseMeshList.forEach(m => { m.material.opacity = baseFade * baseVis * (1 - goneS); m.visible = baseFade * baseVis * (1 - goneS) > 0.01; });
+            betaSubs.forEach((sub, i) => {      // every other β-H is a normal atom again (e.g. after the mechanism is revisited or the β-carbon is turned)
+                if (sub.type !== 'H' || (reactive && i === antiIdx)) return;
+                const m = sub.mesh; if (m.material.opacity !== 1) m.material.opacity = 1; if (!m.visible) m.visible = true;
+            });
             if (reactive && betaSubs[antiIdx]) { const hm = betaSubs[antiIdx].mesh; hm.material.transparent = true; hm.material.opacity = 1 - goneS; hm.visible = goneS < 0.99; }
 
             // --- PI ORBITALS ---
             // The ethene plane is the xz plane (carbons + 4 spectator H), so the p orbitals point along y,
             // the axis along which the Br and H leave. They appear only after the transition state (t > 0.5),
             // grow to full size, and then persist in the product.
-            const orbitalGrow = Math.min(1, Math.max(0, (t - 0.5) / 0.3));
-            const orbitalScale = orbitalGrow * orbitalGrow * (3 - 2 * orbitalGrow); // smoothstep
-            orbitalGroup.visible = showOrbitals && orbitalScale > 0;
+            // E1: the empty p orbital of the carbocation appears on the α-carbon as it flattens (end of step 1); the β-carbon's p orbital
+            // appears in step 2 just as in E2.
+            const sm01 = (u) => { u = Math.min(1, Math.max(0, u)); return u * u * (3 - 2 * u); };
+            const orbitalScaleB = dmbP0 ? sm01(uS) : sm01((t - 0.5) / 0.3);
+            const orbitalScaleA = E1 ? sm01((tA - 0.35) / 0.6) * (dmbP0 ? 1 - sm01(uS) : 1) : orbitalScaleB;
+            orbitalGroup.visible = showOrbitals && (orbitalScaleA > 0 || orbitalScaleB > 0);
             if (orbitalGroup.visible) {
+                orbitalMeshes[0].visible = orbitalScaleA > 0;
                 orbitalMeshes[0].position.copy(posCAlpha);
                 orbitalMeshes[0].quaternion.identity();
-                orbitalMeshes[0].scale.setScalar(orbitalScale);
+                orbitalMeshes[0].scale.setScalar(Math.max(orbitalScaleA, 1e-3));
+                orbitalMeshes[1].visible = orbitalScaleB > 0;
                 orbitalMeshes[1].position.copy(posCBeta);
                 orbitalMeshes[1].quaternion.identity();
-                orbitalMeshes[1].scale.setScalar(orbitalScale);
+                orbitalMeshes[1].scale.setScalar(Math.max(orbitalScaleB, 1e-3));
             }
         }
 
@@ -1605,14 +1827,14 @@ Br</text>
         // Keep the text panels in step with the simulation state
         let lastUIKey = '';
         function syncUI() {
-            const locked = reactionProgress > 0 || isPlaying;
-            const key = `${currentSubstrate}|${rotationDeg}|${locked}`;
+            const locked = !rotatable() || isPlaying;
+            const key = `${mech}|${currentSubstrate}|${rotationDeg}|${locked}`;
             if (key === lastUIKey) return;
             lastUIKey = key;
 
             document.getElementById('drag-hint').textContent = locked
-                ? 'Return to Reactants to rotate into different conformations.'
-                : 'Click and drag any atom on the β-carbon to rotate into different conformations.';
+                ? (isE1() ? 'Return to Reactants (or to the carbocation intermediate) to rotate into different conformations.' : 'Return to Reactants to rotate into different conformations.')
+                : (isE1() ? 'Click and drag any atom on a β-carbon (the C1 methyl group or C3) to rotate it into different conformations.' : 'Click and drag any atom on the β-carbon to rotate into different conformations.');
         }
 
         // (E) / (Z) geometry of the alkene that the current reactive conformation of (3R,4S)-3-bromo-4-methylhexane gives.
@@ -1620,7 +1842,7 @@ Br</text>
         // two end up on the same side (Z) or on opposite sides (E) of the double bond (the +z / -z slots of the alkene plane).
         function alkeneGeometry() {
             if (getAntiIndex() < 0) return null;
-            if (currentSubstrate === 'butane' && currentBase !== 'tbuo') {      // 2-butene: the two methyls on the same / opposite sides
+            if (currentSubstrate === 'butane' && !hofFrame()) {      // 2-butene: the two methyls on the same / opposite sides
                 const a = alphaSubs.find(x => x.type === 'C'), b = betaSubs.find(x => x.type === 'C');
                 return (a.mesh.position.z > 0) === (b.mesh.position.z > 0) ? 'cis' : 'trans';
             }
@@ -1638,21 +1860,28 @@ Br</text>
             while (hintArrow.children.length) { const c = hintArrow.children[0]; hintArrow.remove(c); if (c.geometry) c.geometry.dispose(); }
         }
         let arrowInfo = null;
-        function buildHintArrow() {
+        function buildHintArrow(targetIdx) {
             clearHintArrow(); arrowInfo = null;
+            computeArrowInfo(targetIdx);
+            renderHintArrow();
+        }
+        // targetIdx: index in betaSubs of the hydrogen that has to be brought into position (undefined / -1: the nearest one)
+        function computeArrowInfo(targetIdx) {
+            arrowInfo = null;
             let best = null;
-            betaSubs.forEach(sb => {
+            betaSubs.forEach((sb, si) => {
                 if (sb.type !== 'H') return;
+                if (targetIdx !== undefined && targetIdx >= 0 && si !== targetIdx) return;
                 let d = normDeg(-(sb.theta + rotationDeg)); if (d > 180) d -= 360;
+                if (isE1()) { let d2 = normDeg(180 - (sb.theta + rotationDeg)); if (d2 > 180) d2 -= 360; if (Math.abs(d2) < Math.abs(d)) d = d2; }
                 if (!best || Math.abs(d) < Math.abs(best.d)) best = { sb, d };
             });
-            if (!best) return;
+            if (!best || (targetIdx !== undefined && Math.abs(best.d) < 4)) return;      // guide arrows disappear once the hydrogen is in place
             const m = best.sb.mesh.position, rho = Math.hypot(m.y, m.z) * 1.1 + 0.2, a0 = Math.atan2(m.z, m.y);
             const sg = best.d < 0 ? -1 : 1, rad = Math.PI / 180;
             // long arrow: the tail starts well behind the atom, the tip ends where the atom has to go
             const pt = (a) => new THREE.Vector3(m.x, rho * Math.cos(a), rho * Math.sin(a));
             arrowInfo = { start: pt(a0 - sg * 45 * rad), end: pt(a0 + best.d * rad + sg * 6 * rad), axisPt: new THREE.Vector3(m.x, 0, 0) };
-            renderHintArrow();
         }
         // The arrow is re-bent every frame so its curve always faces the camera: its ends stay on the circle the H travels on,
         // and the bow sits in the screen plane (perpendicular to both the line of sight and the chord), bulging away from the C-C axis.
@@ -1690,6 +1919,13 @@ Br</text>
             core.position.copy(pts[N]).addScaledVector(tan, 0.17); core.quaternion.copy(q);
             hintArrow.add(core);
             hintArrow.children.forEach(c => c.renderOrder = 10);
+        }
+        // A product that is formed, but is not the major one (minor stereoisomer or regioisomer): flagged with an orange label above the structure
+        function isMinorProduct() {
+            if (isE1()) return e1Hof || alkeneGeometry() === 'cis';
+            if (currentSubstrate === 'butane' && currentBase === 'hydride') return alkeneGeometry() === 'cis';
+            if (isDmh() && currentBase === 'tbuo') return alkeneGeometry() === 'Z';
+            return false;
         }
         function showBlockedHint() {
             blockedHintActive = true; hintRot = rotationDeg;
@@ -1735,10 +1971,13 @@ Br</text>
         const H_PROMPT = 'Click the β hydrogen that is most likely to react under these conditions.', H_CORRECT_IDX = 1;
         const betaPanel = document.getElementById('beta-panel');
         const BETA_PROMPT = 'Click the β carbon that is most likely to react under these conditions.';
+        const rPickOn = () => isE1() && rStage === 3 && !rotTween && !isPlaying;
+        const hPickOn = () => (hStage === 1 && hTextSet) || (isE1() && hStage === 2);      // E1: the β-H can be chosen again at any time while resting at the carbocation
         const gateOn = () => isDmh() && !betaChosen;
         // The panel's wanted message is set with setBetaPanel; reconcileBetaPanel (every frame) fades the old message out before the new one fades in.
         let betaWant = { state: 'ask', text: BETA_PROMPT }, betaCur = { state: '', text: '' }, betaReadyAt = 0, hReadySince = 0;
-        function setBetaPanel(state, text) { betaState = state; betaWant = { state, text }; }
+        function ital(s) { return String(s).replace(/\b(tert)-/gi, '<i>$1</i>-'); }      // italic 'tert' in tert-butyl / tert-butoxide
+        function setBetaPanel(state, text, btns) { betaState = state; betaWant = { state, text, btns: btns || null }; }
         function reconcileBetaPanel(show, now) {
             const on = betaPanel.classList.contains('on'), same = betaCur.text === betaWant.text && betaCur.state === betaWant.state;
             if (!show) { if (on) betaPanel.classList.remove('on'); return; }
@@ -1746,7 +1985,9 @@ Br</text>
             if (on) { betaPanel.classList.remove('on'); betaReadyAt = now + 400; return; }     // fade the old message out first
             if (now >= betaReadyAt) {
                 betaPanel.className = betaWant.state === 'ask' ? '' : betaWant.state;
-                betaPanel.textContent = betaWant.text; betaCur = { state: betaWant.state, text: betaWant.text };
+                betaPanel.innerHTML = ital(betaWant.text);
+                if (betaWant.btns) { const row = document.createElement('div'); row.className = 'bp-row'; betaWant.btns.forEach(b => { const e = document.createElement('button'); e.className = 'bp-btn'; e.textContent = b.label; e.addEventListener('click', (ev) => { ev.stopPropagation(); b.fn(); }); row.appendChild(e); }); betaPanel.appendChild(row); }
+                betaCur = { state: betaWant.state, text: betaWant.text };
                 void betaPanel.offsetWidth; betaPanel.classList.add('on');
             }
         }
@@ -1755,8 +1996,19 @@ Br</text>
             setBetaPanel('ask', BETA_PROMPT);
             setLabelsOn(!isDmh());       // the labels start hidden for these substrates
         }
-        function setLabelsOn(on) { labelsOn = on; document.getElementById('btn-labels').textContent = on ? 'LABELS: ON' : 'LABELS: OFF'; }
+        function setLabelsOn(on) {
+            labelsOn = on; const b = document.getElementById('btn-labels');
+            b.textContent = on ? 'LABELS: ON' : 'LABELS: OFF';
+            b.className = 'cp-btn ' + (on ? 'bg-green-600 hover:bg-green-500' : 'bg-red-600 hover:bg-red-500');
+        }
+        // the view buttons: the one for the view that is showing is blue, the other is not shaded; turning the view by hand clears both
+        function setActiveView(v) {
+            activeView = v;
+            document.getElementById('btn-newman').className = 'cp-btn ' + (v === 'newman' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-700 hover:bg-gray-600');
+            document.getElementById('btn-side').className = 'cp-btn ' + (v === 'side' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-700 hover:bg-gray-600');
+        }
         function otherBetaMesh() {
+            if (isE1()) return e1Hof ? e1CSub().mesh : alphaSubs[0].mesh;     // E1: the second β-carbon is C1 (or C3 when C1 is the one turning)
             const sub = alphaSubs.find(x => x.mesh && x.mesh.userData.tag === (currentBase === 'tbuo' ? 'C4' : 'C2'));
             return sub ? sub.mesh : null;
         }
@@ -1776,17 +2028,234 @@ Br</text>
             return [...alphaSubs.flatMap(subMeshes), ...betaSubs.flatMap(subMeshes)]
                 .filter(m => m && m.userData.baseColor && m.userData.baseColor.getHex() === ATOM_COLORS.H);
         }
+        // ---- Rebuilding the E1 model without moving the picture ----
+        // The molecule is rebuilt (other turning carbon / after the methyl shift); the camera is carried over by the rigid transform that maps the
+        // old carbocation carbon and two of its neighbours onto the new ones (several labellings are tried; the one that keeps the picture
+        // and the face of the carbocation (+y: where the base comes in) in place wins).
+        const e1CSub = () => alphaSubs.find(x => x.type === 'E' || x.type === 'T');
+        function e1Triads(sel) {         // [carbocation C, neighbour 1, neighbour 2] candidates, and the carbocation's four atoms (for scoring)
+            const A = atomMeshes.cAlpha.position.clone();
+            const nb = [A, ...alphaSubs.map(s => s.mesh.position.clone()), atomMeshes.cBeta.position.clone()];
+            if (e1Hof) return { tri: [[A, atomMeshes.cBeta.position.clone(), e1CSub().mesh.position.clone()]], nb, p1: [atomMeshes.cBeta] };
+            const tri = [[A, alphaSubs[0].mesh.position.clone(), atomMeshes.cBeta.position.clone()]], p1 = [alphaSubs[0].mesh];
+            if (isDmb()) { tri.push([A, alphaSubs[1].mesh.position.clone(), atomMeshes.cBeta.position.clone()]); p1.push(alphaSubs[1].mesh); if (sel !== undefined) tri.splice(1 - sel, 1); }
+            return { tri, nb, p1 };
+        }
+        function e1Transfer(oldSets, newSets, oldBasisPts) {
+            const basis = (q) => { const a = q[1].clone().sub(q[0]).normalize(), c = new THREE.Vector3().crossVectors(a, q[2].clone().sub(q[0])).normalize(), b = new THREE.Vector3().crossVectors(c, a); return [a, b, c]; };
+            let best = null;
+            oldSets.tri.forEach((ot, oi) => newSets.tri.forEach((nt, ni) => {
+                const Bo = basis(ot), Bn = basis(nt);
+                const xfDir = (v) => { const c = Bo.map(b => v.dot(b)); return Bn[0].clone().multiplyScalar(c[0]).addScaledVector(Bn[1], c[1]).addScaledVector(Bn[2], c[2]); };
+                const xf = (v) => nt[0].clone().add(xfDir(v.clone().sub(ot[0])));
+                let score = 0;
+                oldSets.nb.forEach(p => { let d = Infinity; newSets.nb.forEach(q => { d = Math.min(d, xf(p).distanceToSquared(q)); }); score += d; });
+                if (xfDir(new THREE.Vector3(0, 1, 0)).y < 0.5) score += 100;
+                if (!best || score < best.score) best = { score, xf, xfDir, oi, ni };
+            }));
+            return best;
+        }
+        // Smooth rebuilds: atoms of the rebuilt model start where the same kind of atom was in the old model (carried over by the same
+        // rigid transform as the camera) and glide to their places, so nothing jumps when a click rebuilds the model.
+        function e1Snapshot() { const base = new Set(baseMeshList); return sphereMeshes.filter(m => !base.has(m) && m !== atomMeshes.br).map(m => ({ c: m.userData.baseColor.getHex(), p: m.position.clone() })); }
+        function e1StartMorph(old, T) {
+            const base = new Set(baseMeshList), moved = old.map(o => ({ c: o.c, p: T.xf(o.p) })), items = [];
+            sphereMeshes.forEach(m => {
+                if (base.has(m) || m === atomMeshes.br) return;
+                const c = m.userData.baseColor.getHex(); let best = null, bd = Infinity;
+                moved.forEach(o => { if (o.c !== c) return; const d = o.p.distanceToSquared(m.position); if (d < bd) { bd = d; best = o; } });
+                if (best && bd > 0.0004 && bd < 0.09) items.push({ m, off: best.p.clone().sub(m.position) });
+            });
+            morph = items.length ? { t0: performance.now(), dur: 650, items } : null;
+        }
+        function e1ApplyCamera(T, camP, camT, up) {
+            camTween = null; shiftTween = null;
+            camera.position.copy(T.xf(camP)); controls.target.copy(T.xf(camT)); camUp.copy(T.xfDir(up)).normalize();
+            e1BaseCache = { key: '', pts: [] };
+        }
+        // Search the turn (0..359°) of the turning group for the best match of its atoms to the transformed old positions
+        function e1FitTurn(setTurn, meshesNow, targets) {
+            let best = 0, bestE = Infinity;
+            for (let a = 0; a < 360; a++) {
+                setTurn(a); updatePositions();
+                let e = 0; meshesNow().forEach(m => { let d = Infinity; targets.forEach(t2 => { d = Math.min(d, m.position.distanceToSquared(t2)); }); e += d; });
+                if (e < bestE) { bestE = e; best = a; }
+            }
+            setTurn(best); updatePositions();
+        }
+        // E1: switch which β-carbon is the turning one (C3 <-> the C1 methyl group; after the shift: C3 <-> a methyl of the cation)
+        function e1SetFrame(hof, sel) {
+            if (!isE1() || e1Hof === hof) return;
+            const oldSets = e1Triads(hof ? sel : undefined), oldAt = e1Snapshot();
+            const oldZ = e1Hof ? null : betaSubs.map(b => ({ c: b.mesh.userData.baseColor.getHex(), p: b.mesh.position.clone() }));
+            const oldHs = (e1Hof ? betaSubs.map(b => b.mesh) : null);
+            const alphaHs = e1Hof ? null : alphaSubs.map(s => s.hs.map(h => h.position.clone()));
+            const oldBetaHs = e1Hof ? betaSubs.map(b => b.mesh.position.clone()) : null;
+            const oldOther = (e1Hof && isDmb()) ? alphaSubs[0].hs.map(h => h.position.clone()) : null;
+            if (!e1Hof) e1Rot3 = rotationDeg;
+            const camP = camera.position.clone(), camT = controls.target.clone(), up = camUp.clone();
+            e1Hof = hof;
+            if (hof) { c1Idx = 0; c1Spin = [0, 0]; c1Deg = 0; }
+            if (!hof) rotationDeg = e1Rot3;
+            buildMolecule();
+            const newSets = e1Triads();
+            const T = e1Transfer(oldSets, newSets);
+            const targets = hof ? alphaHs[sel !== undefined ? sel : T.oi].map(v => T.xf(v)) : oldBetaHs.map(v => T.xf(v));
+            if (hof) {      // the C3 group (ethyl / isopropyl-type) keeps the turn it had: spin it to where its atoms were
+                const g = e1CSub(), grp = g.tree ? g.tree.kids.map(k => k.mesh) : [g.c4.mesh, ...g.hs];
+                const tg = oldZ.map(o => ({ c: o.c, p: T.xf(o.p) }));
+                let bs = 0, be = Infinity;
+                for (let a = 0; a < 360; a += 2) {
+                    e1GrpSpin = a * Math.PI / 180; updatePositions();
+                    let e = 0; grp.forEach(m => { let d = Infinity; tg.forEach(o => { if (o.c === m.userData.baseColor.getHex()) d = Math.min(d, o.p.distanceToSquared(m.position)); }); e += d === Infinity ? 0 : d; });
+                    if (e < be) { be = e; bs = a; }
+                }
+                e1GrpSpin = bs * Math.PI / 180;
+            } else e1GrpSpin = 0;
+            if (hof) { e1FitTurn(a => { rotationDeg = a; }, () => betaSubs.map(b => b.mesh), targets);
+                if (isDmb()) e1FitTurn(a => { c1Deg = a; }, () => alphaSubs[0].hs, alphaHs[1 - (sel !== undefined ? sel : T.oi)].map(v => T.xf(v))); }
+            else { c1Idx = T.ni; c1Spin = [0, 0]; e1FitTurn(a => { c1Deg = a; }, () => alphaSubs[T.ni].hs, targets);
+                if (oldOther) e1FitTurn(a => { c1Spin[1 - T.ni] = a; }, () => alphaSubs[1 - T.ni].hs, oldOther.map(v => T.xf(v))); }
+            updatePositions();
+            e1StartMorph(oldAt, T);
+            e1ApplyCamera(T, camP, camT, up);
+        }
+        // 3-bromo-2,2-dimethylbutane: rebuild after (ph = 1) / before (ph = 0) the methyl shift; reference state: the end of the shift (progress E1_B2)
+        function e1SetPhase(ph) {
+            if (!isDmb() || e1Phase === ph) return;
+            if (e1Hof) e1SetFrame(false);
+            const keepS = reactionProgress, keepRot = rotationDeg;
+            reactionProgress = E1_B2(); updatePositions();
+            const camP = camera.position.clone(), camT = controls.target.clone(), up = camUp.clone();
+            const oldAt = e1Snapshot(), A0 = atomMeshes.cAlpha.position.clone(), B0 = atomMeshes.cBeta.position.clone();
+            let oldSets, oldMap;
+            if (ph === 1) {
+                // phase 0 end: the cation is C_beta (C2); neighbours: C3 (= C_alpha), its two remaining methyls
+                const meth = betaSubs.filter((s, i) => i !== e1Mig);
+                oldSets = { tri: meth.map(m => [B0, m.mesh.position.clone(), A0]), nb: [B0, A0, ...meth.map(m => m.mesh.position.clone())] };
+                oldMap = { Hs: alphaSubs[1].mesh.position.clone(), Cs: [alphaSubs[0].mesh.position.clone(), betaSubs[e1Mig].mesh.position.clone()] };
+            } else {
+                oldSets = e1Triads(); oldSets.nb = oldSets.nb.filter((p, i) => i !== 0 || true);
+            }
+            e1Phase = ph; c1Deg = 0; c1Idx = 0; c1Spin = [0, 0];
+            if (ph === 0) { rotationDeg = e1MigRot; }
+            buildMolecule();
+            reactionProgress = E1_B2(); updatePositions();
+            let newSets;
+            if (ph === 1) {
+                const A1 = atomMeshes.cAlpha.position.clone(), B1 = atomMeshes.cBeta.position.clone();
+                newSets = { tri: alphaSubs.map(s => [A1, s.mesh.position.clone(), B1]), nb: [A1, B1, ...alphaSubs.map(s => s.mesh.position.clone())] };
+            } else {
+                const A1 = atomMeshes.cAlpha.position.clone(), B1 = atomMeshes.cBeta.position.clone();
+                const meth = betaSubs.filter((s, i) => i !== e1Mig);
+                newSets = { tri: meth.map(m => [B1, m.mesh.position.clone(), A1]), nb: [B1, A1, ...meth.map(m => m.mesh.position.clone())] };
+            }
+            // the transform for ph = 0 -> 1 maps old triads (cation, methyl, C3) to new (cation, methyl, C3): both lists have the same structure
+            const T = e1Transfer(oldSets, newSets);
+            if (ph === 1) {
+                const tH = T.xf(oldMap.Hs), tC = oldMap.Cs.map(v => T.xf(v));
+                // turn of C3's groups: H goes to the H, the two methyls to the two methyls
+                let best = 0, bestE = Infinity;
+                for (let a = 0; a < 360; a++) {
+                    rotationDeg = a; updatePositions();
+                    let e = betaSubs[0].mesh.position.distanceToSquared(tH);
+                    for (let k = 1; k < 3; k++) e += Math.min(...tC.map(c => betaSubs[k].mesh.position.distanceToSquared(c)));
+                    if (e < bestE) { bestE = e; best = a; }
+                }
+                rotationDeg = best;
+            } else {
+                rotationDeg = e1MigRot;
+            }
+            reactionProgress = keepS; updatePositions();
+            if (Math.abs(keepS - E1_B2()) < 1e-6) e1StartMorph(oldAt, T);
+            e1ApplyCamera(T, camP, camT, up);
+        }
+        let lastPickPx = null, lastPickMesh = null;
         function pickH(px) {
             raycaster.setFromCamera(new THREE.Vector2(px.x / domEl.clientWidth * 2 - 1, -(px.y / domEl.clientHeight) * 2 + 1), camera);
             const hit = raycaster.intersectObjects(hydrogenMeshes(), false);
             if (!hit.length) return null;
             const m = hit[0].object, bi = betaSubs.findIndex(sb => sb.type === 'H' && sb.mesh === m);
+            if (isE1()) {
+                lastPickPx = px; lastPickMesh = m;
+                let kind;
+                if (e1Hof) {      // C1 is the turning carbon: betaSubs are the C1 hydrogens
+                    const es = e1CSub();
+                    kind = bi >= 0 ? 'c1H' : subMeshes(es).includes(m) ? 'c3H' : alphaSubs[0].mesh === m ? 'alphaH' : 'otherH';
+                } else kind = bi === E1_CORRECT_IDX ? 'right' : bi >= 0 ? 'betaH' : alphaSubs.some(s => s.type === 'C' && s.hs.includes(m)) ? 'c1H' : alphaSubs[1].mesh === m ? 'alphaH' : 'otherH';
+                return { mesh: m, kind };
+            }
             return { mesh: m, kind: bi === H_CORRECT_IDX ? 'right' : bi >= 0 ? 'betaH' : 'otherH' };
         }
         function chooseH(kind) {
+            if (isE1()) {
+                if (kind === 'c3H') { e1SetFrame(false); const w = lastPickPx ? pickH(lastPickPx) : null; if (w && w.kind !== 'c3H') chooseH(w.kind); return; }
+                if (kind === 'right' || kind === 'betaH') { e1Pick = 'c3'; e1PickIdx = Math.max(0, betaSubs.findIndex(sb => sb.type === 'H' && lastPickMesh && sb.mesh === lastPickMesh)); if (kind === 'right' && !lastPickMesh) e1PickIdx = E1_CORRECT_IDX; e1SetFrame(false); hStage = 2; hTextSet = true; hReadySince = 0; }
+                else if (kind === 'c1H') { e1Pick = 'c1'; e1SetFrame(true, Math.max(0, alphaSubs.findIndex(s => s.type === 'C' && lastPickMesh && s.hs.includes(lastPickMesh)))); hStage = 2; hTextSet = true; hReadySince = 0; }
+                else if (kind === 'alphaH') { hStage = 1; hTextSet = true; setBetaPanel('wrong', 'That hydrogen is on the carbocation carbon (the α-carbon). Click a hydrogen on a carbon directly attached to the carbocation (a β-hydrogen).'); }
+                else { hStage = 1; hTextSet = true; setBetaPanel('wrong', 'That hydrogen is not on a β-carbon. A β-hydrogen is on a carbon directly attached to the carbocation carbon.'); }
+                return;
+            }
             if (kind === 'right') { hStage = 2; hTextSet = true; hReadySince = 0; }
             else if (kind === 'betaH') setBetaPanel('wrong', 'That β-H can react, but it leads to the minor (Z) alkene: the two alkyl groups end up gauche. Rotate the β-carbon to compare, then try the other β-H.');
             else setBetaPanel('wrong', 'That hydrogen is not on the β-carbon you selected. Click a hydrogen on the β-carbon.');
+        }
+        // ---- E1: does the carbocation rearrange? (asked at the first carbocation, for both substrates) ----
+        const R_Q1 = 'Will a carbocation rearrangement occur?', R_Q2 = 'What type of shift will occur?';
+        const rBtns1 = () => [{ label: 'Yes', fn: () => rAnswer1(true) }, { label: 'No', fn: () => rAnswer1(false) }];
+        const rBtns2 = () => [{ label: '1,2-hydride shift', fn: () => rAnswer2('H') }, { label: '1,2-methyl shift', fn: () => rAnswer2('Me') }];
+        function rAsk1() { setBetaPanel('ask', R_Q1, rBtns1()); }
+        function rAnswer1(yes) {
+            if (rStage !== 1) return;
+            if (isDmb()) {
+                if (yes) { rStage = 2; setBetaPanel('right', 'Correct! The secondary carbocation is next to a quaternary carbon, and a shift would give a more stable tertiary carbocation. ' + R_Q2, rBtns2()); }
+                else setBetaPanel('wrong', 'Not quite. A carbon next to the carbocation carries three methyl groups, and moving one of them to the carbocation carbon would give a more stable tertiary carbocation, so a rearrangement does occur. ' + R_Q1, rBtns1());
+            } else {
+                if (yes) setBetaPanel('wrong', 'Not quite. A 1,2-hydride shift would only give another secondary carbocation, and a 1,2-methyl shift would give a less stable primary carbocation. No shift gives a more stable carbocation. ' + R_Q1, rBtns1());
+                else { rStage = 5; hStage = 1; hTextSet = true; setBetaPanel('right', 'Correct! No shift can produce a more stable carbocation, so it does not rearrange. ' + H_PROMPT); }
+            }
+        }
+        function rAnswer2(kind) {
+            if (rStage !== 2) return;
+            if (kind === 'Me') { rStage = 3; setBetaPanel('ask', 'Correct! A methyl group moves with its pair of bonding electrons to the carbocation carbon. Click the carbon of the methyl group that will shift.'); }
+            else setBetaPanel('wrong', 'Not quite. The carbon next to the carbocation has no hydrogen to shift (it carries three methyl groups), and a hydride from the CH₃ on the other side would give a less stable primary carbocation. ' + R_Q2, rBtns2());
+        }
+        function rPickCarbon(px) {
+            raycaster.setFromCamera(new THREE.Vector2(px.x / domEl.clientWidth * 2 - 1, -(px.y / domEl.clientHeight) * 2 + 1), camera);
+            const hit = raycaster.intersectObjects(carbonMeshes(), false);
+            return hit.length ? hit[0].object : null;
+        }
+        // the shifting methyl has to sit in line with the empty p orbital when the shift starts: if the β-carbon was turned after the choice, swing it back first
+        function alignMig(thenPlay) {
+            if (!isDmb() || e1Phase !== 0 || e1Mig < 0 || rotTween) return false;
+            const d = normDeg(e1MigRot - rotationDeg), dd = d > 180 ? d - 360 : d;
+            if (Math.abs(dd) < 0.5) return false;
+            rotTween = { from: rotationDeg, delta: dd, t0: performance.now(), dur: Math.max(250, Math.min(900, Math.abs(dd) * 6)), thenPlay };
+            return true;
+        }
+        function updateRotTween(now) {
+            if (!rotTween) return;
+            const k = Math.min(1, (now - rotTween.t0) / rotTween.dur), e = k * k * (3 - 2 * k);
+            rotationDeg = normDeg(rotTween.from + rotTween.delta * e);
+            if (k >= 1) {
+                const again = rotTween.thenPlay; rotationDeg = e1MigRot; rotTween = null; rStage = 4;
+                if (again) { isPlaying = true; playDirection = 1; document.getElementById('btn-play').innerHTML = `<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`; return; }
+                setBetaPanel('right', 'Now press the play button on the reaction slider to see this methyl group shift and form the more stable tertiary carbocation.');
+            }
+        }
+        function rChooseCarbon(m) {
+            if (rotTween) return;
+            const bi = betaSubs.findIndex(s => s.type === 'C' && s.mesh === m);
+            if (bi >= 0) {
+                // the chosen methyl group swings into line with the empty p orbital (+y), the position from which it migrates
+                e1Mig = bi;
+                const to = normDeg(-betaSubs[bi].theta), d = normDeg(to - rotationDeg), dd = d > 180 ? d - 360 : d;
+                rotTween = { from: rotationDeg, delta: dd, t0: performance.now(), dur: Math.max(250, Math.min(900, Math.abs(dd) * 6)) };
+                e1MigRot = to;
+                setBetaPanel('right', 'Correct! That methyl group turns into line with the empty p orbital of the carbocation carbon.');
+            } else if (m === atomMeshes.cBeta) setBetaPanel('ask', 'That is the quaternary carbon the methyl group leaves. Click one of the methyl groups attached to it.');
+            else if (m === atomMeshes.cAlpha) setBetaPanel('ask', 'That is the carbocation carbon: the methyl group moves to it. Click a methyl group on the adjacent carbon.');
+            else setBetaPanel('ask', 'That methyl group is on the carbocation carbon itself. The group that shifts comes from the adjacent carbon, the one with three methyl groups. Click one of them.');
         }
         function chooseBeta(which) {
             const hof = currentBase === 'tbuo';
@@ -1794,7 +2263,7 @@ Br</text>
                 betaChosen = true; betaKeep = true; betaRot0 = rotationDeg;      // the green message stays until the β-carbon has actually been rotated
                 setBetaPanel('right', hof
                     ? 'Correct! The bulky tert-butoxide removes the more accessible β-H, on the less hindered β-carbon (Hofmann). Now rotate the β-carbon into the reactive conformation and run the reaction.'
-                    : 'Correct! Hydride is small, so it removes the β-H on the more substituted β-carbon (Zaitsev). Now rotate the β-carbon into the reactive conformation and run the reaction.');
+                    : 'Correct! Ethoxide is a small base, so it removes the β-H on the more substituted β-carbon (Zaitsev). Now rotate the β-carbon into the reactive conformation and run the reaction.');
             } else if (which === 'alpha') {
                 setBetaPanel('wrong', 'That is the α-carbon: it carries the leaving group (Br). Click a β-carbon, a carbon directly attached to it.');
             } else if (which === 'far') {
@@ -1802,7 +2271,7 @@ Br</text>
             } else {
                 setBetaPanel('wrong', hof
                     ? 'Not quite. tert-Butoxide is bulky, so it removes the most accessible β-H. Which β-carbon is less hindered?'
-                    : 'Not quite. Hydride is a small base, so it favors the more stable, more substituted alkene (Zaitsev). Which β-carbon is more substituted?');
+                    : 'Not quite. Ethoxide is a small base, so it favors the more stable, more substituted alkene (Zaitsev). Which β-carbon is more substituted?');
             }
         }
         function blockedByGate() {      // called when the user tries to run the reaction before choosing
@@ -1839,17 +2308,23 @@ Br</text>
         const INSTR_TEXT = {
             ethane: 'Use this simulation to visualize the basic transformation that occurs when a bimolecular elimination occurs. The controls at the top can be used to change the viewing angle, shift to the space filling model, or view/hide labels and the p orbitals of the product. The Newman projection can be especially helpful to check for anti-periplanar alignment between the leaving group and β-hydrogen. Left click and drag an atom attached to the β-carbon to rotate the β-carbon and change the dihedral angle. Once the molecule is in the reactive conformation, press the play button in the bottom slider to watch the reactants transform to the products.',
             butane: 'Explore the reactivity of (R)-2-bromobutane. To understand the stereoselectivity of the E2 reaction, rotate about the C2-C3 bond to visualize the different reactive conformations of the molecule. Remember the Newman projection can be a useful perspective for visualizing the anti-periplanar arrangement between the leaving group and the β-hydrogen. To better understand regioselectivity, change the identity of the base (hydride vs. tert-butoxide) and see how that impacts the reaction outcome.',
-            dmh: 'Use the prompts to predict the major product under the given reaction conditions. Change the base (hydride or tert-butoxide) to see how that impacts the product outcome. These questions will test your understanding of stereospecificity, stereoselectivity and regioselectivity.'
+            dmh: 'Use the prompts to predict the major product under the given reaction conditions. Change the base (ethoxide or tert-butoxide) to see how that impacts the product outcome. These questions will test your understanding of stereospecificity, stereoselectivity and regioselectivity.'
         };
         INSTR_TEXT.dmhR = INSTR_TEXT.dmh;
+        const E1_INSTR_START = 'Use this simulation to explore the basics of an E1 reaction. Follow the prompts to navigate each step of the reaction to reach the major product.';
+        const E1_INSTR_AFTER = 'Make sure to rotate the beta carbon to reach the reactive conformation for beta-hydrogen elimination. Notice there is no requirement for anti-periplanar alignment of the beta-hydrogen with the leaving group; this explains why there is no stereospecificity observed in E1 reactions.';
+        const E1_INSTR_DMB = 'Now explore the E1 reaction of (R)-3-bromo-2,2-dimethylbutane. Consider the possibility of carbocation rearrangement and follow the prompts to arrive at the major product.';
+        const e1InstrSeen2 = new Set();
+        const instrText = () => isE1() ? (isDmb() ? E1_INSTR_DMB : reactionProgress >= E1_B1() ? E1_INSTR_AFTER : E1_INSTR_START) : (INSTR_TEXT[instrKey()] || INSTR_TEXT.ethane);
+        const instrKey = () => isE1() ? 'e1' + currentSubstrate : currentSubstrate;
         const instrModal = document.getElementById('instr-modal'), instrSeen = new Set();
         let instrOpen = false;
         function openInstr() {
-            document.getElementById('instr-text').textContent = INSTR_TEXT[currentSubstrate] || INSTR_TEXT.ethane;
+            document.getElementById('instr-text').innerHTML = ital(instrText());
             instrModal.classList.add('open'); instrOpen = true;
         }
         function closeInstr() { instrModal.classList.remove('open'); instrOpen = false; }
-        function maybeShowInstr() { if (!instrSeen.has(currentSubstrate)) { instrSeen.add(currentSubstrate); openInstr(); } }
+        function maybeShowInstr() { if (!instrSeen.has(instrKey())) { instrSeen.add(instrKey()); openInstr(); } }
         document.getElementById('btn-instr').addEventListener('click', (e) => { openInstr(); e.target.blur(); });
         document.getElementById('instr-close').addEventListener('click', closeInstr);
         window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInstr(); });
@@ -1857,7 +2332,7 @@ Br</text>
         // ---- Practice questions: major product for (3R,4R) / (3R,4S)-3-bromo-4-methylhexane with NaH or t-BuOK ----
         // Four questions (substrate x base). Hydride (small base) -> Zaitsev alkene, stereospecific: (3R,4R) gives (E)-3-methylhex-3-ene, (3R,4S) gives (Z). tert-Butoxide -> Hofmann alkene, (E)-4-methylhex-2-ene is major.
         const QUIZ_PROMPT = 'Predict the MAJOR product in the reaction above. You can use the simulation to help visualize how the product forms.';
-        const FB_HOFMANN = 'Not quite. That is the less substituted (Hofmann) alkene. Hydride is a small base, so look for the more stable, more substituted alkene (Zaitsev).';
+        const FB_HOFMANN = 'Not quite. That is the less substituted (Hofmann) alkene. Ethoxide is a small base, so look for the more stable, more substituted alkene (Zaitsev).';
         const FB_STEREO_H = 'Right regiochemistry, wrong stereochemistry. E2 needs the β-H anti-periplanar to Br: rotate the C3–C4 bond in the 3D model to the reactive conformation and see which side the two ethyl groups end up on.';
         const FB_ZAITSEV = 'Not quite. tert-Butoxide is bulky, so it removes the more accessible β-H (on the CH₂ carbon) instead of the hindered tertiary β-H, giving the less substituted (Hofmann) alkene.';
         const FB_STEREO_T = 'Right regiochemistry (Hofmann), but that is the minor stereoisomer. Rotate the C2–C3 bond to the two reactive conformations and compare them: one puts the two alkyl groups gauche (more crowded), and it leads to the (Z) alkene.';
@@ -1868,12 +2343,16 @@ Br</text>
             'dmh/hydride':  { svg: 'qs-S-h', correct: 'BL', fb: { TR: FB_HOFMANN, BR: FB_HOFMANN, TL: FB_STEREO_H } },   // (Z)-3-methylhex-3-ene
             'dmh/tbuo':     { svg: 'qs-S-t', correct: 'TR', fb: { TL: FB_ZAITSEV, BL: FB_ZAITSEV, BR: FB_STEREO_T } }    // (E)-4-methylhex-2-ene
         };
+        const FB_NOREARR = 'Not quite. That alkene would form if the secondary carbocation simply lost a proton, but that carbocation rearranges first: a 1,2-methyl shift gives a more stable tertiary carbocation, so the major product comes from the rearranged cation.';
+        const FB_HOF_DMB = 'This product does come from the rearranged (tertiary) carbocation, but it is the minor, less substituted (Hofmann) alkene. Ethanol is a weak base, so the more stable, more substituted (Zaitsev) alkene is the major product.';
+        const FB_ETHER = 'Not quite. An ether can form when ethanol attacks the carbocation (SN1, a minor competing pathway), but the question is about the elimination: the major product is the most substituted alkene from the rearranged carbocation.';
+        QUIZ_SETS['dmb/etoh'] = { svg: 'qs-dmb', correct: 'TR', fb: { TL: FB_NOREARR, BR: FB_HOF_DMB, BL: FB_ETHER } };   // 2,3-dimethylbut-2-ene
         let quizKey = '';
         function currentQuiz() { return QUIZ_SETS[currentSubstrate + '/' + currentBase] || null; }
         const quizModal = document.getElementById('quiz-modal'), quizMsg = document.getElementById('quiz-msg');
         function resetQuiz() {
             document.querySelectorAll('.q-opt').forEach(r => r.setAttribute('class', 'q-opt'));
-            quizMsg.className = ''; quizMsg.textContent = QUIZ_PROMPT;
+            quizMsg.className = ''; quizMsg.innerHTML = ital(QUIZ_PROMPT);
         }
         function closeQuiz() { quizModal.classList.remove('open'); }
         document.getElementById('btn-predict').addEventListener('click', () => { if (quizModal.classList.contains('open')) closeQuiz(); else { resetQuiz(); quizModal.classList.add('open'); } });
@@ -1889,9 +2368,46 @@ Br</text>
                 quizMsg.className = 'right'; quizMsg.textContent = 'CORRECT. Well done!';
             } else {
                 r.setAttribute('class', 'q-opt wrong');
-                quizMsg.className = 'wrong'; quizMsg.textContent = (Q && Q.fb[k]) || 'Not quite. Try again.';
+                quizMsg.className = 'wrong'; quizMsg.innerHTML = ital((Q && Q.fb[k]) || 'Not quite. Try again.');
             }
         }));
+
+        // A circled formal charge just outside the upper right of an atom's sphere (alpha 0 hides it)
+        function placeCharge(id, mesh, alpha) {
+            const el = document.getElementById(id);
+            if (!mesh || alpha < 0.02) { el.style.visibility = 'hidden'; el.style.opacity = '0'; return; }
+            const rect = renderer.domElement.getBoundingClientRect(), th = Math.tan(22.5 * Math.PI / 180);
+            const fwd = controls.target.clone().sub(camera.position).normalize(), sp = screenPos(mesh.position);
+            const dd = mesh.position.clone().sub(camera.position).dot(fwd), rr = mesh.userData.radius / dd / th;
+            const D = rr * rect.height / 2 + 19, ang = 35 * Math.PI / 180;      // just outside the sphere, clear of its colour; 35 degrees above the horizontal (the upper right, turned down by 10 degrees)
+            el.style.left = (rect.left + rect.width / 2 + sp.x * rect.height / 2 + D * Math.cos(ang)) + 'px';
+            el.style.top = (rect.top + rect.height / 2 - sp.y * rect.height / 2 - D * Math.sin(ang)) + 'px';
+            el.style.visibility = 'visible'; el.style.opacity = String(Math.min(1, alpha));
+        }
+
+        // Reverse the reaction to the last step before the major product forms (the carbocation for E1, the reactants for E2); the prompts then reappear
+        function startRewind() {
+            minorAsk = false;
+            if (reactionProgress < 0.5 || baseSwitch) return;
+            rewind = { from: reactionProgress, target: isE1() ? E1_B2() : 0, t0: performance.now(), dur: 2400, rot0: rotationDeg, rotD: 0 };
+            if (isE1() && getAntiIndex() >= 0) {      // the carbocation must not come back in a reactive conformation: turn the β-carbon away on the way
+                const keep = rotationDeg;
+                for (const d of [60, -60, 45, -45, 90, -90, 30, -30]) { rotationDeg = normDeg(keep + d); if (getAntiIndex() < 0) { rewind.rotD = d; break; } }
+                rotationDeg = keep;
+            }
+            isPlaying = false; document.getElementById('btn-play').innerHTML = PLAY_ICON;
+        }
+        function finishRewind() {
+            const now = performance.now();
+            if (isE1()) return;      // the carbocation prompts come back by themselves
+            if (isDmh()) {
+                if (currentBase === 'tbuo') { hStage = 1; hShowAt = now + 600; hTextSet = false; }
+                else { hStage = 2; hReadySince = 0; hTextSet = true; }
+            } else {
+                setBetaPanel('ask', 'Rotate about the C2\u2013C3 bond to reach a different reactive conformation, one in which the two methyl groups end up on opposite sides of the alkene.');
+                betaKeep = true; betaRot0 = rotationDeg;
+            }
+        }
 
         function updateGlowAndLabels(now) {
             if (!zoomDragging) {         // keep the zoom slider in step with the view (scroll wheel, preset views, automatic fitting)
@@ -1900,7 +2416,7 @@ Br</text>
             }
             {   // The tert-butoxide model frame is the hydride frame moved by the rigid transform (DMH_R, DMH_T); the light is moved with it, so the
                 // molecule is lit from the same side (relative to the camera) with either base.
-                const tb = currentBase === 'tbuo' && (isDmh() || currentSubstrate === 'butane'), R = DMH_R;
+                const tb = (currentBase === 'tbuo' || (isE1() && e1Hof)) && (isDmh() || isBut()), R = DMH_R;
                 const lx = tb ? R[0][0] * 5 + R[0][1] * 10 + R[0][2] * 7 : 5, ly = tb ? R[1][0] * 5 + R[1][1] * 10 + R[1][2] * 7 : 10, lz = tb ? R[2][0] * 5 + R[2][1] * 10 + R[2][2] * 7 : 7;
                 if (dirLight.position.x !== lx || dirLight.position.y !== ly || dirLight.position.z !== lz) dirLight.position.set(lx, ly, lz);
             }
@@ -1914,28 +2430,75 @@ Br</text>
                     }
                 }
             }
-            if ((hStage === 1 || hStage === 2) && (isPlaying || reactionProgress > 0)) hStage = 0 + 3;
+            if (isE1()) {
+                // E1: once step 1 has run, the slider pauses at the carbocation and asks for the β-H; it starts over whenever the intermediate is left
+                const r = reactionProgress, b1 = E1_B1(), b2 = E1_B2(), idle = !isPlaying && !baseSwitch;
+                { const restNow = idle && e1AtRest() && (!isDmb() || (r === b1 ? e1Phase === 0 : e1Phase === 1)); if (restNow && !e1WasRest) { e1Recenter(); if (instrOpen) openInstr(); else if (!isDmb() && !e1InstrSeen2.has(currentSubstrate)) { e1InstrSeen2.add(currentSubstrate); openInstr(); } } e1WasRest = restNow; }
+                // the rearrangement questions at the first carbocation
+                if (r < b1) rStage = 0;
+                else if (isDmb() && e1Phase === 1) rStage = 5;
+                else if (isDmb() && r === b1 && rStage === 5) rStage = 0;
+                if (r === b1 && e1Phase === 0 && idle) { if (rStage === 0) { rStage = 1; rShowAt = now + 900; rTextSet = false; } }
+                else if (rStage >= 1 && rStage <= 3) { rStage = 0; }
+                if (rStage === 1 && !rTextSet && now >= rShowAt) { rAsk1(); rTextSet = true; }
+                const paused = e1AtRest2() && rStage === 5 && idle;
+                if (paused && hStage === 3) hStage = 0;
+                if (paused && hStage === 0) { hStage = 1; hShowAt = now + 900; hTextSet = false; setBetaPanel('ask', H_PROMPT); }
+                if (!paused && (hStage === 1 || hStage === 2)) { hStage = (isPlaying || reactionProgress > E1_B2()) ? 3 : 0; if (hStage === 0 && !isPlaying) e1SetFrame(false); }
+            } else if ((hStage === 1 || hStage === 2) && (isPlaying || reactionProgress > 0)) hStage = 0 + 3;
             let playReady = false;
             if (hStage === 1 && now >= hShowAt && !hTextSet) { setBetaPanel('ask', H_PROMPT); hTextSet = true; }
             let hold = false;
             if (hStage === 2) {
                 // the play prompt appears only after the molecule has been left in the reactive conformation (the chosen H anti to Br) for 3 s
-                const hyd = currentBase !== 'tbuo';      // hydride: any reactive conformation (its one β-H anti to Br); tert-butoxide: the β-H that was chosen
-                const ready = hyd ? getAntiIndex() >= 0 : getAntiIndex() === H_CORRECT_IDX;
+                const hyd = !isE1() && currentBase !== 'tbuo';      // hydride: any reactive conformation (its one β-H anti to Br); tert-butoxide / E1: the β-H that was chosen
+                const ai = getAntiIndex();
+                const ready = isE1() ? (e1Pick === 'c3' ? (!e1Hof && ai === e1PickIdx) : (e1Hof && ai >= 0))
+                    : hyd ? ai >= 0 : ai === H_CORRECT_IDX;
                 if (!ready) hReadySince = 0; else if (!hReadySince) hReadySince = now;
                 playReady = ready && now - hReadySince >= 3000;
                 hold = hyd ? !playReady : (ready && !playReady);      // hydride: no window until the 3 s are up
-                setBetaPanel('right', playReady ? 'Correct! Now press the play button on the reaction slider to see the reactant transform to the product.'
+                if (isE1()) {
+                    if (e1Pick === 'c3') {
+                        const g = (ready && !isDmb()) ? alkeneGeometry() : null;
+                        const PLAY = 'Now press the play button on the reaction slider to see ethanol remove that β-hydrogen and form the ';
+                        if (isDmb()) setBetaPanel('right', playReady ? 'Correct! ' + PLAY + 'tetrasubstituted alkene, 2,3-dimethylbut-2-ene (the major, Zaitsev product).'
+                            : 'Correct! Rotate the β-carbon (C3) until that hydrogen is aligned with the empty p orbital of the carbocation (either lobe: the base approaches from the side the hydrogen points to).');
+                        else if (g === 'cis') setBetaPanel('minor', playReady ? PLAY + 'minor product, (Z)-2-butene (or rotate C3 by 180° for the other lobe).'
+                            : 'In this conformation the two methyl groups end up on the same side, giving the minor product, (Z)-2-butene. Rotate C3 by 180° so that the hydrogen is aligned with the other lobe of the p orbital to form the major (E) product.');
+                        else if (g === 'trans') setBetaPanel('right', playReady ? 'Correct! ' + PLAY + 'major product, (E)-2-butene.'
+                            : 'Correct! In this conformation the two methyl groups end up on opposite sides, giving the major product, (E)-2-butene.');
+                        else setBetaPanel('right', 'Correct! C3 hydrogens give the more substituted alkene, 2-butene. Rotate C3 until that hydrogen is aligned with either lobe of the empty p orbital (the base approaches from the side the hydrogen points to). The lobe decides whether the (E) (major) or (Z) (minor) alkene forms.');
+                    }
+                    else setBetaPanel('minor', playReady ? 'Now press the play button on the reaction slider to see ethanol remove that β-hydrogen and form the minor product.'
+                        : (isDmb() ? 'Deprotonation of a hydrogen on one of the methyl groups of the carbocation leads to a minor product, 2,3-dimethylbut-1-ene (the less substituted, Hofmann alkene). Rotate that methyl group until one of its hydrogens is aligned with the empty p orbital of the carbocation.'
+                            : 'Deprotonation of a β-hydrogen on C1 leads to a minor product, 1-butene (the less substituted, Hofmann alkene). Rotate the C1 methyl group until one of its hydrogens is aligned with the empty p orbital of the carbocation.'));
+                }
+                else setBetaPanel('right', playReady ? 'Correct! Now press the play button on the reaction slider to see the reactant transform to the product.'
                     : 'Correct! Rotate the β-carbon until that hydrogen is anti-periplanar to the leaving group (Br).');
             } else hReadySince = 0;
-            if (!isDmh()) {      // bromoethane / 2-bromobutane: the play button glows once the reactive conformation has been held for 3 s
+            if (!isDmh() && !isE1()) {      // bromoethane / 2-bromobutane: the play button glows once the reactive conformation has been held for 3 s
                 const ready = getAntiIndex() >= 0 && reactionProgress === 0 && !isPlaying && !baseSwitch;
                 if (!ready) plainReadySince = 0; else if (!plainReadySince) plainReadySince = now;
                 playReady = ready && now - plainReadySince >= 3000;
             }
+            if (isE1() && isDmb() && rStage === 4 && e1Phase === 0 && reactionProgress === E1_B1() && !isPlaying && !baseSwitch) playReady = true;
             { const pb = document.getElementById('btn-play'); if (pb.classList.contains('glow') !== playReady) pb.classList.toggle('glow', playReady); }
-            if (!gateOn() && hStage !== 1) gateHover = null;
-            { const show = (gateOn() && !baseSwitch && !camTween && baseFade >= 1) || betaKeep || (hStage === 1 && hTextSet && !baseSwitch) || (hStage === 2 && !hold);
+            if (!gateOn() && !hPickOn() && !rPickOn()) gateHover = null;
+            if (gateHover && !sphereMeshes.includes(gateHover)) gateHover = null;      // the model was rebuilt: that atom is gone
+            {   // a minor product has formed: offer to go back and revisit the mechanism to find the major product
+                const atEnd = reactionProgress >= 0.999 && !isPlaying && !baseSwitch && !rewind && !!productType && isMinorProduct();
+                if (!atEnd) { minorAskAt = 0; minorAsk = false; if (reactionProgress < 0.95) minorAskDone = false; }
+                else if (!minorAskDone) {
+                    if (!minorAskAt) minorAskAt = now + 1600;
+                    else if (now >= minorAskAt) {
+                        minorAsk = true; minorAskDone = true;
+                        setBetaPanel('ask', 'This is a minor product. Would you like to revisit the reaction mechanism to try to find the major product?',
+                            [{ label: 'Revisit mechanism', fn: startRewind }]);
+                    }
+                }
+            }
+            { const show = minorAsk || (gateOn() && !baseSwitch && !camTween && baseFade >= 1) || betaKeep || (hStage === 1 && hTextSet && !baseSwitch) || (hStage === 2 && !hold) || (isE1() && rStage >= 1 && rStage <= 4 && (rStage > 1 || rTextSet) && reactionProgress === E1_B1() && e1Phase === 0 && !isPlaying && !baseSwitch);
               reconcileBetaPanel(show, now); }
             { const Q = currentQuiz(), showQ = !!Q;
               const key = Q ? currentSubstrate + '/' + currentBase : '';
@@ -1952,12 +2515,12 @@ Br</text>
 
             const antiIdx = getAntiIndex();
             if (antiIdx >= 0) glowHMesh = betaSubs[antiIdx].mesh;
-            const target = (labelsOn && antiIdx >= 0 && reactionProgress === 0 && !isPlaying) ? 1 : 0;
+            const target = (labelsOn && antiIdx >= 0 && (isE1() ? e1AtRest2() : reactionProgress === 0) && !isPlaying) ? 1 : 0;
             glow = target > glow ? Math.min(target, glow + 6 * dt) : Math.max(target, glow - 4 * dt);
             const pulse = 0.85 + 0.15 * Math.sin(now / 1000 * 5);
 
             // Halo sprites
-            [['br', atomMeshes.br, RADII[currentMode].Br], ['h', glowHMesh, RADII[currentMode].H]].forEach(([k, mesh, r]) => {
+            [['br', isE1() ? null : atomMeshes.br, RADII[currentMode].Br], ['h', glowHMesh, RADII[currentMode].H]].forEach(([k, mesh, r]) => {
                 const sp = glowSprites[k];
                 if (!sp) return;
                 sp.visible = !!(mesh && glow > 0.01);
@@ -1979,14 +2542,14 @@ Br</text>
             atoms.forEach(m => {
                 const mat = m.material;
                 const base = m.userData.baseColor;
-                if (glow > 0.01 && (m === atomMeshes.br || m === glowHMesh)) {
+                if (glow > 0.01 && ((m === atomMeshes.br && !isE1()) || m === glowHMesh)) {
                     // Br and the beta-H take on exactly the same glowing yellow
                     mat.color.copy(base).lerp(GLOW_COLOR, Math.min(1, glow));
                     mat.emissive.copy(GLOW_COLOR);
                     mat.emissiveIntensity = 0.7 * glow * pulse;
                 } else {
                     if (!mat.color.equals(base)) mat.color.copy(base);
-                    if (m === hoveredMesh && hStage !== 1) {
+                    if (m === hoveredMesh && !hPickOn()) {
                         mat.emissive.setHex(0x3b82f6);
                         mat.emissiveIntensity = 0.55;
                     } else {
@@ -1996,7 +2559,7 @@ Br</text>
             });
 
             // faint radiant yellow glow around the carbon the pointer is over during the β-carbon choice
-            if (gateHover && (gateOn() || hStage === 1)) {
+            if (gateHover && (gateOn() || hPickOn() || rPickOn())) {
                 const hr = gateHover.userData.radius, d = 2 * Math.max(hr * (currentMode === 'BS' ? 3.0 : 1.7), hr + 0.55);
                 hoverGlow.position.copy(gateHover.position); hoverGlow.scale.set(d, d, 1); hoverGlow.visible = true;
             } else hoverGlow.visible = false;
@@ -2017,10 +2580,10 @@ Br</text>
 
             // ZAITSEV / HOFMANN PRODUCT label: fades in as the product forms and stays at the bottom
             const plab = document.getElementById('product-label');
-            const pf = Math.min(1, Math.max(0, (reactionProgress - 0.7) / 0.2));
+            const pf = Math.min(1, Math.max(0, (prodT() - 0.7) / 0.2));
             const pOpacity = pf * pf * (3 - 2 * pf);
             const blab = document.getElementById('alkene-label');
-            if (labelsOn && productType && pOpacity > 0.01) {
+            if (productType && pOpacity > 0.01) {
                 const hof = productType === 'hofmann';
                 const ez = alkeneGeometry();
                 const text = hof ? 'HOFMANN PRODUCT' : 'ZAITSEV PRODUCT';
@@ -2036,11 +2599,11 @@ Br</text>
                 const w1 = plab.offsetWidth || 260, w2 = btext ? (blab.offsetWidth || 150) : 0, gap = btext ? 14 : 0, h = plab.offsetHeight || 36;
                 let left = rect.left + rect.width / 2 - (w1 + gap + w2) / 2;
                 const y = panelTop - 14 - h;
-                plab.style.left = (left + w1 / 2) + 'px'; plab.style.top = y + 'px';
+                plab.style.left = (left + (btext ? w2 + gap : 0) + w1 / 2) + 'px'; plab.style.top = y + 'px';
                 plab.style.visibility = 'visible'; plab.style.opacity = String(pOpacity);
                 plab.style.transform = `translate(-50%, 0) scale(${0.92 + 0.08 * pOpacity})`;
                 if (btext) {
-                    blab.style.left = (left + w1 + gap + w2 / 2) + 'px'; blab.style.top = y + 'px';
+                    blab.style.left = (left + w2 / 2) + 'px'; blab.style.top = y + 'px';
                     blab.style.visibility = 'visible'; blab.style.opacity = String(pOpacity);
                     blab.style.transform = `translate(-50%, 0) scale(${0.92 + 0.08 * pOpacity})`;
                 } else blab.style.visibility = 'hidden';
@@ -2048,20 +2611,84 @@ Br</text>
                 plab.style.visibility = 'hidden';
                 blab.style.visibility = 'hidden';
             }
+            {   // orange MINOR PRODUCT label above the structure
+                const ml = document.getElementById('minor-label');
+                if (productType && pOpacity > 0.01) {
+                    const mnr = isMinorProduct(); if (ml.textContent !== (mnr ? 'MINOR' : 'MAJOR')) ml.textContent = mnr ? 'MINOR' : 'MAJOR';
+                    ml.classList.toggle('minor', mnr); ml.classList.toggle('major', !mnr);
+                    const rect = renderer.domElement.getBoundingClientRect(), th = Math.tan(22.5 * Math.PI / 180);
+                    const fwd = controls.target.clone().sub(camera.position).normalize(), gone = leavingMeshes();
+                    let top = Infinity, x0 = Infinity, x1 = -Infinity;
+                    sphereMeshes.forEach(m => {
+                        if (gone.has(m) || !m.visible) return;
+                        const sp = screenPos(m.position), d = m.position.clone().sub(camera.position).dot(fwd), r = m.userData.radius / d / th;
+                        top = Math.min(top, rect.top + (1 - (sp.y + r)) * rect.height / 2); x0 = Math.min(x0, sp.x - r); x1 = Math.max(x1, sp.x + r);
+                    });
+                    const h = ml.offsetHeight || 36;
+                    ml.style.left = (rect.left + rect.width / 2 + ((x0 + x1) / 2) * rect.height / 2) + 'px';
+                    ml.style.top = Math.max(64, top - 12 - h) + 'px';
+                    ml.style.visibility = 'visible'; ml.style.opacity = String(pOpacity);
+                    ml.style.transform = `translate(-50%, 0) scale(${0.92 + 0.08 * pOpacity})`;
+                } else ml.style.visibility = 'hidden';
+            }
+
+            // E1: label while the slider rests at the carbocation intermediate
+            {
+                const cl = document.getElementById('cation-label');
+                const on = e1AtRest() && !isPlaying && !baseSwitch && (isDmb() ? (reactionProgress === E1_B1() ? e1Phase === 0 : e1Phase === 1) : true);
+                const ctext = (isDmb() && e1Phase === 1) ? 'TERTIARY CARBOCATION' : 'SECONDARY CARBOCATION';
+                if (cl.textContent !== ctext) cl.textContent = ctext;
+                if (on) {
+                    const rect = renderer.domElement.getBoundingClientRect(), th = Math.tan(22.5 * Math.PI / 180);
+                    const fwd = controls.target.clone().sub(camera.position).normalize(), gone = leavingMeshes();
+                    let top = Infinity, x0 = Infinity, x1 = -Infinity;
+                    sphereMeshes.forEach(m => {
+                        if (gone.has(m) || !m.visible) return;
+                        const sp = screenPos(m.position), d = m.position.clone().sub(camera.position).dot(fwd), r = m.userData.radius / d / th;
+                        top = Math.min(top, rect.top + (1 - (sp.y + r)) * rect.height / 2); x0 = Math.min(x0, sp.x - r); x1 = Math.max(x1, sp.x + r);
+                    });
+                    const h = cl.offsetHeight || 36;
+                    cl.style.left = (rect.left + rect.width / 2 + ((x0 + x1) / 2) * rect.height / 2) + 'px'; cl.style.top = Math.max(64, top - 12 - h) + 'px';
+                    cl.style.visibility = 'visible'; cl.style.opacity = '1';
+                    placeCharge('cation-charge', atomMeshes.cAlpha, 1);
+                } else { cl.style.visibility = 'hidden'; cl.style.opacity = '0'; placeCharge('cation-charge', null, 0); }
+            }
+            {   // red circled minus signs on the anions: the leaving group once it has left, and an anionic base (ethoxide, tert-butoxide) until it has taken the H
+                const sm = (x) => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); }, r = reactionProgress;
+                const lgA = isE1() ? sm((r - 0.35 * E1_B1()) / (0.4 * E1_B1())) : sm((r - 0.45) / 0.25);
+                const brM = atomMeshes.br, brOp = brM.visible ? brM.material.opacity : 0;
+                placeCharge('lg-charge', brM, lgA * brOp);
+                const bM = atomMeshes.baseH, bOp = bM.visible ? bM.material.opacity : 0;
+                placeCharge('base-charge', bM, isE1() ? 0 : (1 - sm((r - 0.3) / 0.25)) * bOp);
+            }
 
             // Transient message if the user tries to start a non-reactive conformation
             const hintEl = document.getElementById('blocked-hint');
             if (blockedHintActive) {
                 let dd = Math.abs(normDeg(rotationDeg - hintRot)); if (dd > 180) dd = 360 - dd;
-                if (dd > 1 || reactionProgress > 0 || getAntiIndex() >= 0) blockedHintActive = false;   // the beta carbon was turned
+                if (dd > 1 || (isE1() ? !e1AtRest2() : reactionProgress > 0) || getAntiIndex() >= 0) blockedHintActive = false;   // the beta carbon was turned
             }
-            const hintOn = blockedHintActive && glow < 0.01;
+            // guide arrow: shown with the prompts that ask the user to rotate the β-carbon to bring a chosen β-H into position
+            let guideIdx;       // undefined: no guide; -1: nearest β-H; otherwise the index (in betaSubs) of the chosen β-H
+            if (!baseSwitch && !isPlaying && reactionProgress === 0 || (isE1() && !baseSwitch && !isPlaying && e1AtRest2())) {
+                if (betaKeep && isDmh()) guideIdx = -1;
+                else if (hStage === 2 && !playReady) guideIdx = isE1() ? (e1Pick === 'c3' ? e1PickIdx : -1) : (currentBase === 'tbuo' ? H_CORRECT_IDX : -1);
+            }
+            let guideOn = false;
+            if (guideIdx === undefined) { guideActive = false; guideDone = false; }
+            else {
+                if (!guideActive) { guideActive = true; guideRot0 = rotationDeg; guideDone = false; }
+                else if (!guideDone) { let gd = Math.abs(normDeg(rotationDeg - guideRot0)); if (gd > 180) gd = 360 - gd; if (gd > 2) guideDone = true; }      // the user has started turning the β-carbon: the guide goes
+                if (!guideDone) { computeArrowInfo(guideIdx); guideOn = !!arrowInfo; }
+            }
+            const hintOn = (blockedHintActive && glow < 0.01) || guideOn;
             arrowAlpha += ((hintOn ? 1 : 0) - arrowAlpha) * 0.18;
             arrowMat.opacity = arrowAlpha;   // the arrow itself is solid; only the glow pulses
             if (arrowAlpha > 0.02) renderHintArrow();
             hintArrow.visible = arrowAlpha > 0.02 && hintArrow.children.length > 0;
-            if (hintOn) placeLabelBelowSubstrate(hintEl);
-            hintEl.style.opacity = hintOn ? '1' : '0';
+            const hintTextOn = blockedHintActive && glow < 0.01;
+            if (hintTextOn) placeLabelBelowSubstrate(hintEl);
+            hintEl.style.opacity = hintTextOn ? '1' : '0';
         }
 
         // Smooth camera transitions between preset views: the camera swings around the molecule
@@ -2188,11 +2815,11 @@ Br</text>
             baseSwitch = { phase: 'out', start: performance.now(), newBase, target: null };
         }
         window.addEventListener('pointermove', (e) => {      // faint yellow glow on the carbon (step 1) or hydrogen (step 2) under the pointer
-            const mode = gateOn() ? 'C' : (hStage === 1 && hTextSet ? 'H' : null);
+            const mode = gateOn() ? 'C' : (hPickOn() ? 'H' : (rPickOn() ? 'R' : null));
             if (!mode || baseSwitch || drag || viewDrag || e.target !== domEl) { gateHover = null; return; }
-            const w = mode === 'C' ? pickBeta(pointerPx(e)) : pickH(pointerPx(e));
+            const w = mode === 'C' ? pickBeta(pointerPx(e)) : mode === 'R' ? (m => m ? { mesh: m } : null)(rPickCarbon(pointerPx(e))) : pickH(pointerPx(e));
             gateHover = w ? w.mesh : null;
-            if (mode === 'C') domEl.style.cursor = w ? 'pointer' : '';
+            if (mode !== 'H') domEl.style.cursor = w ? 'pointer' : '';
         });
         function completeBaseSwitch() {     // jump to the end state of an animation in progress
             const bs = baseSwitch; baseSwitch = null;
@@ -2225,7 +2852,7 @@ Br</text>
             reactionProgress = keepT; updatePositions();
             const W = window.innerWidth, H = window.innerHeight, th = Math.tan(22.5 * Math.PI / 180), hh = H / 2;
             const panelTop = document.getElementById('bottom-panel').getBoundingClientRect().top;
-            const bandTop = 44, bandBottom = panelTop - 14 - 44 - 8;      // px: clear of the product label, the slider and the top edge
+            const bandTop = 92, bandBottom = panelTop - 14 - 44 - 8;      // px: clear of the product label, the slider and the top edge
             const yTop = (hh - bandTop) / hh, yBot = (hh - bandBottom) / hh;
             const panels = [...document.querySelectorAll('.interactive')].filter(el => el.id !== 'bottom-panel' && el.id !== 'controls-wrap').map(el => el.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0);
             const target = (target0 || controls.target).clone(), up = (up0 || camUp).clone();
@@ -2243,7 +2870,7 @@ Br</text>
                     pts.forEach(q => { const rel = q.p.clone().sub(cam), d = rel.dot(f), x = rel.dot(rt) / d / th, y = rel.dot(c2) / d / th, r = q.r / d / th;
                         b.x0 = Math.min(b.x0, x - r); b.x1 = Math.max(b.x1, x + r); b.y0 = Math.min(b.y0, y - r); b.y1 = Math.max(b.y1, y + r); });
                     bx = b;
-                    const k = Math.min((yTop - yBot) * 0.98 / (b.y1 - b.y0), 2 * hw * 0.98 / (b.x1 - b.x0));
+                    const k = Math.min((yTop - yBot) * 0.72 / (b.y1 - b.y0), 2 * hw * 0.72 / (b.x1 - b.x0));
                     const dist = Math.min(MAX_DIST - 0.5, Math.max(5, cam.clone().sub(target).length() / k));
                     cam = target.clone().add(cam.clone().sub(target).setLength(dist));
                 }
@@ -2258,13 +2885,13 @@ Br</text>
             return res;
         }
         function updateProductView() {
-            const want = reactionProgress >= 0.85 && !baseSwitch;
+            const want = prodT() >= 0.85 && !baseSwitch;
             if (want && !productViewOn) {
                 savedView = { pos: camera.position.clone(), target: controls.target.clone(), up: camUp.clone(), shift: { x: viewShift.x, y: viewShift.y } };
                 const fit = fitProductView();
                 animateCameraTo(fit.pos, controls.target.clone(), camUp.clone(), fit.shift, 1800);
                 autoCenter = false; productViewOn = true;
-            } else if (!want && productViewOn && reactionProgress < 0.8) {
+            } else if (!want && productViewOn && prodT() < 0.8) {
                 const sv = savedView; productViewOn = false; savedView = null;
                 if (sv) animateCameraTo(sv.pos, sv.target, sv.up, sv.shift, 1400);
             }
@@ -2275,11 +2902,23 @@ Br</text>
             updateBaseSwitch(performance.now());
             updateCameraTween(performance.now());
             updateShiftTween(performance.now());
+            updateRotTween(performance.now());
+            if (morph) updatePositions();
             orientCamera();
             applyViewShift();
 
+            if (rewind) {
+                if (baseSwitch) rewind = null;
+                else {
+                    const u = Math.min(1, (performance.now() - rewind.t0) / rewind.dur), s = u * u * (3 - 2 * u);
+                    reactionProgress = rewind.from + (rewind.target - rewind.from) * s;
+                    if (rewind.rotD) rotationDeg = normDeg(rewind.rot0 + rewind.rotD * s);
+                    document.getElementById('reaction-slider').value = reactionProgress;
+                    if (u >= 1) { reactionProgress = rewind.target; document.getElementById('reaction-slider').value = reactionProgress; rewind = null; finishRewind(); }
+                }
+            }
             // Playback can't continue from the reactants if no beta-H is anti-periplanar
-            if (isPlaying && reactionProgress <= 0 && getAntiIndex() < 0) {
+            if (isPlaying && (isE1() ? e1AtRest2() : reactionProgress <= 0) && getAntiIndex() < 0) {
                 isPlaying = false;
                 document.getElementById('btn-play').innerHTML = PLAY_ICON;
             }
@@ -2288,9 +2927,24 @@ Br</text>
 
             if (isPlaying) {
                 // the leaving group and the conjugate acid of the base (t > 0.70) depart more slowly: playback eases down to 45 % speed there
-                const dep = Math.min(1, Math.max(0, (reactionProgress - 0.64) / 0.08)), slow = 1 - 0.55 * dep * dep * (3 - 2 * dep);
-                const speed = (isQuarterSpeed ? (baseSpeed / 4) : baseSpeed) * playDirection * slow;
+                const dep = Math.min(1, Math.max(0, (prodT() - 0.64) / 0.08)), slow = 1 - 0.55 * dep * dep * (3 - 2 * dep);
+                // E1: each of the two steps takes about as long as the whole E2 reaction; step 1 eases to rest at the carbocation
+                const easeTo = (b) => (playDirection > 0 && reactionProgress < b) ? 1 - 0.6 * smooth01(Math.min(1, Math.max(0, (reactionProgress - (b - 0.08)) / 0.08))) : 1;
+                // each stage takes about as long as the whole E2 reaction (stage widths: 0.5/0.5 for 2-bromobutane, 0.3/0.3/0.4 for the methyl-shift substrate)
+                const wFac = !isDmb() ? 1 : reactionProgress < E1_B1() ? 0.6 : reactionProgress < E1_B2() ? 0.6 : 0.8;
+                const e1k = isE1() ? 0.6 * wFac * (reactionProgress < E1_B1() ? easeTo(E1_B1()) : reactionProgress < E1_B2() ? easeTo(E1_B2()) : 1) : 1;
+                const speed = (isQuarterSpeed ? (baseSpeed / 4) : baseSpeed) * playDirection * slow * e1k;
+                const prevP = reactionProgress;
                 reactionProgress += speed;
+                if (isE1() && playDirection > 0) {
+                    const hit1 = prevP < E1_B1() && reactionProgress >= E1_B1(), hit2 = isDmb() && e1Phase === 0 && prevP < E1_B2() && reactionProgress >= E1_B2();
+                    if (hit1 || hit2) {
+                        reactionProgress = hit1 ? E1_B1() : E1_B2(); isPlaying = false;       // the slider rests at the carbocation intermediates
+                        document.getElementById('btn-play').innerHTML = PLAY_ICON;
+                        if (hit2) { e1SetPhase(1); rStage = 5; }
+                    }
+                }
+                if (isDmb() && e1Phase === 1 && reactionProgress < E1_B2()) e1SetPhase(0);
 
                 if (isLooping) {
                     if (reactionProgress >= 1) {
@@ -2336,9 +2990,10 @@ Br</text>
 
         // Swing to a preset view. Before the product has formed: the usual fitted view. At the end of the reaction (the base and
         // leaving group have flown off) the view is zoomed on the product alone; running the reaction back returns to the fitted view.
-        function goToView(getView) {
+        function goToView(getView0) {
+            const getView = () => { centerVisible = true; try { return getView0(); } finally { centerVisible = false; } };
             const v = getView();
-            if (reactionProgress >= 0.85) {
+            if (prodT() >= 0.85) {
                 const keep = reactionProgress; reactionProgress = 0; updatePositions();
                 const rv = getView();
                 reactionProgress = keep; updatePositions();
@@ -2353,15 +3008,14 @@ Br</text>
             p = new THREE.Vector3(-Math.min(d, MAX_DIST - 0.5), 0, 0);
             return { pos: p, target: o, up: u, shift: centeredShift(p, o, u) };
         }
-        document.getElementById('btn-newman').addEventListener('click', () => goToView(newmanView));
+        document.getElementById('btn-newman').addEventListener('click', () => { goToView(newmanView); setActiveView('newman'); });
 
         document.getElementById('btn-labels').addEventListener('click', () => {
-            labelsOn = !labelsOn;
-            document.getElementById('btn-labels').textContent = labelsOn ? 'LABELS: ON' : 'LABELS: OFF';
+            setLabelsOn(!labelsOn);
         });
         document.getElementById('btn-side').addEventListener('click', () => {
             // Side view (perpendicular to the C-C axis, from slightly above) for the current substrate / base
-            goToView(sideView);
+            goToView(sideView); setActiveView('side');
         });
 
         document.getElementById('btn-orbitals').addEventListener('click', (e) => {
@@ -2369,10 +3023,12 @@ Br</text>
             if (showOrbitals) {
                 e.target.innerText = "HIDE P ORBITALS";
                 e.target.classList.replace('border-purple-500', 'border-purple-300');
-                e.target.classList.add('bg-purple-600', 'text-white');
+                e.target.classList.add('bg-purple-600', 'text-white', 'hover:bg-gray-600');
+                e.target.classList.remove('hover:bg-purple-600');
             } else {
                 e.target.innerText = "SHOW P ORBITALS";
-                e.target.classList.remove('bg-purple-600', 'text-white');
+                e.target.classList.remove('bg-purple-600', 'text-white', 'hover:bg-gray-600');
+                e.target.classList.add('hover:bg-purple-600');
                 e.target.classList.add('border-purple-500', 'text-purple-300');
             }
             updatePositions();
@@ -2383,7 +3039,19 @@ Br</text>
             if (baseSwitch) { e.target.value = reactionProgress; return; }
             if (blockedByGate()) { e.target.value = 0; reactionProgress = 0; return; }
             reactionProgress = parseFloat(e.target.value);
-            if (reactionProgress > 0 && getAntiIndex() < 0) {
+            if (isE1()) {
+                const b1 = E1_B1(), b2 = E1_B2();
+                // the intermediates are wide targets: the slider settles on them from a little before / after
+                [b1, b2].forEach(b => { if (Math.abs(reactionProgress - b) < 0.03) { reactionProgress = b; e.target.value = b; } });
+                // the rearrangement questions have to be answered first (the slider rests at the first carbocation)
+                if (reactionProgress > b1 && rStage < (isDmb() ? 4 : 5) && e1Phase === 0) { reactionProgress = b1; e.target.value = b1; }
+                else if (reactionProgress > b1 && isDmb() && e1Phase === 0 && rStage === 4 && alignMig(false)) { reactionProgress = b1; e.target.value = b1; }
+                if (isDmb() && e1Phase === 1 && reactionProgress < b2) e1SetPhase(0);
+                if (isDmb() && e1Phase === 0 && reactionProgress >= b2) { reactionProgress = b2; e.target.value = b2; e1SetPhase(1); rStage = 5; }
+                // the removal of a β-H needs it aligned with the empty p orbital: the slider stops at the carbocation until one is
+                else if (e1AtRest2() === false && reactionProgress > b2 && getAntiIndex() < 0) { reactionProgress = b2; e.target.value = b2; showBlockedHint(); }
+                else if (reactionProgress > b2 && getAntiIndex() < 0) { reactionProgress = b2; e.target.value = b2; showBlockedHint(); }
+            } else if (reactionProgress > 0 && getAntiIndex() < 0) {
                 // E2 requires an anti-periplanar beta-H
                 reactionProgress = 0;
                 e.target.value = 0;
@@ -2397,9 +3065,11 @@ Br</text>
         document.getElementById('btn-play').addEventListener('click', () => {
             if (baseSwitch) return;
             if (blockedByGate()) return;
-            if (reactionProgress >= 1) reactionProgress = 0;
-            if (reactionProgress <= 0 && getAntiIndex() < 0) {
-                showBlockedHint();   // E2 requires an anti-periplanar beta-H
+            if (reactionProgress >= 1) { reactionProgress = 0; if (isDmb() && e1Phase === 1) e1SetPhase(0); }
+            if (isE1() && reactionProgress === E1_B1() && e1Phase === 0 && rStage < (isDmb() ? 4 : 5)) return;
+            if (isE1() && isDmb() && reactionProgress === E1_B1() && rStage === 4 && !isPlaying && alignMig(true)) return;      // answer the rearrangement questions first
+            if (isE1() ? (e1AtRest2() && getAntiIndex() < 0) : (reactionProgress <= 0 && getAntiIndex() < 0)) {
+                showBlockedHint();   // E2 requires an anti-periplanar beta-H; E1 step 2 a β-H aligned with the empty p orbital
                 return;
             }
             isPlaying = !isPlaying;
@@ -2434,16 +3104,29 @@ Br</text>
         // Reset the simulation to the reactants (used when the substrate or base changes)
         // Starting rotation of the beta carbon: the lowest-energy conformation of the chosen substrate
         function initialRotation() {
+            if (isE1()) return isDmb() ? 0 : 120;       // E1 start: the C4 methyl group anti to Br (the lowest-energy conformer); no β-H is aligned yet
             if (!isDmh()) return 0;
             selectDmhSet();
             return (currentBase === 'tbuo' ? DMH.h.rot0 : DMH.z.rot0);
+        }
+        function updateE1Steps() {
+            const el = document.getElementById('e1-steps');
+            el.classList.toggle('on', isE1());
+            if (!isE1()) return;
+            const pts = isDmb() ? [30, 60] : [50];
+            el.innerHTML = isDmb()
+                ? '<div style="flex:3">1. Loss of leaving group to form carbocation</div><div style="flex:3">2. Carbocation rearrangement</div><div style="flex:4">3. Deprotonation of β-hydrogen to form the product</div>'
+                : '<div style="flex:1">1. Loss of leaving group to form carbocation</div><div style="flex:1">2. Deprotonation of β-hydrogen to form the product</div>';
+            const g = ['#4b5563 0']; pts.forEach(q => g.push('#4b5563 calc(' + q + '% - 7px)', '#facc15 calc(' + q + '% - 7px)', '#facc15 calc(' + q + '% + 7px)', '#4b5563 calc(' + q + '% + 7px)')); g.push('#4b5563 100%');
+            document.getElementById('reaction-slider').style.setProperty('--e1bg', 'linear-gradient(90deg, ' + g.join(', ') + ')');
+            document.getElementById('lab-mid').textContent = isDmb() ? '' : 'Carbocation Intermediate';
         }
         function resetSimulation() {
             reactionProgress = 0;
             isPlaying = false;
             playDirection = 1;
-            rotationDeg = initialRotation();
-            glow = 0; blockedHintActive = false;
+            e1Hof = false; e1Pick = 'c3'; rotationDeg = initialRotation(); c1Deg = 0; c1Idx = 0; c1Spin = [0, 0]; e1Phase = 0; e1Mig = -1; rStage = 0; rTextSet = false; rotTween = null; morph = null; e1GrpSpin = 0; rewind = null; minorAsk = false; minorAskDone = false; updateE1Steps();
+            glow = 0; blockedHintActive = false; setActiveView('side');
             resetBetaGate();
             if (typeof endDrag === 'function') endDrag();
             document.getElementById('reaction-slider').value = 0;
@@ -2451,6 +3134,35 @@ Br</text>
             lastUIKey = '';
             buildMolecule();
         }
+
+        // Mechanism selection: E2 (all substrates and bases) or E1 ((R)-2-bromobutane with ethanol only)
+        const E2_SUB_OPTS = document.getElementById('substrate-select').innerHTML, E2_BASE_OPTS = document.getElementById('base-select').innerHTML;
+        let e2Saved = { sub: 'ethane', base: 'hydride' };
+        document.getElementById('mech-select').addEventListener('change', (e) => {
+            const want = e.target.value;
+            e.target.blur();
+            if (want === mech) return;
+            if (!isE1()) e2Saved = { sub: currentSubstrate, base: currentBase };
+            if (baseSwitch) { baseSwitch = null; baseFade = 1; }
+            mech = want; shiftTween = null;
+            const subSel = document.getElementById('substrate-select'), baseSel = document.getElementById('base-select');
+            if (isE1()) {
+                subSel.innerHTML = '<option value="butane">(R)-2-bromobutane</option><option value="dmb">(R)-3-bromo-2,2-dimethylbutane</option>';
+                baseSel.innerHTML = '<option value="etoh">ethanol: CH₃CH₂OH</option>';
+                currentSubstrate = 'butane'; currentBase = 'etoh';
+            } else {
+                subSel.innerHTML = E2_SUB_OPTS; baseSel.innerHTML = E2_BASE_OPTS;
+                currentSubstrate = e2Saved.sub; currentBase = e2Saved.base;
+                subSel.value = currentSubstrate; baseSel.value = currentBase;
+            }
+            document.getElementById('mech-sub').textContent = isE1() ? 'Unimolecular Elimination' : 'Bimolecular Elimination';
+            document.getElementById('lab-mid').textContent = isE1() ? 'Carbocation Intermediate' : 'Transition State';
+            document.getElementById('reaction-slider').classList.toggle('e1', isE1());
+            baseFade = 1; e1BaseCache = { key: '', pts: [] };
+            resetSimulation();
+            { const sv = sideView(); setCameraNow(sv.pos, sv.target, sv.up, sv.shift); }
+            maybeShowInstr();
+        });
 
         // Substrate selection
         document.getElementById('substrate-select').addEventListener('change', (e) => {
@@ -2471,7 +3183,7 @@ Br</text>
         domEl.style.touchAction = 'none';
         let drag = null;
 
-        const canDragNow = () => reactionProgress === 0 && !isPlaying && !baseSwitch && !gateOn();
+        const canDragNow = () => rotatable() && !isPlaying && !baseSwitch && !gateOn() && !rotTween;
         const c3Meshes = () => betaSubs.flatMap(subMeshes);
         const pointerPx = (e) => {
             const r = domEl.getBoundingClientRect();
@@ -2486,8 +3198,27 @@ Br</text>
             const hits = raycaster.intersectObjects(c3Meshes(), false);
             return hits.length ? hits[0].object : null;
         };
+        // E1: the C1 methyl group (the second β-carbon) can be turned about the C1-C2 bond
+        const pickC1 = (px) => {
+            if (!isE1() || e1Hof) return null;
+            raycaster.setFromCamera(new THREE.Vector2(px.x / domEl.clientWidth * 2 - 1, -(px.y / domEl.clientHeight) * 2 + 1), camera);
+            const hits = raycaster.intersectObjects(alphaSubs.filter(s => s.type === 'C').flatMap(subMeshes), false);
+            return hits.length ? hits[0].object : null;
+        };
+        const pickRot = (px) => pickC3(px) || pickC1(px);
 
         function beginDrag(mesh, px) {
+            const mi = (isE1() && !e1Hof) ? alphaSubs.findIndex(s => s.type === 'C' && subMeshes(s).includes(mesh)) : -1;
+            if (mi >= 0) {
+                // grabbed an atom of the C1 methyl group: it travels on a circle about the C1-C2 bond
+                c1Select(mi);
+                const c2 = atomMeshes.cAlpha.position, c1 = alphaSubs[mi].mesh.position, ax = c1.clone().sub(c2).normalize();
+                const g = mesh === alphaSubs[mi].mesh ? alphaSubs[mi].hs[0] : mesh, pg = g.position.clone();
+                const center = c1.clone().addScaledVector(ax, pg.clone().sub(c1).dot(ax)), r = pg.clone().sub(center), rho = r.length();
+                const e1v = r.clone().normalize(), e2v = new THREE.Vector3().crossVectors(ax, e1v), q0 = projectPx(pg);
+                drag = { kind: 'c1', mesh: g, center, e1v, e2v, rho, startPsi: c1Deg, prev: 0, offX: px.x - q0.x, offY: px.y - q0.y };
+                return;
+            }
             const p0 = mesh.position.clone();
             const q0 = projectPx(p0);
             drag = {
@@ -2501,8 +3232,10 @@ Br</text>
         function updateDrag(px) {
             const tx = px.x - drag.offX, ty = px.y - drag.offY;
             const cost = (dDeg) => {
-                const a = drag.a0 + dDeg * Math.PI / 180;
-                const q = projectPx(new THREE.Vector3(drag.x0, drag.rho * Math.cos(a), drag.rho * Math.sin(a)));
+                let pt;
+                if (drag.kind === 'c1') { const a = dDeg * Math.PI / 180; pt = drag.center.clone().addScaledVector(drag.e1v, drag.rho * Math.cos(a)).addScaledVector(drag.e2v, drag.rho * Math.sin(a)); }
+                else { const a = drag.a0 + dDeg * Math.PI / 180; pt = new THREE.Vector3(drag.x0, drag.rho * Math.cos(a), drag.rho * Math.sin(a)); }
+                const q = projectPx(pt);
                 return (q.x - tx) * (q.x - tx) + (q.y - ty) * (q.y - ty);
             };
             let best = drag.prev, bestC = Infinity;
@@ -2517,6 +3250,12 @@ Br</text>
             }
             drag.prev = best;
             let psi = drag.startPsi + best;
+            if (drag.kind === 'c1') {
+                const n = Math.round((psi - 30) / 60) * 60 + 30;      // snap to the conformations where a C1-H lines up with the p orbital (above or below the plane)
+                if (Math.abs(psi - n) <= 7) psi = n;
+                c1Deg = normDeg(psi);
+                return;
+            }
             const n60 = Math.round(psi / 60) * 60;
             if (Math.abs(psi - n60) <= 7) psi = n60;   // magnetic snap to staggered / eclipsed positions
             rotationDeg = normDeg(psi);
@@ -2532,17 +3271,26 @@ Br</text>
 
         let viewDrag = null;
         document.getElementById('canvas-container').addEventListener('pointerdown', (e) => {
-            if (e.button === 0 && hStage === 1 && hTextSet && !baseSwitch) {
+            if (e.button === 0 && hPickOn() && !baseSwitch) {
                 const w = pickH(pointerPx(e));
                 hPending = w ? { kind: w.kind, x: e.clientX, y: e.clientY } : null;      // decided on release, if the pointer did not move (otherwise it was a drag)
+            }
+            if (e.button === 0 && isE1() && rStage === 3 && !baseSwitch && !isPlaying) {
+                const m = rPickCarbon(pointerPx(e));
+                if (m) { rChooseCarbon(m); e.stopPropagation(); e.preventDefault(); return; }
             }
             if (e.button === 0 && gateOn() && !baseSwitch) {
                 const w = pickBeta(pointerPx(e));
                 if (w) { chooseBeta(w.kind); e.stopPropagation(); e.preventDefault(); return; }
             }
+            if (e.button === 0 && isE1() && e1Hof && canDragNow()) {      // a click on a C3 atom (ethyl group) while C1 is the turning carbon: switch back to C3
+                const px = pointerPx(e);
+                raycaster.setFromCamera(new THREE.Vector2(px.x / domEl.clientWidth * 2 - 1, -(px.y / domEl.clientHeight) * 2 + 1), camera);
+                if (raycaster.intersectObjects(subMeshes(e1CSub()), false).length) e1SetFrame(false);
+            }
             if (e.button === 0 && canDragNow()) {
                 const px = pointerPx(e);
-                const m = pickC3(px);
+                const m = pickRot(px);
                 if (m) {
                     controls.enabled = false;           // keep the camera fixed while rotating the beta carbon
                     beginDrag(m, px);
@@ -2565,7 +3313,7 @@ Br</text>
             rotateView(dx, dy, e.shiftKey, e.altKey ? FINE_ROTATE_SPEED : ROTATE_SPEED);
         });
         window.addEventListener('pointerup', (e) => {
-            if (hPending && hStage === 1 && Math.hypot(e.clientX - hPending.x, e.clientY - hPending.y) < 4) chooseH(hPending.kind);
+            if (hPending && hPickOn() && Math.hypot(e.clientX - hPending.x, e.clientY - hPending.y) < 4) chooseH(hPending.kind);
             hPending = null;
         });
         const endViewDrag = () => { if (viewDrag) { viewDrag = null; domEl.style.cursor = ''; } };
@@ -2582,7 +3330,7 @@ Br</text>
                 if (hoveredMesh) { hoveredMesh = null; domEl.style.cursor = ''; }
                 return;
             }
-            const m = pickC3(pointerPx(e));
+            const m = pickRot(pointerPx(e));
             hoveredMesh = m;
             domEl.style.cursor = m ? 'grab' : '';
         });
